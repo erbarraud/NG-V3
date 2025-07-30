@@ -730,8 +730,11 @@ export default {
             enabled: false,
             value: ''
           },
-          lengthMin: '',
-          lengthMax: '',
+          length: '',
+          lengthTolerance: {
+            enabled: false,
+            value: ''
+          },
           thickness: '',
           thicknessTolerance: {
             enabled: false,
@@ -772,7 +775,7 @@ export default {
       return this.newSort.name && 
              this.newSort.targetVolume && 
              this.newSort.grades.length > 0 &&
-             (this.newSort.geometry.width || this.newSort.geometry.lengthMin || this.newSort.geometry.thickness)
+             (this.newSort.geometry.width || this.newSort.geometry.length || this.newSort.geometry.thickness)
     }
   },
 
@@ -820,8 +823,11 @@ export default {
             enabled: false,
             value: ''
           },
-          lengthMin: '',
-          lengthMax: '',
+          length: '',
+          lengthTolerance: {
+            enabled: false,
+            value: ''
+          },
           thickness: '',
           thicknessTolerance: {
             enabled: false,
