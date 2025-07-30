@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "prebuild": "rimraf dist",
-    "build": "node scripts/build-and-exit.js",
+    "build": "cross-env NODE_ENV=production vite build --mode production && exit 0",
     "build:fallback": "cross-env NODE_ENV=production vite build --mode production && exit 0",
     "build:simple": "vite build || exit 0",
     "lint": "eslint .",
