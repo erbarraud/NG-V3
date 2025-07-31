@@ -694,9 +694,6 @@
                 Add Template to Order
               </button>
             </div>
-          </div>
-        </div>
-
         </div>
       </div>
     </div>
