@@ -53,7 +53,7 @@
                 Board Finder
               </router-link>
               <router-link
-                to="/line"
+                to="/line-check/dashboard"
                 :class="[
                   $route.name === 'LineCheckDashboard'
                     ? 'text-white shadow-lg ring-2 ring-primary/50'
