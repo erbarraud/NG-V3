@@ -136,16 +136,6 @@
                 </div>
                 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Custom Order ID</label>
-                  <input 
-                    v-model="orderData.customId"
-                    type="text" 
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                    placeholder="Optional custom ID"
-                  />
-                </div>
-                
-                <div>
                   <label class="block text-sm font-medium text-gray-700 mb-2">Order ID</label>
                   <input 
                     v-model="orderData.orderId"
