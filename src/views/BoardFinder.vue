@@ -314,7 +314,6 @@
                  @click="selectedBoard = board.id"
             >
               <div class="flex items-center justify-between">
-                <div class="font-semibold text-gray-900">{{ board.id }}</div>
                 <router-link 
                   :to="`/inspector/${board.id}`"
                   class="font-semibold text-emerald-600 hover:text-emerald-800 hover:underline"
