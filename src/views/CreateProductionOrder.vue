@@ -335,6 +335,56 @@
             </div>
           </div>
 
+          <!-- Added Sorts Display -->
+          <div v-if="orderData.sorts.length > 0" class="bg-gray-50 rounded-lg p-6 border border-gray-200 mb-8">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-gray-900">Added Sorts ({{ orderData.sorts.length }})</h3>
+              <button 
+                @click="clearAllSorts"
+                class="text-sm text-red-600 hover:text-red-700 font-medium"
+              >
+                Clear All
+              </button>
+            </div>
+            
+            <div class="space-y-4">
+              <div v-for="(sort, index) in orderData.sorts" :key="sort.id" 
+                   class="bg-white rounded-lg p-4 border border-gray-200">
+                <div class="flex items-center justify-between mb-3">
+                  <h4 class="font-medium text-gray-900">{{ sort.name }}</h4>
+                  <button 
+                    @click="removeSort(index)"
+                    class="text-red-600 hover:text-red-700 p-1 rounded hover:bg-red-50"
+                  >
+                    <X class="w-4 h-4" />
+                  </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <span class="text-gray-600">Geometry:</span>
+                    <div class="font-medium text-gray-900">
+                      {{ sort.geometry?.width || 'Any' }}" × {{ sort.geometry?.length || 'Any' }}' × {{ sort.geometry?.thickness || 'Any' }}
+                    </div>
+                  </div>
+                  <div>
+                    <span class="text-gray-600">Grades:</span>
+                    <div class="font-medium text-gray-900">{{ sort.grades?.join(', ') || 'Not specified' }}</div>
+                  </div>
+                  <div>
+                    <span class="text-gray-600">Target Volume:</span>
+                    <div class="font-medium text-gray-900">{{ sort.targetVolume || 'TBD' }} {{ sort.volumeUnit || 'm³' }}</div>
+                  </div>
+                </div>
+                
+                <div v-if="sort.colorSorting?.enabled" class="mt-2 text-sm">
+                  <span class="text-gray-600">Color Sorting:</span>
+                  <span class="font-medium text-gray-900 ml-1">{{ sort.colorSorting.type }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Sort Creation Options -->
           <div class="mb-8">
             <h3 class="text-lg font-medium text-gray-900 mb-4">Add Sort to Order</h3>
@@ -695,55 +745,6 @@
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 ]"
               >
-                Add Sort to Order
-              </button>
-            </div>
-          </div>
-
-          <!-- Template Selection -->
-          <div v-if="sortCreationMode === 'template'" class="bg-gray-50 rounded-lg p-6 border border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900 mb-6">Choose Sort Template</h3>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-              <div v-for="template in sortTemplates" :key="template.id"
-                   @click="selectTemplate(template)"
-                   :class="[
-                     'p-4 border-2 rounded-lg cursor-pointer transition-all duration-200',
-                     selectedTemplate?.id === template.id
-                       ? 'border-emerald-500 bg-emerald-50'
-                       : 'border-gray-200 hover:border-gray-300 hover:bg-white'
-                   ]"
-              >
-                <h4 class="font-medium text-gray-900 mb-2">{{ template.name }}</h4>
-                <div class="text-sm text-gray-600 space-y-1">
-                  <div>{{ template.geometry.width }}" × {{ template.geometry.length }}' × {{ template.geometry.thickness }}</div>
-                  <div>Grades: {{ template.grades.join(', ') }}</div>
-                  <div v-if="template.colorSorting.enabled">Color: {{ template.colorSorting.type }}</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Template Actions -->
-            <div class="flex justify-end space-x-3">
-              <button 
-                @click="selectedTemplate = null"
-                class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Clear Selection
-              </button>
-              <button 
-                @click="addTemplateSort"
-                :disabled="!selectedTemplate"
-                :class="[
-                  'px-4 py-2 rounded-lg transition-colors',
-                  selectedTemplate
-                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                ]"
-              >
-                Add Template to Order
-              </button>
-            </div>
         </div>
       </div>
         </div>
