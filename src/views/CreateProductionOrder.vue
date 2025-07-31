@@ -417,8 +417,8 @@
 
                 <div class="mt-4 pt-4 border-t border-gray-200">
                   <div class="text-sm text-gray-600">
-                    Target Volume: <span class="font-medium">{{ sort.targetVolume }} {{ sort.volumeUnit }}</span>
-                    <span v-if="sort.specialRequirements" class="ml-4">
+                    Target Volume: <span class="font-medium">{{ sort?.targetVolume }} {{ sort?.volumeUnit }}</span>
+                    <span v-if="sort?.specialRequirements" class="ml-4">
                       Special: <span class="font-medium">{{ sort.specialRequirements }}</span>
                     </span>
                   </div>
