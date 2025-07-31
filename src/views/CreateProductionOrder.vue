@@ -185,19 +185,6 @@
                     <option value="low">Low</option>
                   </select>
                 </div>
-                
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Line</label>
-                  <select 
-                    v-model="orderData.preferredLine"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                  >
-                    <option value="auto">Auto Assignment</option>
-                    <option value="line1">Line 1</option>
-                    <option value="line2">Line 2</option>
-                    <option value="line3">Line 3</option>
-                  </select>
-                </div>
               </div>
             </div>
 
