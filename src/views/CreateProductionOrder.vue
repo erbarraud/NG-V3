@@ -326,77 +326,81 @@
                 <div class="flex items-center mb-3">
                   <div :class="[
                     'w-10 h-10 rounded-lg flex items-center justify-center mr-3',
-                    sortCreationMode === 'template' ? 'bg-emerald-500' : 'bg-gray-400'
-                  ]">
-                    <FileTemplate class="w-5 h-5 text-white" />
-                  </div>
-                  <h4 class="text-lg font-semibold text-gray-900">Use Existing Template</h4>
-                </div>
-                <p class="text-sm text-gray-600">
-                  Choose from pre-configured sort templates for common lumber specifications.
-                </p>
-              </button>
-            </div>
-          </div>
-          <!-- Added Sorts List -->
-          <div v-if="orderData.sorts.length > 0" class="mb-8">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Added Sorts ({{ orderData.sorts.length }})</h3>
-            <div class="space-y-4">
-              <div v-for="(sort, index) in orderData.sorts" :key="index" 
-                   class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-                <div class="flex items-center justify-between mb-4">
-                  <h4 class="font-medium text-gray-900 text-lg">{{ sort.name }}</h4>
-                  <button 
-                    @click="removeSort(index)"
-                    class="px-3 py-1 bg-white border border-red-300 text-red-600 rounded text-sm hover:bg-red-50 hover:border-red-400 transition-colors flex items-center"
+          <!-- Create New Sort Form -->
+          <div v-if="sortCreationMode === 'new'" class="bg-gray-50 rounded-lg p-6 border border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">Create New Sort</h3>
+            
+            <!-- Basic Sort Info -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Sort Name *</label>
+                <input 
+                  v-model="newSort.name"
+                  type="text" 
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  placeholder="Enter sort name"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Target Volume *</label>
+                <div class="flex space-x-2">
+                  <input 
+                    v-model="newSort.targetVolume"
+                    type="number" 
+                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    placeholder="0"
+                  />
+                  <select 
+                    v-model="newSort.volumeUnit"
+                    class="px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                   >
-                    <X class="w-4 h-4 mr-1" />
-                    Remove
-                  </button>
+                    <option value="m3">m³</option>
+                    <option value="bf">Board Feet</option>
+                    <option value="pieces">Pieces</option>
+                  </select>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <!-- Board Geometry -->
                   <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                    <div class="flex items-center mb-3">
-                      <Ruler class="w-5 h-5 text-blue-600 mr-2" />
-                      <h5 class="font-medium text-blue-900">Board Geometry</h5>
-                    </div>
-                    <div class="space-y-2 text-sm text-blue-800">
-                      <div>Width: {{ sort.geometry.width }}"{{ sort.geometry.widthTolerance.enabled ? ' ±' + sort.geometry.widthTolerance.value + '"' : '' }}</div>
-                      <div>Length: {{ sort.geometry.length }}'{{ sort.geometry.lengthTolerance.enabled ? ' ±' + sort.geometry.lengthTolerance.value + '\'' : '' }}</div>
-                      <div>Thickness: {{ sort.geometry.thickness }}</div>
-                    </div>
-                  </div>
-
-                  <!-- Board Grades -->
-                  <div class="bg-green-50 rounded-lg p-4 border border-green-200">
-                    <div class="flex items-center mb-3">
-                      <CheckCircle class="w-5 h-5 text-green-600 mr-2" />
-                      <h5 class="font-medium text-green-900">Board Grades</h5>
-                    </div>
-                    <div class="flex flex-wrap gap-1">
-                      <span v-for="grade in sort.grades" :key="grade" 
-                            class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
-                        {{ grade }}
-                      </span>
-                    </div>
-                  </div>
-
-                  <!-- Board Colors -->
-                  <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
-                    <div class="flex items-center mb-3">
-                      <Palette class="w-5 h-5 text-purple-600 mr-2" />
-                      <h5 class="font-medium text-purple-900">Board Colors</h5>
-                    </div>
-                    <div class="text-sm text-purple-800">
-                      <div v-if="sort.colorSorting.enabled">
-                        Color Type: {{ sort.colorSorting.type }}
-                      </div>
-                      <div v-else class="text-purple-600">No color sorting</div>
-                    </div>
-                  </div>
+            <!-- 3 Configuration Areas -->
+            <div class="space-y-6 mb-6">
+              <!-- 1. Board Geometry -->
+              <div class="bg-white rounded-lg p-6 border border-gray-200">
+                <div class="flex items-center mb-4">
+                  <Ruler class="w-5 h-5 text-gray-600 mr-2" />
+                  <h4 class="font-medium text-gray-900">Board Geometry</h4>
                 </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <!-- Width Range -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Width (inches)</label>
+                    <div class="space-y-2">
+                      <input 
+                        v-model="newSort.geometry.width"
+                        type="number" 
+                        step="0.25"
+                        placeholder="Width"
+                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+                      />
+                      <div class="flex items-center space-x-2">
+                        <input 
+                          type="checkbox" 
+                          v-model="newSort.geometry.widthTolerance.enabled"
+                          class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+                        />
+                        <label class="text-sm text-gray-700">Add tolerance</label>
+                      </div>
+                      <input 
+                        v-if="newSort.geometry.widthTolerance.enabled"
+                        v-model="newSort.geometry.widthTolerance.value"
+                        type="number" 
+                        step="0.25"
+                        placeholder="± Tolerance"
+                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+                      />
+                    </div>
+                  </div>
 
                 <div class="mt-4 pt-4 border-t border-gray-200">
                   <div class="text-sm text-gray-600">
@@ -676,12 +680,46 @@
                   <label class="flex items-center">
                     <input 
                       type="checkbox" 
+              <!-- 2. Board Grades -->
+              <div class="bg-white rounded-lg p-6 border border-gray-200">
+                <div class="flex items-center mb-4">
+                  <CheckCircle class="w-5 h-5 text-gray-600 mr-2" />
+                  <h4 class="font-medium text-gray-900">Board Grades</h4>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <label class="flex items-start">
+                    <input 
+                      type="checkbox" 
+                      value="FAS" 
+                      v-model="newSort.grades"
+                      class="mt-1 h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+                    />
+                    <div class="ml-3">
+                      <div class="text-sm font-medium text-gray-900">FAS</div>
+                      <div class="text-xs text-gray-600">First and Seconds - Highest grade</div>
+                    </div>
+                  </label>
+                        <label class="text-sm text-gray-700">Add tolerance</label>
+                  <label class="flex items-start">
+              <!-- 3. Board Colors -->
+              <div class="bg-white rounded-lg p-6 border border-gray-200">
+                <div class="flex items-center mb-4">
+                  <Palette class="w-5 h-5 text-gray-600 mr-2" />
+                  <h4 class="font-medium text-gray-900">Board Colors</h4>
+                </div>
+                
+                <div class="space-y-4">
+                  <!-- Enable Color Sorting -->
+                  <label class="flex items-center">
+                    <input 
+                      type="checkbox" 
                       v-model="newSort.colorSorting.enabled"
                       class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
                     />
                     <span class="ml-2 text-sm font-medium text-gray-900">Enable Color Sorting</span>
                   </label>
-
+                      class="mt-1 h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
                   <!-- Color Options (only show if enabled) -->
                   <div v-if="newSort.colorSorting.enabled" class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <label class="flex items-center">
@@ -696,7 +734,7 @@
                         <div class="text-sm text-gray-900">White/Light</div>
                       </div>
                     </label>
-
+                    <div class="ml-3">
                     <label class="flex items-center">
                       <input 
                         type="radio" 
@@ -709,7 +747,7 @@
                         <div class="text-sm text-gray-900">Red/Dark</div>
                       </div>
                     </label>
-
+                    <div class="ml-3">
                     <label class="flex items-center">
                       <input 
                         type="radio" 
@@ -718,39 +756,6 @@
                         class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300"
                       />
                       <div class="ml-3 flex items-center">
-                        <div class="w-4 h-4 bg-gradient-to-r from-gray-100 to-red-300 border border-gray-300 rounded mr-2"></div>
-                        <div class="text-sm text-gray-900">Mixed</div>
-                      </div>
-                    </label>
-
-                    <label class="flex items-center">
-                      <input 
-                        type="radio" 
-                        value="Natural Variation" 
-                        v-model="newSort.colorSorting.type"
-                        class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300"
-                      />
-                      <div class="ml-3 flex items-center">
-                        <div class="w-4 h-4 bg-yellow-200 border border-yellow-300 rounded mr-2"></div>
-                        <div class="text-sm text-gray-900">Natural Variation</div>
-                      </div>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Special Requirements -->
-            <div class="mb-6">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Special Requirements</label>
-              <input 
-                v-model="newSort.specialRequirements"
-                type="text" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                placeholder="Any special requirements..."
-              />
-            </div>
-
             <!-- Form Actions -->
             <div class="flex justify-end space-x-3">
               <button 
@@ -772,7 +777,7 @@
                 Add Sort to Order
               </button>
             </div>
-          </div>
+            </div>
         </div>
 
         </div>
@@ -854,6 +859,56 @@ export default {
 
       speciesList: [
         'Oak', 'Maple', 'Cherry', 'Walnut', 'Pine', 'Cedar', 'Birch', 'Ash', 'Mahogany', 'Teak'
+      ],
+
+      // Sort creation mode
+      sortCreationMode: 'new', // 'new' or 'template'
+      selectedTemplate: null,
+
+      // Sort templates
+      sortTemplates: [
+        {
+          id: 'template1',
+          name: 'Standard Flooring',
+          geometry: { width: 3.25, length: 8, thickness: '3/4' },
+          grades: ['Select', 'No. 1 Common'],
+          colorSorting: { enabled: true, type: 'White/Light' }
+        },
+        {
+          id: 'template2',
+          name: 'Cabinet Grade',
+          geometry: { width: 6, length: 10, thickness: '4/4' },
+          grades: ['FAS', 'Select'],
+          colorSorting: { enabled: false, type: '' }
+        },
+        {
+          id: 'template3',
+          name: 'Construction Grade',
+          geometry: { width: 5.5, length: 12, thickness: '8/4' },
+          grades: ['No. 2 Common', 'No. 3 Common'],
+          colorSorting: { enabled: false, type: '' }
+        },
+        {
+          id: 'template4',
+          name: 'Premium Furniture',
+          geometry: { width: 8, length: 12, thickness: '5/4' },
+          grades: ['FAS'],
+          colorSorting: { enabled: true, type: 'Natural Variation' }
+        },
+        {
+          id: 'template5',
+          name: 'Millwork Standard',
+          geometry: { width: 4, length: 16, thickness: '6/4' },
+          grades: ['Select', 'No. 1 Common'],
+          colorSorting: { enabled: true, type: 'Mixed' }
+        },
+        {
+          id: 'template6',
+          name: 'Pallet Stock',
+          geometry: { width: 3.5, length: 4, thickness: '4/4' },
+          grades: ['No. 3 Common'],
+          colorSorting: { enabled: false, type: '' }
+        }
       ]
     }
   },
@@ -942,6 +997,24 @@ export default {
         console.log('Creating order:', this.orderData)
         alert('Order created successfully!')
         this.$router.push('/orders')
+      }
+    },
+
+    selectTemplate(template) {
+      this.selectedTemplate = template
+    },
+
+    addTemplateSort() {
+      if (this.selectedTemplate) {
+        this.orderData.sorts.push({
+          ...this.selectedTemplate,
+          id: 'template_' + Date.now(),
+          targetVolume: 100, // Default volume
+          volumeUnit: 'm3',
+          specialRequirements: ''
+        })
+        
+        this.selectedTemplate = null
       }
     }
   },
