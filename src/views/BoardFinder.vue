@@ -712,15 +712,25 @@ const filteredBoards = computed(() => {
     // Value range filter
     if (filters.value.valueRange.min || filters.value.valueRange.max) {
       const boardValue = parseFloat(board.value.replace('$', ''))
-      if (filters.value.valueRange.min && boardValue < parseFloat(filters.value.valueRange.min)) {
+      if (filters.value.valueRange?.min && boardValue < parseFloat(filters.value.valueRange.min)) {
         return false
       }
-      if (filters.value.valueRange.max && boardValue > parseFloat(filters.value.valueRange.max)) {
+      if (filters.value.valueRange?.max && boardValue > parseFloat(filters.value.valueRange.max)) {
         return false
       }
     }
 
     // Defect count filter
+    if (filters.value.defectCount?.min || filters.value.defectCount?.max) {
+      const boardDefects = parseInt(board.totalDefects)
+      if (filters.value.defectCount?.min && boardDefects < parseInt(filters.value.defectCount.min)) {
+        return false
+      }
+      if (filters.value.defectCount?.max && boardDefects > parseInt(filters.value.defectCount.max)) {
+        return false
+      }
+    }
+
     return true
   })
 })
