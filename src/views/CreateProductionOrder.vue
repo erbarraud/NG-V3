@@ -745,8 +745,10 @@
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 ]"
               >
-        </div>
-      </div>
+                Add Sort to Order
+              </button>
+            </div>
+          </div>
         </div>
     </div>
       </div>
