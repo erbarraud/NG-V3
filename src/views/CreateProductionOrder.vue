@@ -467,18 +467,12 @@
                   <div>
                     <label class="block text-sm font-medium text-gray-700 mb-3">Thickness</label>
                     <div class="space-y-2">
-                      <select 
+                      <input 
                         v-model="newSort.geometry.thickness"
+                        type="text"
+                        placeholder="Thickness"
                         class="w-full px-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
-                      >
-                        <option value="">Select thickness...</option>
-                        <option value="4/4">4/4 (1 inch)</option>
-                        <option value="5/4">5/4 (1.25 inches)</option>
-                        <option value="6/4">6/4 (1.5 inches)</option>
-                        <option value="8/4">8/4 (2 inches)</option>
-                        <option value="10/4">10/4 (2.5 inches)</option>
-                        <option value="12/4">12/4 (3 inches)</option>
-                      </select>
+                      />
                       <div class="flex items-center space-x-2">
                         <input 
                           type="checkbox" 
