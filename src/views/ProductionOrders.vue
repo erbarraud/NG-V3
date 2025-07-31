@@ -256,7 +256,11 @@ const upcomingOrders = ref([
     status: 'Scheduled',
     statusDetail: 'Ready to Start',
     targetMix: '40% Prime, 35% Select, 25% #1 Common',
-    canStart: true
+    canStart: true,
+    sorts: [
+      { name: 'Standard Boards', targetVolume: 1500 },
+      { name: 'Premium Grade', targetVolume: 1000 }
+    ]
   },
   {
     id: 'ORD-20250702-003',
@@ -271,7 +275,12 @@ const upcomingOrders = ref([
     status: 'Scheduled',
     statusDetail: 'Pending Setup',
     targetMix: '60% Select, 30% #1 Common, 10% #2 Common',
-    canStart: false
+    canStart: false,
+    sorts: [
+      { name: 'Flooring Grade', targetVolume: 2500 },
+      { name: 'Select Boards', targetVolume: 1200 },
+      { name: 'Common Grade', targetVolume: 500 }
+    ]
   },
   {
     id: 'ORD-20250703-004',
@@ -286,7 +295,10 @@ const upcomingOrders = ref([
     status: 'Scheduled',
     statusDetail: 'Ready to Start',
     targetMix: '50% FAS, 30% Select, 20% #1 Common',
-    canStart: true
+    canStart: true,
+    sorts: [
+      { name: 'Cabinet Grade', targetVolume: 1800 }
+    ]
   },
   {
     id: 'ORD-20250703-005',
@@ -301,7 +313,11 @@ const upcomingOrders = ref([
     status: 'Scheduled',
     statusDetail: 'Pending Setup',
     targetMix: '45% FAS, 35% Select, 20% #1 Common',
-    canStart: false
+    canStart: false,
+    sorts: [
+      { name: 'Premium Furniture', targetVolume: 2000 },
+      { name: 'Select Grade', targetVolume: 1600 }
+    ]
   },
   {
     id: 'ORD-20250704-006',
@@ -316,7 +332,10 @@ const upcomingOrders = ref([
     status: 'Scheduled',
     statusDetail: 'Material Pending',
     targetMix: '60% FAS, 25% Select, 15% #1 Common',
-    canStart: false
+    canStart: false,
+    sorts: [
+      { name: 'Select Walnut', targetVolume: 1200 }
+    ]
   }
 ])
 

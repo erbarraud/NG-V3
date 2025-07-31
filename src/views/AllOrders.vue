@@ -94,6 +94,9 @@
                 Volume
               </th>
               <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-b-2 border-emerald-500">
+                Sorts
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-b-2 border-emerald-500">
                 Schedule
               </th>
               <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-b-2 border-emerald-500">
@@ -123,6 +126,9 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm text-gray-900">{{ order.volume }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">{{ order.sorts?.length || 0 }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm text-gray-900">{{ order.date }}</div>
@@ -223,7 +229,11 @@ const allOrders = ref([
     volume: '3,200 bf',
     date: 'Jul 1, 2025',
     time: '8:00 AM - 12:00 PM',
-    status: 'Running'
+    status: 'Running',
+    sorts: [
+      { name: 'Premium Oak', targetVolume: 1800 },
+      { name: 'Standard Oak', targetVolume: 1400 }
+    ]
   },
   {
     id: 'ORD-20250701-002',
@@ -234,7 +244,10 @@ const allOrders = ref([
     volume: '2,500 bf',
     date: 'Jul 1, 2025',
     time: '1:00 PM - 6:00 PM',
-    status: 'Scheduled'
+    status: 'Scheduled',
+    sorts: [
+      { name: 'Furniture Grade', targetVolume: 2500 }
+    ]
   },
   {
     id: 'ORD-20250702-003',
@@ -245,7 +258,11 @@ const allOrders = ref([
     volume: '4,200 bf',
     date: 'Jul 2, 2025',
     time: '9:00 AM - 5:00 PM',
-    status: 'Scheduled'
+    status: 'Scheduled',
+    sorts: [
+      { name: 'Flooring Premium', targetVolume: 2800 },
+      { name: 'Flooring Standard', targetVolume: 1400 }
+    ]
   },
   {
     id: 'ORD-20250630-004',
@@ -256,7 +273,10 @@ const allOrders = ref([
     volume: '1,800 bf',
     date: 'Jun 30, 2025',
     time: '8:00 AM - 2:00 PM',
-    status: 'Completed'
+    status: 'Completed',
+    sorts: [
+      { name: 'Cabinet Grade', targetVolume: 1800 }
+    ]
   },
   {
     id: 'ORD-20250629-005',
@@ -267,7 +287,11 @@ const allOrders = ref([
     volume: '3,600 bf',
     date: 'Jun 29, 2025',
     time: '7:00 AM - 4:00 PM',
-    status: 'Completed'
+    status: 'Completed',
+    sorts: [
+      { name: 'Premium Maple', targetVolume: 2200 },
+      { name: 'Standard Maple', targetVolume: 1400 }
+    ]
   },
   {
     id: 'ORD-20250628-006',
@@ -278,7 +302,10 @@ const allOrders = ref([
     volume: '1,200 bf',
     date: 'Jun 28, 2025',
     time: '10:00 AM - 3:00 PM',
-    status: 'Completed'
+    status: 'Completed',
+    sorts: [
+      { name: 'Select Walnut', targetVolume: 1200 }
+    ]
   },
   {
     id: 'ORD-20250703-007',
@@ -289,7 +316,11 @@ const allOrders = ref([
     volume: '5,000 bf',
     date: 'Jul 3, 2025',
     time: '8:00 AM - 6:00 PM',
-    status: 'Scheduled'
+    status: 'Scheduled',
+    sorts: [
+      { name: 'Construction Grade', targetVolume: 3000 },
+      { name: 'Utility Grade', targetVolume: 2000 }
+    ]
   },
   {
     id: 'ORD-20250627-008',
@@ -300,7 +331,10 @@ const allOrders = ref([
     volume: '2,800 bf',
     date: 'Jun 27, 2025',
     time: '9:00 AM - 4:00 PM',
-    status: 'Cancelled'
+    status: 'Cancelled',
+    sorts: [
+      { name: 'Furniture Maple', targetVolume: 2800 }
+    ]
   }
 ])
 

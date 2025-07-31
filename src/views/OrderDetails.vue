@@ -163,6 +163,10 @@
                   <div class="text-sm text-gray-600 mb-1">Operator</div>
                   <div class="font-medium text-gray-900">{{ order.operator || 'Not assigned' }}</div>
                 </div>
+                <div>
+                  <div class="text-sm text-gray-600 mb-1">Sorts</div>
+                  <div class="font-medium text-gray-900">{{ order.sorts?.length || 0 }} configured</div>
+                </div>
               </div>
             </CardContent>
           </Card>
