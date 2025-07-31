@@ -326,6 +326,19 @@
                 <div class="flex items-center mb-3">
                   <div :class="[
                     'w-10 h-10 rounded-lg flex items-center justify-center mr-3',
+                    sortCreationMode === 'template' ? 'bg-emerald-500' : 'bg-gray-400'
+                  ]">
+                    <FileText class="w-5 h-5 text-white" />
+                  </div>
+                  <h4 class="text-lg font-semibold text-gray-900">Use Existing Template</h4>
+                </div>
+                <p class="text-sm text-gray-600">
+                  Choose from pre-configured lumber specifications for common applications.
+                </p>
+              </button>
+            </div>
+          </div>
+
           <!-- Create New Sort Form -->
           <div v-if="sortCreationMode === 'new'" class="bg-gray-50 rounded-lg p-6 border border-gray-200">
             <h3 class="text-lg font-semibold text-gray-900 mb-6">Create New Sort</h3>
@@ -680,46 +693,12 @@
                   <label class="flex items-center">
                     <input 
                       type="checkbox" 
-              <!-- 2. Board Grades -->
-              <div class="bg-white rounded-lg p-6 border border-gray-200">
-                <div class="flex items-center mb-4">
-                  <CheckCircle class="w-5 h-5 text-gray-600 mr-2" />
-                  <h4 class="font-medium text-gray-900">Board Grades</h4>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <label class="flex items-start">
-                    <input 
-                      type="checkbox" 
-                      value="FAS" 
-                      v-model="newSort.grades"
-                      class="mt-1 h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
-                    />
-                    <div class="ml-3">
-                      <div class="text-sm font-medium text-gray-900">FAS</div>
-                      <div class="text-xs text-gray-600">First and Seconds - Highest grade</div>
-                    </div>
-                  </label>
-                        <label class="text-sm text-gray-700">Add tolerance</label>
-                  <label class="flex items-start">
-              <!-- 3. Board Colors -->
-              <div class="bg-white rounded-lg p-6 border border-gray-200">
-                <div class="flex items-center mb-4">
-                  <Palette class="w-5 h-5 text-gray-600 mr-2" />
-                  <h4 class="font-medium text-gray-900">Board Colors</h4>
-                </div>
-                
-                <div class="space-y-4">
-                  <!-- Enable Color Sorting -->
-                  <label class="flex items-center">
-                    <input 
-                      type="checkbox" 
                       v-model="newSort.colorSorting.enabled"
                       class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
                     />
                     <span class="ml-2 text-sm font-medium text-gray-900">Enable Color Sorting</span>
                   </label>
-                      class="mt-1 h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+                  
                   <!-- Color Options (only show if enabled) -->
                   <div v-if="newSort.colorSorting.enabled" class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <label class="flex items-center">
@@ -734,7 +713,7 @@
                         <div class="text-sm text-gray-900">White/Light</div>
                       </div>
                     </label>
-                    <div class="ml-3">
+                    
                     <label class="flex items-center">
                       <input 
                         type="radio" 
@@ -747,7 +726,7 @@
                         <div class="text-sm text-gray-900">Red/Dark</div>
                       </div>
                     </label>
-                    <div class="ml-3">
+                    
                     <label class="flex items-center">
                       <input 
                         type="radio" 
@@ -756,6 +735,28 @@
                         class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300"
                       />
                       <div class="ml-3 flex items-center">
+                        <div class="w-4 h-4 bg-gradient-to-r from-gray-100 to-red-300 border border-gray-300 rounded mr-2"></div>
+                        <div class="text-sm text-gray-900">Mixed</div>
+                      </div>
+                    </label>
+                    
+                    <label class="flex items-center">
+                      <input 
+                        type="radio" 
+                        value="Natural Variation" 
+                        v-model="newSort.colorSorting.type"
+                        class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300"
+                      />
+                      <div class="ml-3 flex items-center">
+                        <div class="w-4 h-4 bg-gradient-to-br from-yellow-200 via-orange-200 to-red-200 border border-gray-300 rounded mr-2"></div>
+                        <div class="text-sm text-gray-900">Natural Variation</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Form Actions -->
             <div class="flex justify-end space-x-3">
               <button 
