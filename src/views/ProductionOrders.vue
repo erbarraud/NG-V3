@@ -23,10 +23,10 @@
       <h2 class="text-2xl font-bold text-emerald-600 mb-6">Running Order</h2>
       
       <Card class="border-2 border-emerald-300">
-        <CardContent class="p-8">
-          <div class="flex items-center justify-between mb-6">
+        <CardContent class="p-6">
+          <div class="flex items-center justify-between mb-4">
             <div>
-              <h3 class="text-2xl font-bold text-gray-900 flex items-center mb-2">
+              <h3 class="text-xl font-bold text-gray-900 flex items-center mb-1">
                 <Zap class="w-5 h-5 text-emerald-600 mr-2" />
                 Red Oak - Prime Run
               </h3>
@@ -37,7 +37,7 @@
             <Badge variant="secondary" class="border">Running</Badge>
           </div>
 
-          <div class="grid grid-cols-3 gap-8 mb-8">
+          <div class="grid grid-cols-3 gap-6 mb-6">
             <div>
               <div class="flex items-center mb-2">
                 <TreePine class="w-4 h-4 text-gray-400 mr-2" />
@@ -61,42 +61,42 @@
             </div>
           </div>
 
-          <div class="text-sm text-gray-600 mb-4">Key Performance Indicators:</div>
-          <div class="grid grid-cols-4 gap-6 mb-8">
+          <div class="text-sm text-gray-600 mb-3">Key Performance Indicators:</div>
+          <div class="grid grid-cols-4 gap-4 mb-6">
             <div class="flex items-center">
-              <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
-                <BarChart3 class="w-5 h-5 text-emerald-600" />
+              <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
+                <BarChart3 class="w-4 h-4 text-emerald-600" />
               </div>
               <div>
                 <div class="text-sm text-gray-600">Boards Scanned</div>
-                <div class="text-xl font-bold text-gray-900">125</div>
+                <div class="text-lg font-bold text-gray-900">125</div>
               </div>
             </div>
             <div class="flex items-center">
-              <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
-                <Package class="w-5 h-5 text-emerald-600" />
+              <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
+                <Package class="w-4 h-4 text-emerald-600" />
               </div>
               <div>
                 <div class="text-sm text-gray-600">Bundles Created</div>
-                <div class="text-xl font-bold text-gray-900">4</div>
+                <div class="text-lg font-bold text-gray-900">4</div>
               </div>
             </div>
             <div class="flex items-center">
-              <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
-                <Clock class="w-5 h-5 text-gray-600" />
+              <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                <Clock class="w-4 h-4 text-gray-600" />
               </div>
               <div>
                 <div class="text-sm text-gray-600">Time Elapsed</div>
-                <div class="text-xl font-bold text-gray-900">1h 02m</div>
+                <div class="text-lg font-bold text-gray-900">1h 02m</div>
               </div>
             </div>
             <div class="flex items-center">
-              <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
-                <Timer class="w-5 h-5 text-gray-600" />
+              <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                <Timer class="w-4 h-4 text-gray-600" />
               </div>
               <div>
                 <div class="text-sm text-gray-600">Time Remaining (Est.)</div>
-                <div class="text-xl font-bold text-gray-900">1h 58m</div>
+                <div class="text-lg font-bold text-gray-900">1h 58m</div>
               </div>
             </div>
           </div>
