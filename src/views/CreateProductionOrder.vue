@@ -159,30 +159,6 @@
                 </div>
               </div>
 
-              <!-- Client Information -->
-              <div class="space-y-6">
-                <h3 class="text-lg font-medium text-gray-900">Client Information</h3>
-                
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Contact Person</label>
-                  <input 
-                    v-model="orderData.contactPerson"
-                    type="text" 
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                    placeholder="Contact person name"
-                  />
-                </div>
-                
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Project Reference</label>
-                  <input 
-                    v-model="orderData.projectReference"
-                    type="text" 
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                    placeholder="Project reference number"
-                  />
-                </div>
-              </div>
             </div>
 
             <!-- Scheduling -->
