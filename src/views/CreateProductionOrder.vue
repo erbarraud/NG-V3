@@ -130,7 +130,7 @@
                 <input 
                   v-model="orderData.name"
                   type="text" 
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                   placeholder="Enter order name"
                 />
               </div>
@@ -140,7 +140,7 @@
                 <input 
                   v-model="orderData.customId"
                   type="text" 
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                   placeholder="Optional custom ID"
                 />
               </div>
@@ -149,7 +149,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">Client *</label>
                 <select 
                   v-model="orderData.clientId"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 >
                   <option value="">Select client...</option>
                   <option v-for="client in clients" :key="client.id" :value="client.id">
@@ -168,7 +168,7 @@
                 <input 
                   v-model="orderData.contactPerson"
                   type="text" 
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                   placeholder="Contact person name"
                 />
               </div>
@@ -178,7 +178,7 @@
                 <input 
                   v-model="orderData.projectReference"
                   type="text" 
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                   placeholder="Project reference number"
                 />
               </div>
@@ -194,7 +194,7 @@
                 <input 
                   v-model="orderData.requiredDate"
                   type="date" 
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 />
               </div>
               
@@ -202,7 +202,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">Priority Level</label>
                 <select 
                   v-model="orderData.priority"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 >
                   <option value="standard">Standard</option>
                   <option value="rush">Rush</option>
@@ -214,7 +214,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Line</label>
                 <select 
                   v-model="orderData.preferredLine"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 >
                   <option value="auto">Auto Assignment</option>
                   <option value="line1">Line 1</option>
@@ -235,12 +235,12 @@
                   <input 
                     v-model="orderData.expectedVolume"
                     type="number" 
-                    class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    class="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                     placeholder="0"
                   />
                   <select 
                     v-model="orderData.volumeUnit"
-                    class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    class="px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                   >
                     <option value="m3">m³</option>
                     <option value="bf">Board Feet</option>
@@ -253,7 +253,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">Species</label>
                 <select 
                   v-model="orderData.species"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 >
                   <option value="">Select species...</option>
                   <option v-for="species in speciesList" :key="species" :value="species">
@@ -270,7 +270,7 @@
             <textarea 
               v-model="orderData.specialInstructions"
               rows="4"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
               placeholder="Any special requirements or notes..."
             ></textarea>
           </div>
@@ -368,7 +368,7 @@
                 <input 
                   v-model="newSort.name"
                   type="text" 
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                   placeholder="Enter sort name"
                 />
               </div>
@@ -378,12 +378,12 @@
                   <input 
                     v-model="newSort.targetVolume"
                     type="number" 
-                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                     placeholder="0"
                   />
                   <select 
                     v-model="newSort.volumeUnit"
-                    class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    class="px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                   >
                     <option value="m3">m³</option>
                     <option value="bf">Board Feet</option>
@@ -412,7 +412,7 @@
                         type="number" 
                         step="0.25"
                         placeholder="Width"
-                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
                       />
                       <div class="flex items-center space-x-2">
                         <input 
@@ -428,7 +428,7 @@
                         type="number" 
                         step="0.25"
                         placeholder="± Tolerance"
-                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
                       />
                     </div>
                   </div>
@@ -442,7 +442,7 @@
                         type="number" 
                         step="0.5"
                         placeholder="Length"
-                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
                       />
                       <div class="flex items-center space-x-2">
                         <input 
@@ -458,7 +458,7 @@
                         type="number" 
                         step="0.5"
                         placeholder="± Tolerance (feet)"
-                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
                       />
                     </div>
                   </div>
@@ -469,7 +469,7 @@
                     <div class="space-y-2">
                       <select 
                         v-model="newSort.geometry.thickness"
-                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
                       >
                         <option value="">Select thickness...</option>
                         <option value="4/4">4/4 (1 inch)</option>
@@ -493,7 +493,7 @@
                         type="number" 
                         step="0.125"
                         placeholder="± Tolerance (inches)"
-                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
                       />
                     </div>
                   </div>
@@ -657,7 +657,7 @@
               <input 
                 v-model="newSort.specialRequirements"
                 type="text" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 placeholder="Any special requirements..."
               />
             </div>
