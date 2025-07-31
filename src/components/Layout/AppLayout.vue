@@ -40,7 +40,7 @@
                 Orders
               </router-link>
               <router-link
-                to="/finder"
+                to="/board-finder"
                 :class="[
                   $route.name === 'BoardFinder'
                     ? 'text-white shadow-lg ring-2 ring-primary/50'
