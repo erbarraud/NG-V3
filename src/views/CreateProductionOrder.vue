@@ -144,19 +144,6 @@
                     placeholder="Optional custom ID"
                   />
                 </div>
-                
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Client *</label>
-                  <select 
-                    v-model="orderData.clientId"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                  >
-                    <option value="">Select client...</option>
-                    <option v-for="client in clients" :key="client.id" :value="client.id">
-                      {{ client.name }}
-                    </option>
-                  </select>
-                </div>
               </div>
 
             </div>
