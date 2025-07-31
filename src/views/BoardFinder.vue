@@ -563,7 +563,8 @@ const filters = ref({
   dryStatus: '',
   batch: '',
   valueRange: { min: '', max: '' },
-  dateRange: { start: '', end: '' },
+  defectCount: { min: '', max: '' },
+  dateRange: { start: '', end: '' }
 })
 
 // Filter options based on business logic
