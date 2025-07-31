@@ -224,19 +224,6 @@
                     </select>
                   </div>
                 </div>
-                
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Species</label>
-                  <select 
-                    v-model="orderData.species"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                  >
-                    <option value="">Select species...</option>
-                    <option v-for="species in speciesList" :key="species" :value="species">
-                      {{ species }}
-                    </option>
-                  </select>
-                </div>
               </div>
             </div>
 
