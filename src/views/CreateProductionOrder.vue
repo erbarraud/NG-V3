@@ -70,16 +70,16 @@
           </div>
 
           <!-- Order Summary Card -->
-          <div v-if="orderData.name || orderData.clientId || orderData.sorts.length > 0" class="bg-white rounded-lg shadow p-6">
+          <div v-if="orderData.name || orderData.orderId || orderData.sorts.length > 0" class="bg-white rounded-lg shadow p-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Order Summary</h3>
             <div class="space-y-2 text-sm">
               <div v-if="orderData.name">
                 <span class="text-gray-600">Name:</span>
                 <div class="font-medium text-gray-900">{{ orderData.name }}</div>
               </div>
-              <div v-if="orderData.clientId">
-                <span class="text-gray-600">Client:</span>
-                <div class="font-medium text-gray-900">{{ getClientName(orderData.clientId) }}</div>
+              <div v-if="orderData.orderId">
+                <span class="text-gray-600">Order ID:</span>
+                <div class="font-medium text-gray-900">{{ orderData.orderId }}</div>
               </div>
               <div v-if="orderData.sorts.length > 0">
                 <span class="text-gray-600">Sorts:</span>
@@ -142,6 +142,16 @@
                     type="text" 
                     class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                     placeholder="Optional custom ID"
+                  />
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Order ID</label>
+                  <input 
+                    v-model="orderData.orderId"
+                    type="text" 
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    placeholder="Auto-generated"
                   />
                 </div>
               </div>
@@ -711,6 +721,7 @@ export default {
       orderData: {
         name: '',
         customId: '',
+        orderId: '',
         clientId: '',
         contactPerson: '',
         projectReference: '',
@@ -822,7 +833,6 @@ export default {
   computed: {
     canCreateOrder() {
       return this.orderData.name && 
-             this.orderData.clientId && 
              this.orderData.requiredDate && 
              this.orderData.sorts.length > 0
     },
@@ -839,7 +849,7 @@ export default {
     isStepComplete(step) {
       switch (step) {
         case 'details':
-          return this.orderData.name && this.orderData.clientId && this.orderData.requiredDate
+          return this.orderData.name && this.orderData.requiredDate
         case 'sorts':
           return this.orderData.sorts.length > 0
         default:
@@ -847,9 +857,11 @@ export default {
       }
     },
 
-    getClientName(clientId) {
-      const client = this.clients.find(c => c.id === clientId)
-      return client ? client.name : ''
+    generateOrderId() {
+      const prefix = 'ORD'
+      const date = new Date().toISOString().slice(0,10).replace(/-/g,'')
+      const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0')
+      this.orderData.orderId = `${prefix}-${date}-${random}`
     },
 
     addNewSort() {
@@ -947,6 +959,9 @@ export default {
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
     this.orderData.requiredDate = tomorrow.toISOString().split('T')[0]
+    
+    // Generate Order ID automatically
+    this.generateOrderId()
   }
 }
 </script>
