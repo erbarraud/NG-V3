@@ -109,6 +109,56 @@
               </button>
             </div>
           </div>
+
+          <!-- Added Sorts Display -->
+          <div v-if="orderData.sorts.length > 0" class="bg-white rounded-lg p-6 border border-gray-200 mt-8">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-gray-900">Added Sorts ({{ orderData.sorts.length }})</h3>
+              <button 
+                @click="clearAllSorts"
+                class="text-sm text-red-600 hover:text-red-700 font-medium"
+              >
+                Clear All
+              </button>
+            </div>
+            
+            <div class="space-y-4">
+              <div v-for="(sort, index) in orderData.sorts" :key="sort.id" 
+                   class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <div class="flex items-center justify-between mb-3">
+                  <h4 class="font-medium text-gray-900">{{ sort.name }}</h4>
+                  <button 
+                    @click="removeSort(index)"
+                    class="text-red-600 hover:text-red-700 p-1 rounded hover:bg-red-50"
+                  >
+                    <X class="w-4 h-4" />
+                  </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <span class="text-gray-600">Geometry:</span>
+                    <div class="font-medium text-gray-900">
+                      {{ sort.geometry?.width || 'Any' }}" × {{ sort.geometry?.length || 'Any' }}' × {{ sort.geometry?.thickness || 'Any' }}
+                    </div>
+                  </div>
+                  <div>
+                    <span class="text-gray-600">Grades:</span>
+                    <div class="font-medium text-gray-900">{{ sort.grades?.join(', ') || 'Not specified' }}</div>
+                  </div>
+                  <div>
+                    <span class="text-gray-600">Target Volume:</span>
+                    <div class="font-medium text-gray-900">{{ sort.targetVolume || 'TBD' }} {{ sort.volumeUnit || 'm³' }}</div>
+                  </div>
+                </div>
+                
+                <div v-if="sort.colorSorting?.enabled" class="mt-2 text-sm">
+                  <span class="text-gray-600">Color Sorting:</span>
+                  <span class="font-medium text-gray-900 ml-1">{{ sort.colorSorting.type }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Main Content Area -->
@@ -923,15 +973,32 @@ export default {
     addTemplateSort() {
       if (this.selectedTemplate) {
         this.orderData.sorts.push({
-          ...this.selectedTemplate,
           id: 'template_' + Date.now(),
-          targetVolume: 100, // Default volume
+          name: this.selectedTemplate.name,
+          targetVolume: 100,
           volumeUnit: 'm3',
+          geometry: {
+            width: this.selectedTemplate.geometry.width,
+            length: this.selectedTemplate.geometry.length,
+            thickness: this.selectedTemplate.geometry.thickness,
+            widthTolerance: { enabled: false, value: '' },
+            lengthTolerance: { enabled: false, value: '' },
+            thicknessTolerance: { enabled: false, value: '' }
+          },
+          grades: [...this.selectedTemplate.grades],
+          colorSorting: {
+            enabled: this.selectedTemplate.colorSorting.enabled,
+            type: this.selectedTemplate.colorSorting.type
+          },
           specialRequirements: ''
         })
         
         this.selectedTemplate = null
       }
+    },
+
+    clearAllSorts() {
+      this.orderData.sorts = []
     }
   },
 
