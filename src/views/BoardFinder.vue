@@ -563,7 +563,7 @@ const filters = ref({
   dryStatus: '',
   batch: '',
   valueRange: { min: '', max: '' },
-  dateRange: { start: '', end: '' }
+  dateRange: { start: '', end: '' },
 })
 
 // Filter options based on business logic
@@ -773,6 +773,7 @@ const clearAllFilters = () => {
     dryStatus: '',
     batch: '',
     valueRange: { min: '', max: '' },
+    defectCount: { min: '', max: '' },
     dateRange: { start: '', end: '' }
   }
   searchQuery.value = ''
