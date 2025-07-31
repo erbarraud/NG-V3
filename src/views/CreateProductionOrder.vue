@@ -396,31 +396,31 @@
             <!-- 3 Configuration Areas -->
             <div class="space-y-6 mb-6">
               <!-- 1. Board Geometry -->
-              <div class="bg-blue-50 rounded-lg p-6 border border-blue-200">
+              <div class="bg-white rounded-lg p-6 border border-gray-200">
                 <div class="flex items-center mb-4">
-                  <Ruler class="w-5 h-5 text-blue-600 mr-2" />
-                  <h4 class="font-medium text-blue-900">Board Geometry</h4>
+                  <Ruler class="w-5 h-5 text-gray-600 mr-2" />
+                  <h4 class="font-medium text-gray-900">Board Geometry</h4>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <!-- Width Range -->
                   <div>
-                    <label class="block text-sm font-medium text-blue-800 mb-3">Width (inches)</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Width (inches)</label>
                     <div class="space-y-2">
                       <input 
                         v-model="newSort.geometry.width"
                         type="number" 
                         step="0.25"
                         placeholder="Width"
-                        class="w-full px-3 py-2.5 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
                       />
                       <div class="flex items-center space-x-2">
                         <input 
                           type="checkbox" 
                           v-model="newSort.geometry.widthTolerance.enabled"
-                          class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-blue-300 rounded"
+                          class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
                         />
-                        <label class="text-sm text-blue-700">Add tolerance</label>
+                        <label class="text-sm text-gray-700">Add tolerance</label>
                       </div>
                       <input 
                         v-if="newSort.geometry.widthTolerance.enabled"
@@ -428,29 +428,29 @@
                         type="number" 
                         step="0.25"
                         placeholder="± Tolerance"
-                        class="w-full px-3 py-2.5 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
                       />
                     </div>
                   </div>
 
                   <!-- Length Range -->
                   <div>
-                    <label class="block text-sm font-medium text-blue-800 mb-3">Length (feet)</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Length (feet)</label>
                     <div class="space-y-2">
                       <input 
                         v-model="newSort.geometry.length"
                         type="number" 
                         step="0.5"
                         placeholder="Length"
-                        class="w-full px-3 py-2.5 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
                       />
                       <div class="flex items-center space-x-2">
                         <input 
                           type="checkbox" 
                           v-model="newSort.geometry.lengthTolerance.enabled"
-                          class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-blue-300 rounded"
+                          class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
                         />
-                        <label class="text-sm text-blue-700">Add tolerance</label>
+                        <label class="text-sm text-gray-700">Add tolerance</label>
                       </div>
                       <input 
                         v-if="newSort.geometry.lengthTolerance.enabled"
@@ -458,18 +458,18 @@
                         type="number" 
                         step="0.5"
                         placeholder="± Tolerance (feet)"
-                        class="w-full px-3 py-2.5 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
                       />
                     </div>
                   </div>
 
                   <!-- Thickness -->
                   <div>
-                    <label class="block text-sm font-medium text-blue-800 mb-3">Thickness</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Thickness</label>
                     <div class="space-y-2">
                       <select 
                         v-model="newSort.geometry.thickness"
-                        class="w-full px-3 py-2.5 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
                       >
                         <option value="">Select thickness...</option>
                         <option value="4/4">4/4 (1 inch)</option>
@@ -483,9 +483,9 @@
                         <input 
                           type="checkbox" 
                           v-model="newSort.geometry.thicknessTolerance.enabled"
-                          class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-blue-300 rounded"
+                          class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
                         />
-                        <label class="text-sm text-blue-700">Add tolerance</label>
+                        <label class="text-sm text-gray-700">Add tolerance</label>
                       </div>
                       <input 
                         v-if="newSort.geometry.thicknessTolerance.enabled"
@@ -493,7 +493,7 @@
                         type="number" 
                         step="0.125"
                         placeholder="± Tolerance (inches)"
-                        class="w-full px-3 py-2.5 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
                       />
                     </div>
                   </div>
@@ -501,10 +501,10 @@
               </div>
 
               <!-- 2. Board Grades -->
-              <div class="bg-green-50 rounded-lg p-6 border border-green-200">
+              <div class="bg-white rounded-lg p-6 border border-gray-200">
                 <div class="flex items-center mb-4">
-                  <CheckCircle class="w-5 h-5 text-green-600 mr-2" />
-                  <h4 class="font-medium text-green-900">Board Grades</h4>
+                  <CheckCircle class="w-5 h-5 text-gray-600 mr-2" />
+                  <h4 class="font-medium text-gray-900">Board Grades</h4>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -513,11 +513,11 @@
                       type="checkbox" 
                       value="FAS" 
                       v-model="newSort.grades"
-                      class="mt-1 h-4 w-4 text-green-600 focus:ring-green-500 border-green-300 rounded"
+                      class="mt-1 h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
                     />
                     <div class="ml-3">
-                      <div class="text-sm font-medium text-green-900">FAS</div>
-                      <div class="text-xs text-green-700">First and Seconds - Highest grade</div>
+                      <div class="text-sm font-medium text-gray-900">FAS</div>
+                      <div class="text-xs text-gray-600">First and Seconds - Highest grade</div>
                     </div>
                   </label>
 
@@ -526,11 +526,11 @@
                       type="checkbox" 
                       value="Select" 
                       v-model="newSort.grades"
-                      class="mt-1 h-4 w-4 text-green-600 focus:ring-green-500 border-green-300 rounded"
+                      class="mt-1 h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
                     />
                     <div class="ml-3">
-                      <div class="text-sm font-medium text-green-900">Select</div>
-                      <div class="text-xs text-green-700">High quality with minor defects</div>
+                      <div class="text-sm font-medium text-gray-900">Select</div>
+                      <div class="text-xs text-gray-600">High quality with minor defects</div>
                     </div>
                   </label>
 
@@ -539,11 +539,11 @@
                       type="checkbox" 
                       value="No. 1 Common" 
                       v-model="newSort.grades"
-                      class="mt-1 h-4 w-4 text-green-600 focus:ring-green-500 border-green-300 rounded"
+                      class="mt-1 h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
                     />
                     <div class="ml-3">
-                      <div class="text-sm font-medium text-green-900">No. 1 Common</div>
-                      <div class="text-xs text-green-700">Good for staining and painting</div>
+                      <div class="text-sm font-medium text-gray-900">No. 1 Common</div>
+                      <div class="text-xs text-gray-600">Good for staining and painting</div>
                     </div>
                   </label>
 
@@ -552,11 +552,11 @@
                       type="checkbox" 
                       value="No. 2 Common" 
                       v-model="newSort.grades"
-                      class="mt-1 h-4 w-4 text-green-600 focus:ring-green-500 border-green-300 rounded"
+                      class="mt-1 h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
                     />
                     <div class="ml-3">
-                      <div class="text-sm font-medium text-green-900">No. 2 Common</div>
-                      <div class="text-xs text-green-700">Economy grade with character</div>
+                      <div class="text-sm font-medium text-gray-900">No. 2 Common</div>
+                      <div class="text-xs text-gray-600">Economy grade with character</div>
                     </div>
                   </label>
 
@@ -565,21 +565,21 @@
                       type="checkbox" 
                       value="No. 3 Common" 
                       v-model="newSort.grades"
-                      class="mt-1 h-4 w-4 text-green-600 focus:ring-green-500 border-green-300 rounded"
+                      class="mt-1 h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
                     />
                     <div class="ml-3">
-                      <div class="text-sm font-medium text-green-900">No. 3 Common</div>
-                      <div class="text-xs text-green-700">Utility grade for construction</div>
+                      <div class="text-sm font-medium text-gray-900">No. 3 Common</div>
+                      <div class="text-xs text-gray-600">Utility grade for construction</div>
                     </div>
                   </label>
                 </div>
               </div>
 
               <!-- 3. Board Colors -->
-              <div class="bg-purple-50 rounded-lg p-6 border border-purple-200">
+              <div class="bg-white rounded-lg p-6 border border-gray-200">
                 <div class="flex items-center mb-4">
-                  <Palette class="w-5 h-5 text-purple-600 mr-2" />
-                  <h4 class="font-medium text-purple-900">Board Colors</h4>
+                  <Palette class="w-5 h-5 text-gray-600 mr-2" />
+                  <h4 class="font-medium text-gray-900">Board Colors</h4>
                 </div>
                 
                 <div class="space-y-4">
@@ -588,9 +588,9 @@
                     <input 
                       type="checkbox" 
                       v-model="newSort.colorSorting.enabled"
-                      class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-purple-300 rounded"
+                      class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
                     />
-                    <span class="ml-2 text-sm font-medium text-purple-900">Enable Color Sorting</span>
+                    <span class="ml-2 text-sm font-medium text-gray-900">Enable Color Sorting</span>
                   </label>
 
                   <!-- Color Options (only show if enabled) -->
@@ -600,11 +600,11 @@
                         type="radio" 
                         value="White/Light" 
                         v-model="newSort.colorSorting.type"
-                        class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-purple-300"
+                        class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300"
                       />
                       <div class="ml-3 flex items-center">
                         <div class="w-4 h-4 bg-gray-100 border border-gray-300 rounded mr-2"></div>
-                        <div class="text-sm text-purple-900">White/Light</div>
+                        <div class="text-sm text-gray-900">White/Light</div>
                       </div>
                     </label>
 
@@ -613,11 +613,11 @@
                         type="radio" 
                         value="Red/Dark" 
                         v-model="newSort.colorSorting.type"
-                        class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-purple-300"
+                        class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300"
                       />
                       <div class="ml-3 flex items-center">
                         <div class="w-4 h-4 bg-red-300 border border-red-400 rounded mr-2"></div>
-                        <div class="text-sm text-purple-900">Red/Dark</div>
+                        <div class="text-sm text-gray-900">Red/Dark</div>
                       </div>
                     </label>
 
@@ -626,11 +626,11 @@
                         type="radio" 
                         value="Mixed" 
                         v-model="newSort.colorSorting.type"
-                        class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-purple-300"
+                        class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300"
                       />
                       <div class="ml-3 flex items-center">
                         <div class="w-4 h-4 bg-gradient-to-r from-gray-100 to-red-300 border border-gray-300 rounded mr-2"></div>
-                        <div class="text-sm text-purple-900">Mixed</div>
+                        <div class="text-sm text-gray-900">Mixed</div>
                       </div>
                     </label>
 
@@ -639,11 +639,11 @@
                         type="radio" 
                         value="Natural Variation" 
                         v-model="newSort.colorSorting.type"
-                        class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-purple-300"
+                        class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300"
                       />
                       <div class="ml-3 flex items-center">
                         <div class="w-4 h-4 bg-yellow-200 border border-yellow-300 rounded mr-2"></div>
-                        <div class="text-sm text-purple-900">Natural Variation</div>
+                        <div class="text-sm text-gray-900">Natural Variation</div>
                       </div>
                     </label>
                   </div>
