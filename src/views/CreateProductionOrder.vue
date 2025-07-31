@@ -285,6 +285,59 @@
             </div>
           </div>
 
+          <!-- Sort Creation Options -->
+          <div class="mb-8">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Add Sort to Order</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Create New Sort Option -->
+              <button
+                @click="sortCreationMode = 'new'"
+                :class="[
+                  'p-6 border-2 rounded-lg text-left transition-all duration-200',
+                  sortCreationMode === 'new'
+                    ? 'border-emerald-500 bg-emerald-50'
+                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                ]"
+              >
+                <div class="flex items-center mb-3">
+                  <div :class="[
+                    'w-10 h-10 rounded-lg flex items-center justify-center mr-3',
+                    sortCreationMode === 'new' ? 'bg-emerald-500' : 'bg-gray-400'
+                  ]">
+                    <Plus class="w-5 h-5 text-white" />
+                  </div>
+                  <h4 class="text-lg font-semibold text-gray-900">Create New Sort</h4>
+                </div>
+                <p class="text-sm text-gray-600">
+                  Define custom board geometry, grades, and color sorting specifications from scratch.
+                </p>
+              </button>
+
+              <!-- Use Template Option -->
+              <button
+                @click="sortCreationMode = 'template'"
+                :class="[
+                  'p-6 border-2 rounded-lg text-left transition-all duration-200',
+                  sortCreationMode === 'template'
+                    ? 'border-emerald-500 bg-emerald-50'
+                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                ]"
+              >
+                <div class="flex items-center mb-3">
+                  <div :class="[
+                    'w-10 h-10 rounded-lg flex items-center justify-center mr-3',
+                    sortCreationMode === 'template' ? 'bg-emerald-500' : 'bg-gray-400'
+                  ]">
+                    <FileTemplate class="w-5 h-5 text-white" />
+                  </div>
+                  <h4 class="text-lg font-semibold text-gray-900">Use Existing Template</h4>
+                </div>
+                <p class="text-sm text-gray-600">
+                  Choose from pre-configured sort templates for common lumber specifications.
+                </p>
+              </button>
+            </div>
+          </div>
           <!-- Added Sorts List -->
           <div v-if="orderData.sorts.length > 0" class="mb-8">
             <h3 class="text-lg font-medium text-gray-900 mb-4">Added Sorts ({{ orderData.sorts.length }})</h3>
@@ -357,9 +410,51 @@
             </div>
           </div>
 
-          <!-- Create New Sort Form -->
-          <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900 mb-6">Create New Sort</h3>
+          <!-- Template Selection -->
+          <div v-if="sortCreationMode === 'template'" class="bg-gray-50 rounded-lg p-6 border border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">Choose Sort Template</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+              <div v-for="template in sortTemplates" :key="template.id"
+                   @click="selectTemplate(template)"
+                   :class="[
+                     'p-4 border-2 rounded-lg cursor-pointer transition-all duration-200',
+                     selectedTemplate?.id === template.id
+                       ? 'border-emerald-500 bg-emerald-50'
+                       : 'border-gray-200 hover:border-gray-300 hover:bg-white'
+                   ]"
+              >
+                <h4 class="font-medium text-gray-900 mb-2">{{ template.name }}</h4>
+                <div class="text-sm text-gray-600 space-y-1">
+                  <div>{{ template.geometry.width }}" × {{ template.geometry.length }}' × {{ template.geometry.thickness }}</div>
+                  <div>Grades: {{ template.grades.join(', ') }}</div>
+                  <div v-if="template.colorSorting.enabled">Color: {{ template.colorSorting.type }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Template Actions -->
+            <div class="flex justify-end space-x-3">
+              <button 
+                @click="selectedTemplate = null"
+                class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Clear Selection
+              </button>
+              <button 
+                @click="addTemplateSort"
+                :disabled="!selectedTemplate"
+                :class="[
+                  'px-4 py-2 rounded-lg transition-colors',
+                  selectedTemplate
+                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                ]"
+              >
+                Add Template to Order
+              </button>
+            </div>
+          </div>
             
             <!-- Basic Sort Info -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
