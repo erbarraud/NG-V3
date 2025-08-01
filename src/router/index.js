@@ -82,6 +82,7 @@ const routes = [
   },
   {
     name: 'UserManagement',
+    path: '/user-management',
     component: UserManagement
   },
   {
