@@ -524,7 +524,7 @@
             <!-- Full Inspection Button -->
             <div class="flex justify-end">
               <Button class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2">
-                <router-link to="/inspector">
+                <router-link :to="`/board-inspector/${currentBoard.id}`">
                   Full Inspection
                 </router-link>
               </Button>
