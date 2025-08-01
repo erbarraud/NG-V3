@@ -82,7 +82,6 @@ const routes = [
     component: ShiftScheduler
   },
   {
-    path: '/user-management',
     name: 'UserManagement',
     component: UserManagement
   },
@@ -90,11 +89,6 @@ const routes = [
     path: '/claims',
     name: 'ClaimsManagement',
     component: ClaimsManagement
-  },
-  {
-    path: '/grade-management',
-    name: 'GradeManagement',
-    component: GradeManagement
   },
   {
     path: '/error/server',
