@@ -91,7 +91,7 @@
                     User Management
                   </router-link>
                   <router-link
-                    to="/scheduler"
+                    to="/shift-scheduler"
                     class="block px-4 py-2 text-sm text-slate-700 hover:bg-primary/10 hover:text-primary transition-colors duration-150"
                     @click="showToolsMenu = false"
                   >
