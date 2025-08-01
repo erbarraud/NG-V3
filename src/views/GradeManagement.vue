@@ -69,188 +69,264 @@
       <!-- Grade Cards Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <!-- FAS Grade Card -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-lg hover:border-emerald-300 transition-all duration-200 group">
           <div class="p-6">
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
                   <Award class="w-5 h-5 text-emerald-600" />
                 </div>
                 <div>
                   <h3 class="text-lg font-semibold text-gray-900">FAS</h3>
-                  <p class="text-sm text-gray-500">First and Seconds</p>
+                  <div class="flex items-center space-x-2">
+                    <Badge variant="outline" class="text-xs px-2 py-0.5">Premium</Badge>
+                    <span class="text-xs text-gray-500">First and Seconds</span>
+                  </div>
                 </div>
               </div>
-              <Badge variant="default" class="text-xs">Active</Badge>
+              <div class="flex items-center space-x-2">
+                <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                <Badge variant="default" class="text-xs">Active</Badge>
+              </div>
             </div>
             
-            <div class="space-y-3 mb-4">
+            <div class="space-y-2 mb-4 bg-gray-50 rounded-lg p-3">
+              <div class="text-xs font-medium text-gray-700 mb-2">Key Specifications</div>
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-600">Face Method:</span>
-                <span class="font-medium text-gray-900">Good Face</span>
+                <Badge variant="outline" class="text-xs">Good Face</Badge>
               </div>
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-600">Min Width:</span>
-                <span class="font-medium text-gray-900">6 inches</span>
+                <span class="font-medium text-gray-900">6"</span>
               </div>
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-600">Min Length:</span>
-                <span class="font-medium text-gray-900">8 feet</span>
+                <span class="font-medium text-gray-900">8'</span>
               </div>
+            </div>
+            
+            <div class="mb-4">
               <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-600">Usage Count:</span>
-                <span class="font-medium text-emerald-600">1,247 boards</span>
+                <span class="text-gray-600">Usage This Month:</span>
+                <div class="flex items-center space-x-2">
+                  <span class="font-bold text-emerald-600">1,247</span>
+                  <span class="text-xs text-gray-500">boards</span>
+                </div>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                <div class="bg-emerald-500 h-1.5 rounded-full" style="width: 85%"></div>
               </div>
             </div>
             
             <div class="flex items-center space-x-2">
-              <Button variant="outline" size="sm" class="flex-1" @click="editGrade(grades[0])">
+              <Button variant="outline" size="sm" class="flex-1 hover:bg-emerald-50 hover:border-emerald-300" @click="editGrade(grades[0])">
                 <Edit class="w-4 h-4 mr-1" />
                 Edit
               </Button>
-              <Button variant="ghost" size="sm" @click="cloneGrade(grades[0])">
+              <Button variant="ghost" size="sm" class="hover:bg-emerald-50" @click="cloneGrade(grades[0])">
                 <Copy class="w-4 h-4" />
+              </Button>
+              <Button variant="ghost" size="sm" class="hover:bg-red-50 text-red-600" @click="deleteGrade(grades[0])">
+                <Trash2 class="w-4 h-4" />
               </Button>
             </div>
           </div>
         </div>
 
         <!-- Select & Better Grade Card -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-lg hover:border-blue-300 transition-all duration-200 group">
           <div class="p-6">
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
                   <Star class="w-5 h-5 text-blue-600" />
                 </div>
                 <div>
                   <h3 class="text-lg font-semibold text-gray-900">Select & Better</h3>
-                  <p class="text-sm text-gray-500">High Quality</p>
+                  <div class="flex items-center space-x-2">
+                    <Badge variant="outline" class="text-xs px-2 py-0.5">High Quality</Badge>
+                    <span class="text-xs text-gray-500">Select Grade</span>
+                  </div>
                 </div>
               </div>
-              <Badge variant="default" class="text-xs">Active</Badge>
+              <div class="flex items-center space-x-2">
+                <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                <Badge variant="default" class="text-xs">Active</Badge>
+              </div>
             </div>
             
-            <div class="space-y-3 mb-4">
+            <div class="space-y-2 mb-4 bg-gray-50 rounded-lg p-3">
+              <div class="text-xs font-medium text-gray-700 mb-2">Key Specifications</div>
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-600">Face Method:</span>
-                <span class="font-medium text-gray-900">Both Faces</span>
+                <Badge variant="outline" class="text-xs">Both Faces</Badge>
               </div>
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-600">Min Width:</span>
-                <span class="font-medium text-gray-900">4 inches</span>
+                <span class="font-medium text-gray-900">4"</span>
               </div>
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-600">Min Length:</span>
-                <span class="font-medium text-gray-900">6 feet</span>
+                <span class="font-medium text-gray-900">6'</span>
               </div>
+            </div>
+            
+            <div class="mb-4">
               <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-600">Usage Count:</span>
-                <span class="font-medium text-emerald-600">892 boards</span>
+                <span class="text-gray-600">Usage This Month:</span>
+                <div class="flex items-center space-x-2">
+                  <span class="font-bold text-emerald-600">892</span>
+                  <span class="text-xs text-gray-500">boards</span>
+                </div>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                <div class="bg-blue-500 h-1.5 rounded-full" style="width: 68%"></div>
               </div>
             </div>
             
             <div class="flex items-center space-x-2">
-              <Button variant="outline" size="sm" class="flex-1" @click="editGrade(grades[1])">
+              <Button variant="outline" size="sm" class="flex-1 hover:bg-blue-50 hover:border-blue-300" @click="editGrade(grades[1])">
                 <Edit class="w-4 h-4 mr-1" />
                 Edit
               </Button>
-              <Button variant="ghost" size="sm" @click="cloneGrade(grades[1])">
+              <Button variant="ghost" size="sm" class="hover:bg-blue-50" @click="cloneGrade(grades[1])">
                 <Copy class="w-4 h-4" />
+              </Button>
+              <Button variant="ghost" size="sm" class="hover:bg-red-50 text-red-600" @click="deleteGrade(grades[1])">
+                <Trash2 class="w-4 h-4" />
               </Button>
             </div>
           </div>
         </div>
 
         <!-- No.1 Common Grade Card -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-lg hover:border-yellow-300 transition-all duration-200 group">
           <div class="p-6">
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center group-hover:bg-yellow-200 transition-colors">
                   <Package class="w-5 h-5 text-yellow-600" />
                 </div>
                 <div>
                   <h3 class="text-lg font-semibold text-gray-900">No.1 Common</h3>
-                  <p class="text-sm text-gray-500">Standard Grade</p>
+                  <div class="flex items-center space-x-2">
+                    <Badge variant="outline" class="text-xs px-2 py-0.5">Standard</Badge>
+                    <span class="text-xs text-gray-500">Common Grade</span>
+                  </div>
                 </div>
               </div>
-              <Badge variant="default" class="text-xs">Active</Badge>
+              <div class="flex items-center space-x-2">
+                <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                <Badge variant="default" class="text-xs">Active</Badge>
+              </div>
             </div>
             
-            <div class="space-y-3 mb-4">
+            <div class="space-y-2 mb-4 bg-gray-50 rounded-lg p-3">
+              <div class="text-xs font-medium text-gray-700 mb-2">Key Specifications</div>
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-600">Face Method:</span>
-                <span class="font-medium text-gray-900">Poor Face</span>
+                <Badge variant="outline" class="text-xs">Poor Face</Badge>
               </div>
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-600">Min Width:</span>
-                <span class="font-medium text-gray-900">3 inches</span>
+                <span class="font-medium text-gray-900">3"</span>
               </div>
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-600">Min Length:</span>
-                <span class="font-medium text-gray-900">4 feet</span>
+                <span class="font-medium text-gray-900">4'</span>
               </div>
+            </div>
+            
+            <div class="mb-4">
               <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-600">Usage Count:</span>
-                <span class="font-medium text-emerald-600">2,156 boards</span>
+                <span class="text-gray-600">Usage This Month:</span>
+                <div class="flex items-center space-x-2">
+                  <span class="font-bold text-emerald-600">2,156</span>
+                  <span class="text-xs text-gray-500">boards</span>
+                </div>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                <div class="bg-yellow-500 h-1.5 rounded-full" style="width: 92%"></div>
               </div>
             </div>
             
             <div class="flex items-center space-x-2">
-              <Button variant="outline" size="sm" class="flex-1" @click="editGrade(grades[2])">
+              <Button variant="outline" size="sm" class="flex-1 hover:bg-yellow-50 hover:border-yellow-300" @click="editGrade(grades[2])">
                 <Edit class="w-4 h-4 mr-1" />
                 Edit
               </Button>
-              <Button variant="ghost" size="sm" @click="cloneGrade(grades[2])">
+              <Button variant="ghost" size="sm" class="hover:bg-yellow-50" @click="cloneGrade(grades[2])">
                 <Copy class="w-4 h-4" />
+              </Button>
+              <Button variant="ghost" size="sm" class="hover:bg-red-50 text-red-600" @click="deleteGrade(grades[2])">
+                <Trash2 class="w-4 h-4" />
               </Button>
             </div>
           </div>
         </div>
 
         <!-- No.2A Common Grade Card -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-lg hover:border-orange-300 transition-all duration-200 group opacity-75">
           <div class="p-6">
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center group-hover:bg-orange-200 transition-colors">
                   <Layers class="w-5 h-5 text-orange-600" />
                 </div>
                 <div>
                   <h3 class="text-lg font-semibold text-gray-900">No.2A Common</h3>
-                  <p class="text-sm text-gray-500">Economy Grade</p>
+                  <div class="flex items-center space-x-2">
+                    <Badge variant="outline" class="text-xs px-2 py-0.5">Economy</Badge>
+                    <span class="text-xs text-gray-500">Common Grade</span>
+                  </div>
                 </div>
               </div>
-              <Badge variant="secondary" class="text-xs">Inactive</Badge>
+              <div class="flex items-center space-x-2">
+                <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                <Badge variant="secondary" class="text-xs">Inactive</Badge>
+              </div>
             </div>
             
-            <div class="space-y-3 mb-4">
+            <div class="space-y-2 mb-4 bg-gray-50 rounded-lg p-3">
+              <div class="text-xs font-medium text-gray-700 mb-2">Key Specifications</div>
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-600">Face Method:</span>
-                <span class="font-medium text-gray-900">Poor Face</span>
+                <Badge variant="outline" class="text-xs">Poor Face</Badge>
               </div>
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-600">Min Width:</span>
-                <span class="font-medium text-gray-900">3 inches</span>
+                <span class="font-medium text-gray-900">3"</span>
               </div>
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-600">Min Length:</span>
-                <span class="font-medium text-gray-900">4 feet</span>
+                <span class="font-medium text-gray-900">4'</span>
               </div>
+            </div>
+            
+            <div class="mb-4">
               <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-600">Usage Count:</span>
-                <span class="font-medium text-gray-500">0 boards</span>
+                <span class="text-gray-600">Usage This Month:</span>
+                <div class="flex items-center space-x-2">
+                  <span class="font-bold text-gray-500">0</span>
+                  <span class="text-xs text-gray-500">boards</span>
+                </div>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                <div class="bg-gray-400 h-1.5 rounded-full" style="width: 0%"></div>
               </div>
             </div>
             
             <div class="flex items-center space-x-2">
-              <Button variant="outline" size="sm" class="flex-1" @click="editGrade(grades[3])">
+              <Button variant="outline" size="sm" class="flex-1 hover:bg-orange-50 hover:border-orange-300" @click="editGrade(grades[3])">
                 <Edit class="w-4 h-4 mr-1" />
                 Edit
               </Button>
-              <Button variant="ghost" size="sm" @click="cloneGrade(grades[3])">
+              <Button variant="ghost" size="sm" class="hover:bg-orange-50" @click="cloneGrade(grades[3])">
                 <Copy class="w-4 h-4" />
+              </Button>
+              <Button variant="ghost" size="sm" class="hover:bg-red-50 text-red-600" @click="deleteGrade(grades[3])">
+                <Trash2 class="w-4 h-4" />
               </Button>
             </div>
           </div>
@@ -260,50 +336,72 @@
         <div 
           v-for="grade in filteredGrades.slice(4)" 
           :key="grade.id"
-          class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200"
+          class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-lg hover:border-gray-300 transition-all duration-200 group"
         >
           <div class="p-6">
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
                   <FileText class="w-5 h-5 text-gray-600" />
                 </div>
                 <div>
                   <h3 class="text-lg font-semibold text-gray-900">{{ grade.name }}</h3>
-                  <p class="text-sm text-gray-500">{{ grade.description }}</p>
+                  <div class="flex items-center space-x-2">
+                    <Badge variant="outline" class="text-xs px-2 py-0.5">Custom</Badge>
+                    <span class="text-xs text-gray-500 truncate max-w-24">{{ grade.description }}</span>
+                  </div>
                 </div>
               </div>
-              <Badge :variant="grade.isActive ? 'default' : 'secondary'" class="text-xs">
-                {{ grade.isActive ? 'Active' : 'Inactive' }}
-              </Badge>
+              <div class="flex items-center space-x-2">
+                <div :class="[
+                  'w-2 h-2 rounded-full',
+                  grade.isActive ? 'bg-emerald-500' : 'bg-gray-400'
+                ]"></div>
+                <Badge :variant="grade.isActive ? 'default' : 'secondary'" class="text-xs">
+                  {{ grade.isActive ? 'Active' : 'Inactive' }}
+                </Badge>
+              </div>
             </div>
             
-            <div class="space-y-3 mb-4">
+            <div class="space-y-2 mb-4 bg-gray-50 rounded-lg p-3">
+              <div class="text-xs font-medium text-gray-700 mb-2">Key Specifications</div>
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-600">Face Method:</span>
-                <span class="font-medium text-gray-900">{{ getFaceMethodLabel(grade.faceMethod) }}</span>
+                <Badge variant="outline" class="text-xs">{{ getFaceMethodLabel(grade.faceMethod) }}</Badge>
               </div>
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-600">Width Method:</span>
-                <span class="font-medium text-gray-900">{{ getWidthMethodLabel(grade.widthMethod) }}</span>
+                <span class="font-medium text-gray-900 text-xs">{{ getWidthMethodLabel(grade.widthMethod) }}</span>
               </div>
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-600">Zones:</span>
                 <span class="font-medium text-gray-900">{{ grade.zones?.length || 0 }}</span>
               </div>
+            </div>
+            
+            <div class="mb-4">
               <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-600">Usage Count:</span>
-                <span class="font-medium text-emerald-600">{{ Math.floor(Math.random() * 1000) }} boards</span>
+                <span class="text-gray-600">Usage This Month:</span>
+                <div class="flex items-center space-x-2">
+                  <span class="font-bold text-emerald-600">{{ Math.floor(Math.random() * 1000) }}</span>
+                  <span class="text-xs text-gray-500">boards</span>
+                </div>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                <div class="bg-gray-500 h-1.5 rounded-full" :style="{ width: Math.floor(Math.random() * 80 + 20) + '%' }"></div>
               </div>
             </div>
             
             <div class="flex items-center space-x-2">
-              <Button variant="outline" size="sm" class="flex-1" @click="editGrade(grade)">
+              <Button variant="outline" size="sm" class="flex-1 hover:bg-gray-50 hover:border-gray-300" @click="editGrade(grade)">
                 <Edit class="w-4 h-4 mr-1" />
                 Edit
               </Button>
-              <Button variant="ghost" size="sm" @click="cloneGrade(grade)">
+              <Button variant="ghost" size="sm" class="hover:bg-gray-50" @click="cloneGrade(grade)">
                 <Copy class="w-4 h-4" />
+              </Button>
+              <Button variant="ghost" size="sm" class="hover:bg-red-50 text-red-600" @click="deleteGrade(grade)">
+                <Trash2 class="w-4 h-4" />
               </Button>
             </div>
           </div>
