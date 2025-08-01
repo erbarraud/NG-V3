@@ -422,6 +422,250 @@
       </div>
     </div>
 
+    <!-- Create/Edit Grade Modal -->
+    <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-hidden">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-900">
+              {{ editingGrade ? 'Edit Grade' : 'Create New Grade' }}
+            </h2>
+            <p class="text-gray-600 mt-1">
+              {{ editingGrade ? 'Modify existing grade specifications' : 'Define lumber grading standards and zones' }}
+            </p>
+          </div>
+          <button 
+            @click="closeModal"
+            class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <X class="w-6 h-6" />
+          </button>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="flex h-[calc(90vh-140px)]">
+          <!-- Left Panel - Form -->
+          <div class="w-1/3 p-6 border-r border-gray-200 overflow-y-auto">
+            <form @submit.prevent="saveGrade" class="space-y-6">
+              <!-- Basic Information -->
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Basic Information</h3>
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Grade Name *</label>
+                    <input
+                      v-model="gradeForm.name"
+                      type="text"
+                      required
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                      placeholder="Enter grade name"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Grade Type</label>
+                    <select
+                      v-model="gradeForm.type"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    >
+                      <option value="standard">Standard</option>
+                      <option value="custom">Custom</option>
+                      <option value="template">Template</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <textarea
+                      v-model="gradeForm.description"
+                      rows="3"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                      placeholder="Grade description..."
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Specifications -->
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Specifications</h3>
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Face Method</label>
+                    <select
+                      v-model="gradeForm.faceMethod"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    >
+                      <option value="good">Good Face</option>
+                      <option value="poor">Poor Face</option>
+                      <option value="both">Both Faces</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Width Method</label>
+                    <select
+                      v-model="gradeForm.widthMethod"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    >
+                      <option value="narrowest">Narrowest Point</option>
+                      <option value="average">Average Width</option>
+                      <option value="widest">Widest Point</option>
+                    </select>
+                  </div>
+                  
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Min Width (in)</label>
+                      <input
+                        v-model="gradeForm.minWidth"
+                        type="number"
+                        step="0.25"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                        placeholder="3.0"
+                      />
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Min Length (ft)</label>
+                      <input
+                        v-model="gradeForm.minLength"
+                        type="number"
+                        step="0.5"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                        placeholder="4.0"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label class="flex items-center">
+                      <input
+                        v-model="gradeForm.isActive"
+                        type="checkbox"
+                        class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+                      />
+                      <span class="ml-2 text-sm text-gray-700">Active Grade</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Zone Management -->
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Zone Management</h3>
+                <div class="space-y-3">
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Zones: {{ gradeForm.zones.length }}</span>
+                    <button
+                      type="button"
+                      @click="addZone"
+                      class="px-3 py-1.5 text-sm bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+                    >
+                      <Plus class="w-4 h-4 mr-1 inline" />
+                      Add Zone
+                    </button>
+                  </div>
+                  
+                  <div v-for="(zone, index) in gradeForm.zones" :key="zone.id" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center space-x-3">
+                      <div :class="getZoneColor(index)" class="w-4 h-4 rounded border"></div>
+                      <span class="text-sm font-medium text-gray-900">{{ zone.name }}</span>
+                    </div>
+                    <button
+                      type="button"
+                      @click="removeZone(index)"
+                      class="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                    >
+                      <X class="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Right Panel - Canvas -->
+          <div class="flex-1 p-6">
+            <div class="h-full flex flex-col">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Zone Drawing Canvas</h3>
+                <div class="flex items-center space-x-2">
+                  <button
+                    type="button"
+                    @click="clearCanvas"
+                    class="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    Clear Canvas
+                  </button>
+                  <button
+                    type="button"
+                    @click="resetCanvas"
+                    class="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Canvas Container -->
+              <div class="flex-1 border border-gray-300 rounded-lg bg-gray-50 relative">
+                <canvas
+                  ref="fabricCanvas"
+                  id="grade-canvas"
+                  class="absolute inset-0 w-full h-full"
+                ></canvas>
+              </div>
+              
+              <!-- Canvas Tools -->
+              <div class="mt-4 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <span class="text-sm text-gray-600">Drawing Mode:</span>
+                  <select
+                    v-model="canvasMode"
+                    @change="setCanvasMode"
+                    class="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  >
+                    <option value="select">Select</option>
+                    <option value="rectangle">Rectangle</option>
+                    <option value="circle">Circle</option>
+                    <option value="polygon">Polygon</option>
+                  </select>
+                </div>
+                <div class="text-xs text-gray-500">
+                  Click and drag to create zones. Use different colors for different zone types.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="flex items-center justify-between p-6 border-t border-gray-200 bg-gray-50">
+          <div class="text-sm text-gray-500">
+            {{ editingGrade ? 'Modifying existing grade' : 'Creating new grade' }}
+          </div>
+          <div class="flex items-center space-x-3">
+            <button
+              type="button"
+              @click="closeModal"
+              class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              @click="saveGrade"
+              class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors flex items-center"
+            >
+              <Save class="w-4 h-4 mr-2" />
+              {{ editingGrade ? 'Update Grade' : 'Create Grade' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Grade Creation/Edit Form -->
     <div v-if="currentView === 'form'" class="space-y-6">
       <!-- Form Header -->
@@ -921,7 +1165,7 @@
 import { ref, computed, onMounted } from 'vue'
 import {
   Plus, Search, Edit, Copy, Power, Trash2, ArrowLeft, Eye, Save, Upload, Download,
-  Grid, Layers, ChevronUp, ChevronDown, X
+  Grid, Layers, ChevronUp, ChevronDown, X, Trash
 } from 'lucide-vue-next'
 import { Award, Star, Package, FileText } from 'lucide-vue-next'
 import Button from '@/components/ui/button.vue'
@@ -938,16 +1182,172 @@ const selectedRuleZone = ref('overall')
 const showGrid = ref(true)
 const showImportModal = ref(false)
 const isLoading = ref(false)
+const showModal = ref(false)
+const editingGrade = ref(null)
+const fabricCanvas = ref(null)
+const canvasInstance = ref(null)
+const canvasMode = ref('select')
 
 // Search and filters
 const searchQuery = ref('')
 const statusFilter = ref('')
 const faceMethodFilter = ref('')
 
+// Grade form data
+const gradeForm = ref({
+  name: '',
+  type: 'standard',
+  description: '',
+  faceMethod: 'good',
+  widthMethod: 'narrowest',
+  minWidth: '',
+  minLength: '',
+  isActive: true,
+  zones: []
+})
+
 const clearFilters = () => {
   searchQuery.value = ''
   statusFilter.value = ''
   faceMethodFilter.value = ''
+}
+
+// Modal methods
+const openCreateModal = () => {
+  editingGrade.value = null
+  gradeForm.value = {
+    name: '',
+    type: 'standard',
+    description: '',
+    faceMethod: 'good',
+    widthMethod: 'narrowest',
+    minWidth: '',
+    minLength: '',
+    isActive: true,
+    zones: []
+  }
+  showModal.value = true
+  // Initialize canvas after modal is shown
+  setTimeout(initializeCanvas, 100)
+}
+
+const openEditModal = (grade) => {
+  editingGrade.value = grade
+  gradeForm.value = {
+    name: grade.name,
+    type: grade.type || 'standard',
+    description: grade.description,
+    faceMethod: grade.faceMethod,
+    widthMethod: grade.widthMethod,
+    minWidth: grade.minWidth || '',
+    minLength: grade.minLength || '',
+    isActive: grade.isActive,
+    zones: [...(grade.zones || [])]
+  }
+  showModal.value = true
+  // Initialize canvas after modal is shown
+  setTimeout(initializeCanvas, 100)
+}
+
+const closeModal = () => {
+  showModal.value = false
+  editingGrade.value = null
+  if (canvasInstance.value) {
+    canvasInstance.value.dispose()
+    canvasInstance.value = null
+  }
+}
+
+const saveGrade = () => {
+  // Validate form
+  if (!gradeForm.value.name.trim()) {
+    alert('Please enter a grade name')
+    return
+  }
+  
+  if (editingGrade.value) {
+    // Update existing grade
+    const index = grades.value.findIndex(g => g.id === editingGrade.value.id)
+    if (index !== -1) {
+      grades.value[index] = {
+        ...grades.value[index],
+        ...gradeForm.value,
+        updatedAt: new Date().toISOString()
+      }
+    }
+  } else {
+    // Create new grade
+    const newGrade = {
+      id: Date.now().toString(),
+      ...gradeForm.value,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }
+    grades.value.push(newGrade)
+  }
+  
+  closeModal()
+}
+
+// Canvas methods
+const initializeCanvas = () => {
+  if (!fabricCanvas.value) return
+  
+  // Import Fabric.js dynamically (you'll need to install it: npm install fabric)
+  // For now, we'll create a placeholder canvas
+  const canvas = fabricCanvas.value
+  const ctx = canvas.getContext('2d')
+  
+  // Set canvas size
+  canvas.width = canvas.offsetWidth
+  canvas.height = canvas.offsetHeight
+  
+  // Draw board outline
+  ctx.strokeStyle = '#374151'
+  ctx.lineWidth = 2
+  ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40)
+  
+  // Add some sample zones
+  ctx.fillStyle = 'rgba(239, 68, 68, 0.3)'
+  ctx.fillRect(30, 30, 100, 80)
+  ctx.strokeStyle = '#dc2626'
+  ctx.strokeRect(30, 30, 100, 80)
+  
+  ctx.fillStyle = 'rgba(34, 197, 94, 0.3)'
+  ctx.fillRect(150, 30, 120, 80)
+  ctx.strokeStyle = '#16a34a'
+  ctx.strokeRect(150, 30, 120, 80)
+}
+
+const clearCanvas = () => {
+  if (!fabricCanvas.value) return
+  const canvas = fabricCanvas.value
+  const ctx = canvas.getContext('2d')
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+}
+
+const resetCanvas = () => {
+  clearCanvas()
+  initializeCanvas()
+}
+
+const setCanvasMode = () => {
+  // Canvas mode change logic would go here
+  console.log('Canvas mode changed to:', canvasMode.value)
+}
+
+const addZone = () => {
+  const newZone = {
+    id: Date.now().toString(),
+    name: `Zone ${gradeForm.value.zones.length + 1}`,
+    color: getZoneColor(gradeForm.value.zones.length).split(' ')[0],
+    rules: {}
+  }
+  gradeForm.value.zones.push(newZone)
+}
+
+const removeZone = (index) => {
+  gradeForm.value.zones.splice(index, 1)
 }
 
 // Canvas dimensions
@@ -1127,8 +1527,7 @@ const cloneGrade = (grade) => {
   cloned.isActive = false
   currentGrade.value = cloned
   isEditing.value = false
-  currentView.value = 'form'
-  activeTab.value = 'basic'
+  openCreateModal()
 }
 
 const deleteGrade = (grade) => {
@@ -1356,8 +1755,7 @@ const getZoneColor = (index) => {
   const colors = [
     'bg-red-200 border-red-400',
     'bg-blue-200 border-blue-400',
-    'bg-green-200 border-green-400',
-    'bg-yellow-200 border-yellow-400',
+  openEditModal(grade)
     'bg-purple-200 border-purple-400',
     'bg-pink-200 border-pink-400',
     'bg-indigo-200 border-indigo-400',
