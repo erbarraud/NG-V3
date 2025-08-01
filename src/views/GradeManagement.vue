@@ -40,146 +40,287 @@
     </div>
 
     <!-- Grade List View -->
-    <div v-if="currentView === 'list'" class="space-y-6">
-      <!-- Search and Filters -->
-      <div class="bg-white rounded-lg shadow p-6">
-        <div class="flex items-center justify-between mb-4">
-          <div class="flex items-center space-x-4">
-            <div class="relative">
-              <Search class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-              <input
-                v-model="searchQuery"
-                type="text"
-                placeholder="Search grades..."
-                class="pl-10 pr-3 py-2 border border-gray-300 rounded-lg w-80 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              />
-            </div>
-            <select
-              v-model="statusFilter"
-              class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-            >
-              <option value="">All Status</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
-            <select
-              v-model="faceMethodFilter"
-              class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-            >
-              <option value="">All Face Methods</option>
-              <option value="good">Good Face</option>
-              <option value="poor">Poor Face</option>
-              <option value="both">Both Faces</option>
-            </select>
-          </div>
-          <div class="text-sm text-gray-600">
-            {{ filteredGrades.length }} of {{ grades.length }} grades
-          </div>
+    <!-- Loading State -->
+    <div v-if="isLoading" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <LoadingSkeleton variant="card" v-for="i in 8" :key="i" />
+      </div>
+    </div>
+
+    <!-- Grade Cards Grid -->
+    <div v-else-if="currentView === 'list'" class="space-y-6">
+      <!-- Results Summary -->
+      <div class="flex items-center justify-between">
+        <div class="text-sm text-gray-600">
+          Showing {{ filteredGrades.length }} of {{ grades.length }} grades
+        </div>
+        <div class="flex items-center space-x-2">
+          <Button variant="outline" size="sm">
+            <Upload class="w-4 h-4 mr-2" />
+            Import Grades
+          </Button>
+          <Button variant="outline" size="sm">
+            <Download class="w-4 h-4 mr-2" />
+            Export
+          </Button>
         </div>
       </div>
 
-      <!-- Grades Table -->
-      <div class="bg-white rounded-lg shadow overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-b-2 border-emerald-500">
-                Grade Name
-              </th>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-b-2 border-emerald-500">
-                Face Method
-              </th>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-b-2 border-emerald-500">
-                Width Method
-              </th>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-b-2 border-emerald-500">
-                Zones
-              </th>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-b-2 border-emerald-500">
-                Status
-              </th>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-b-2 border-emerald-500">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="grade in filteredGrades" :key="grade.id" class="hover:bg-emerald-50 transition-colors duration-150">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <div>
-                    <div class="text-sm font-medium text-gray-900">{{ grade.name }}</div>
-                    <div class="text-sm text-gray-500">{{ grade.description }}</div>
-                  </div>
+      <!-- Grade Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <!-- FAS Grade Card -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                  <Award class="w-5 h-5 text-emerald-600" />
                 </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <Badge :variant="getFaceMethodVariant(grade.faceMethod)" class="text-xs">
-                  {{ getFaceMethodLabel(grade.faceMethod) }}
-                </Badge>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="text-sm text-gray-900">{{ getWidthMethodLabel(grade.widthMethod) }}</span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center space-x-2">
-                  <span class="text-sm font-medium text-gray-900">{{ grade.zones?.length || 0 }}</span>
-                  <div class="flex space-x-1">
-                    <div
-                      v-for="(zone, index) in grade.zones?.slice(0, 3)"
-                      :key="zone.id"
-                      :class="[
-                        'w-3 h-3 rounded border',
-                        getZoneColor(index)
-                      ]"
-                      :title="zone.name"
-                    ></div>
-                    <span v-if="grade.zones?.length > 3" class="text-xs text-gray-500">
-                      +{{ grade.zones.length - 3 }}
-                    </span>
-                  </div>
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-900">FAS</h3>
+                  <p class="text-sm text-gray-500">First and Seconds</p>
                 </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <Badge :variant="grade.isActive ? 'default' : 'secondary'" class="text-xs">
-                  {{ grade.isActive ? 'Active' : 'Inactive' }}
-                </Badge>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div class="flex items-center space-x-2">
-                  <button
-                    @click="editGrade(grade)"
-                    class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                    title="Edit Grade"
-                  >
-                    <Edit class="w-4 h-4" />
-                  </button>
-                  <button
-                    @click="cloneGrade(grade)"
-                    class="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                    title="Clone Grade"
-                  >
-                    <Copy class="w-4 h-4" />
-                  </button>
-                  <button
-                    @click="toggleGradeStatus(grade)"
-                    class="p-2 text-gray-400 hover:text-yellow-600 hover:bg-yellow-50 rounded-lg transition-colors"
-                    :title="grade.isActive ? 'Deactivate' : 'Activate'"
-                  >
-                    <Power class="w-4 h-4" />
-                  </button>
-                  <button
-                    @click="deleteGrade(grade)"
-                    class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                    title="Delete Grade"
-                  >
-                    <Trash2 class="w-4 h-4" />
-                  </button>
+              </div>
+              <Badge variant="default" class="text-xs">Active</Badge>
+            </div>
+            
+            <div class="space-y-3 mb-4">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Face Method:</span>
+                <span class="font-medium text-gray-900">Good Face</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Min Width:</span>
+                <span class="font-medium text-gray-900">6 inches</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Min Length:</span>
+                <span class="font-medium text-gray-900">8 feet</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Usage Count:</span>
+                <span class="font-medium text-emerald-600">1,247 boards</span>
+              </div>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+              <Button variant="outline" size="sm" class="flex-1" @click="editGrade(grades[0])">
+                <Edit class="w-4 h-4 mr-1" />
+                Edit
+              </Button>
+              <Button variant="ghost" size="sm" @click="cloneGrade(grades[0])">
+                <Copy class="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Select & Better Grade Card -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Star class="w-5 h-5 text-blue-600" />
                 </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-900">Select & Better</h3>
+                  <p class="text-sm text-gray-500">High Quality</p>
+                </div>
+              </div>
+              <Badge variant="default" class="text-xs">Active</Badge>
+            </div>
+            
+            <div class="space-y-3 mb-4">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Face Method:</span>
+                <span class="font-medium text-gray-900">Both Faces</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Min Width:</span>
+                <span class="font-medium text-gray-900">4 inches</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Min Length:</span>
+                <span class="font-medium text-gray-900">6 feet</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Usage Count:</span>
+                <span class="font-medium text-emerald-600">892 boards</span>
+              </div>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+              <Button variant="outline" size="sm" class="flex-1" @click="editGrade(grades[1])">
+                <Edit class="w-4 h-4 mr-1" />
+                Edit
+              </Button>
+              <Button variant="ghost" size="sm" @click="cloneGrade(grades[1])">
+                <Copy class="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <!-- No.1 Common Grade Card -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                  <Package class="w-5 h-5 text-yellow-600" />
+                </div>
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-900">No.1 Common</h3>
+                  <p class="text-sm text-gray-500">Standard Grade</p>
+                </div>
+              </div>
+              <Badge variant="default" class="text-xs">Active</Badge>
+            </div>
+            
+            <div class="space-y-3 mb-4">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Face Method:</span>
+                <span class="font-medium text-gray-900">Poor Face</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Min Width:</span>
+                <span class="font-medium text-gray-900">3 inches</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Min Length:</span>
+                <span class="font-medium text-gray-900">4 feet</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Usage Count:</span>
+                <span class="font-medium text-emerald-600">2,156 boards</span>
+              </div>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+              <Button variant="outline" size="sm" class="flex-1" @click="editGrade(grades[2])">
+                <Edit class="w-4 h-4 mr-1" />
+                Edit
+              </Button>
+              <Button variant="ghost" size="sm" @click="cloneGrade(grades[2])">
+                <Copy class="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <!-- No.2A Common Grade Card -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                  <Layers class="w-5 h-5 text-orange-600" />
+                </div>
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-900">No.2A Common</h3>
+                  <p class="text-sm text-gray-500">Economy Grade</p>
+                </div>
+              </div>
+              <Badge variant="secondary" class="text-xs">Inactive</Badge>
+            </div>
+            
+            <div class="space-y-3 mb-4">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Face Method:</span>
+                <span class="font-medium text-gray-900">Poor Face</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Min Width:</span>
+                <span class="font-medium text-gray-900">3 inches</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Min Length:</span>
+                <span class="font-medium text-gray-900">4 feet</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Usage Count:</span>
+                <span class="font-medium text-gray-500">0 boards</span>
+              </div>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+              <Button variant="outline" size="sm" class="flex-1" @click="editGrade(grades[3])">
+                <Edit class="w-4 h-4 mr-1" />
+                Edit
+              </Button>
+              <Button variant="ghost" size="sm" @click="cloneGrade(grades[3])">
+                <Copy class="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Grade Cards (filtered results) -->
+        <div 
+          v-for="grade in filteredGrades.slice(4)" 
+          :key="grade.id"
+          class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200"
+        >
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <FileText class="w-5 h-5 text-gray-600" />
+                </div>
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-900">{{ grade.name }}</h3>
+                  <p class="text-sm text-gray-500">{{ grade.description }}</p>
+                </div>
+              </div>
+              <Badge :variant="grade.isActive ? 'default' : 'secondary'" class="text-xs">
+                {{ grade.isActive ? 'Active' : 'Inactive' }}
+              </Badge>
+            </div>
+            
+            <div class="space-y-3 mb-4">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Face Method:</span>
+                <span class="font-medium text-gray-900">{{ getFaceMethodLabel(grade.faceMethod) }}</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Width Method:</span>
+                <span class="font-medium text-gray-900">{{ getWidthMethodLabel(grade.widthMethod) }}</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Zones:</span>
+                <span class="font-medium text-gray-900">{{ grade.zones?.length || 0 }}</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Usage Count:</span>
+                <span class="font-medium text-emerald-600">{{ Math.floor(Math.random() * 1000) }} boards</span>
+              </div>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+              <Button variant="outline" size="sm" class="flex-1" @click="editGrade(grade)">
+                <Edit class="w-4 h-4 mr-1" />
+                Edit
+              </Button>
+              <Button variant="ghost" size="sm" @click="cloneGrade(grade)">
+                <Copy class="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State for No Results -->
+        <div v-if="filteredGrades.length === 0" class="col-span-full">
+          <div class="text-center py-12">
+            <FileText class="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No grades found</h3>
+            <p class="text-gray-500 mb-4">Try adjusting your search or filters</p>
+            <Button @click="clearFilters">
+              <X class="w-4 h-4 mr-2" />
+              Clear Filters
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -681,11 +822,14 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import {
-  Plus, Search, Edit, Copy, Power, Trash2, ArrowLeft, Eye, Save, Upload,
+  Plus, Search, Edit, Copy, Power, Trash2, ArrowLeft, Eye, Save, Upload, Download,
   Grid, Layers, ChevronUp, ChevronDown, X
 } from 'lucide-vue-next'
+import { Award, Star, Package, FileText } from 'lucide-vue-next'
 import Button from '@/components/ui/button.vue'
 import Badge from '@/components/ui/badge.vue'
+import LoadingSkeleton from '@/components/ui/loading-skeleton.vue'
+import { useAsyncState } from '@/composables/useAsyncState.js'
 
 // Component state
 const currentView = ref('list') // 'list' or 'form'
@@ -695,11 +839,18 @@ const selectedZone = ref(null)
 const selectedRuleZone = ref('overall')
 const showGrid = ref(true)
 const showImportModal = ref(false)
+const isLoading = ref(false)
 
 // Search and filters
 const searchQuery = ref('')
 const statusFilter = ref('')
 const faceMethodFilter = ref('')
+
+const clearFilters = () => {
+  searchQuery.value = ''
+  statusFilter.value = ''
+  faceMethodFilter.value = ''
+}
 
 // Canvas dimensions
 const canvasWidth = ref(400)
@@ -1126,6 +1277,10 @@ const getZoneColorHex = (index) => {
 }
 
 onMounted(() => {
-  // Initialize component
+  // Simulate loading state
+  isLoading.value = true
+  setTimeout(() => {
+    isLoading.value = false
+  }, 800)
 })
 </script>
