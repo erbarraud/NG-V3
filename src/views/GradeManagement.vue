@@ -1304,38 +1304,6 @@ const initializeCanvas = () => {
   
   // Draw board outline
   ctx.strokeStyle = '#374151'
-  ctx.lineWidth = 2
-  ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40)
-  
-  // Add some sample zones
-  ctx.fillStyle = 'rgba(239, 68, 68, 0.3)'
-  ctx.fillRect(30, 30, 100, 80)
-  ctx.strokeStyle = '#dc2626'
-  ctx.strokeRect(30, 30, 100, 80)
-  
-  ctx.fillStyle = 'rgba(34, 197, 94, 0.3)'
-  ctx.fillRect(150, 30, 120, 80)
-  ctx.strokeStyle = '#16a34a'
-  ctx.strokeRect(150, 30, 120, 80)
-}
-
-const clearCanvas = () => {
-  if (!fabricCanvas.value) return
-  const canvas = fabricCanvas.value
-  const ctx = canvas.getContext('2d')
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
-}
-
-const resetCanvas = () => {
-  clearCanvas()
-  initializeCanvas()
-}
-
-const setCanvasMode = () => {
-  // Canvas mode change logic would go here
-  console.log('Canvas mode changed to:', canvasMode.value)
-}
-
 const addZone = () => {
   const newZone = {
     id: Date.now().toString(),
