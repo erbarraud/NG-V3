@@ -132,6 +132,7 @@
           </div>
         </div>
       </div>
+      </div>
     </nav>
 
     <!-- Full Screen Navigation Bar -->
