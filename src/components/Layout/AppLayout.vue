@@ -105,6 +105,13 @@
                     Claims Management
                   </router-link>
                   <router-link
+                    to="/grade-management"
+                    class="block px-4 py-2 text-sm text-slate-700 hover:bg-primary/10 hover:text-primary transition-colors duration-150"
+                    @click="showToolsMenu = false"
+                  >
+                    Grade Management
+                  </router-link>
+                  <router-link
                     to="/scanning"
                     class="block px-4 py-2 text-sm text-slate-700 hover:bg-primary/10 hover:text-primary transition-colors duration-150"
                     @click="showToolsMenu = false"
