@@ -1,20 +1,41 @@
 <template>
   <div class="w-full px-4 sm:px-6 lg:px-8 py-6">
     <!-- Page Header -->
-    <div class="flex items-center justify-between mb-8">
-      <div>
-        <h1 class="text-4xl font-extrabold text-gray-900 mb-2">Grade Management</h1>
-        <p class="text-gray-600 mt-1">Create and manage lumber grades with zone-based rule configuration</p>
-      </div>
-      <div class="flex items-center space-x-4">
-        <Button variant="outline" @click="showImportModal = true">
-          <Upload class="w-4 h-4 mr-2" />
-          Import Grades
-        </Button>
-        <Button @click="createNewGrade">
-          <Plus class="w-4 h-4 mr-2" />
-          Create New Grade
-        </Button>
+    <div class="header-section mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">Grade Management</h1>
+          <p class="text-gray-600">Manage lumber grading standards and templates</p>
+        </div>
+        <div class="flex items-center space-x-4">
+          <!-- Search Input -->
+          <div class="relative">
+            <Search class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Search grades..."
+              class="pl-10 pr-3 py-2 border border-gray-300 rounded-lg w-80 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+            />
+          </div>
+          
+          <!-- Filter Dropdown -->
+          <select
+            v-model="statusFilter"
+            class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          >
+            <option value="">All Grade Types</option>
+            <option value="active">Active Grades</option>
+            <option value="inactive">Inactive Grades</option>
+            <option value="template">Templates</option>
+          </select>
+          
+          <!-- Create New Grade Button -->
+          <Button @click="createNewGrade">
+            <Plus class="w-4 h-4 mr-2" />
+            Create New Grade
+          </Button>
+        </div>
       </div>
     </div>
 
