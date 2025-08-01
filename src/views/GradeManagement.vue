@@ -1722,7 +1722,6 @@ const getWidthMethodLabel = (method) => {
 const getZoneColor = (index) => {
   const colors = [
     'bg-red-200 border-red-400',
-    'bg-blue-200 border-blue-400',
     'bg-purple-200 border-purple-400',
     'bg-pink-200 border-pink-400',
     'bg-indigo-200 border-indigo-400',
