@@ -112,7 +112,7 @@
                     Live Scanning
                   </router-link>
                 </div>
-                    to="/shift-scheduler" 
+              </div>
               <button class="text-white hover:bg-primary/80 hover:text-white px-3 py-2 rounded-lg text-sm font-semibold flex items-center transition-all duration-200 hover:shadow-md">
                 Support
                 <ChevronDown class="w-4 h-4 ml-1" />
