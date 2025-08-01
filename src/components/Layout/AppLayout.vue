@@ -84,7 +84,7 @@
                   class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-2xl py-2 z-50 border border-slate-200 ring-1 ring-black/5"
                 >
                   <router-link
-                    to="/users"
+                    to="/user-management" 
                     class="block px-4 py-2 text-sm text-slate-700 hover:bg-primary/10 hover:text-primary transition-colors duration-150"
                     @click="showToolsMenu = false"
                   >
@@ -112,7 +112,7 @@
                     Live Scanning
                   </router-link>
                 </div>
-              </div>
+                    to="/shift-scheduler" 
               <button class="text-white hover:bg-primary/80 hover:text-white px-3 py-2 rounded-lg text-sm font-semibold flex items-center transition-all duration-200 hover:shadow-md">
                 Support
                 <ChevronDown class="w-4 h-4 ml-1" />
