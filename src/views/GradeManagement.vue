@@ -67,11 +67,75 @@
             getColorClasses(grade.color).border,
             'hover:' + getColorClasses(grade.color).bg
           ]"
+          @click="viewGradeDetails(grade)"
+            'bg-white rounded-lg border-2 p-6 hover:shadow-lg transition-all duration-200 cursor-pointer',
+            getColorClasses(grade.color).border,
+            'hover:' + getColorClasses(grade.color).bg
+          ]"
         >
           <!-- Card Header -->
           <div class="flex items-start justify-between mb-4">
             <div class="flex-1">
               <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ grade.name }}</h3>
+              <span :class="[
+                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                grade.isCustom ? 'bg-purple-100 text-purple-800' : getColorClasses(grade.color).badge
+              ]">
+                {{ grade.isCustom ? 'Custom' : 'Standard' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <p class="text-sm text-gray-600 mb-4">{{ grade.description }}</p>
+
+          <!-- Key Specifications -->
+          <div class="mb-4">
+            <h4 class="text-sm font-medium text-gray-900 mb-2">Key Specifications:</h4>
+            <ul class="space-y-1">
+              <li v-for="spec in grade.keySpecs" :key="spec" class="text-xs text-gray-600 flex items-start">
+                <span class="w-1 h-1 bg-gray-400 rounded-full mt-1.5 mr-2 flex-shrink-0"></span>
+                {{ spec }}
+              </li>
+            </ul>
+          </div>
+
+          <!-- Footer -->
+          <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+            <div class="flex items-center text-sm text-gray-500">
+              <Package class="w-4 h-4 mr-1" />
+              <span class="font-medium text-gray-900">{{ grade.usageCount }}</span> orders
+            </div>
+            <div class="flex items-center space-x-1">
+              <button 
+                @click.stop="viewGradeDetails(grade)"
+                class="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" 
+                title="View Details"
+              >
+                <Eye class="w-4 h-4" />
+              </button>
+              <button 
+                @click.stop="editGrade(grade)"
+                class="p-1.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded transition-colors" 
+                title="Edit Grade"
+              >
+                <Edit class="w-4 h-4" />
+              </button>
+              <button 
+                @click.stop="duplicateGrade(grade)"
+                class="p-1.5 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded transition-colors" 
+                title="Duplicate"
+              >
+                <Copy class="w-4 h-4" />
+              </button>
+              <button 
+                @click.stop="deleteGrade(grade)"
+                class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors" 
+                title="Delete"
+              >
+                <Trash2 class="w-4 h-4" />
+              </button>
+            </div>
               <span :class="[
                 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
                 getColorClasses(grade.color).badge
@@ -123,7 +187,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { Search, Plus, Eye, Edit, Copy, Trash2 } from 'lucide-vue-next'
+import { Search, Plus, Eye, Edit, Copy, Trash2, Package } from 'lucide-vue-next'
 
 // Loading state
 const isLoading = ref(false)
@@ -142,7 +206,8 @@ const gradeCards = ref([
       'Max defects: Minimal'
     ],
     usageCount: 24,
-    color: 'emerald'
+    color: 'emerald',
+    isCustom: false
   },
   {
     id: 2,
@@ -156,7 +221,8 @@ const gradeCards = ref([
       'Good for staining'
     ],
     usageCount: 18,
-    color: 'blue'
+    color: 'blue',
+    isCustom: false
   },
   {
     id: 3,
@@ -170,7 +236,8 @@ const gradeCards = ref([
       'Paint grade quality'
     ],
     usageCount: 32,
-    color: 'yellow'
+    color: 'yellow',
+    isCustom: false
   },
   {
     id: 4,
@@ -184,7 +251,8 @@ const gradeCards = ref([
       'Rustic appearance'
     ],
     usageCount: 15,
-    color: 'orange'
+    color: 'orange',
+    isCustom: false
   }
 ])
 
@@ -217,5 +285,26 @@ const getColorClasses = (color) => {
     }
   }
   return colorMap[color] || colorMap.emerald
+}
+
+// Interactive methods
+const viewGradeDetails = (grade) => {
+  console.log('Viewing details for:', grade.name)
+  // TODO: Navigate to grade details page or open modal
+}
+
+const editGrade = (grade) => {
+  console.log('Editing grade:', grade.name)
+  // TODO: Open edit modal or navigate to edit page
+}
+
+const duplicateGrade = (grade) => {
+  console.log('Duplicating grade:', grade.name)
+  // TODO: Create duplicate grade
+}
+
+const deleteGrade = (grade) => {
+  console.log('Deleting grade:', grade.name)
+  // TODO: Show confirmation dialog and delete
 }
 </script>
