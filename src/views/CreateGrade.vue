@@ -391,6 +391,11 @@
                           {{ getUnitForMetric(defect.metric) || 'Select metric first' }}
                         </div>
                       </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
