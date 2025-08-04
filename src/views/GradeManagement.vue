@@ -26,7 +26,7 @@
           </select>
           
           <!-- Create New Grade Button -->
-          <button class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors flex items-center">
+          <button @click="openCreateModal" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors flex items-center">
             <Plus class="w-4 h-4 mr-2" />
             Create New Grade
           </button>
@@ -148,15 +148,221 @@
         </div>
       </div>
     </div> <!-- /content -->
+
+    <!-- Grade Creation/Editing Modal -->
+    <div v-if="showModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <!-- Modal backdrop with blur effect -->
+      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 backdrop-blur-sm transition-opacity" aria-hidden="true" @click="closeModal"></div>
+
+        <!-- Modal panel -->
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+          <!-- Modal header -->
+          <div class="bg-white px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-medium text-gray-900" id="modal-title">
+                {{ isEditMode ? 'Edit Grade' : 'Create New Grade' }}
+              </h3>
+              <button @click="closeModal" class="text-gray-400 hover:text-gray-600 transition-colors">
+                <X class="w-6 h-6" />
+              </button>
+            </div>
+          </div>
+
+          <!-- Modal content -->
+          <div class="bg-white px-6 py-6">
+            <form @submit.prevent="saveGrade" class="space-y-6">
+              <!-- Basic Information -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label for="gradeName" class="block text-sm font-medium text-gray-700 mb-2">
+                    Grade Name *
+                  </label>
+                  <input
+                    id="gradeName"
+                    v-model="formData.name"
+                    type="text"
+                    required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    placeholder="Enter grade name"
+                  />
+                </div>
+
+                <div>
+                  <label for="gradeType" class="block text-sm font-medium text-gray-700 mb-2">
+                    Grade Type *
+                  </label>
+                  <select
+                    id="gradeType"
+                    v-model="formData.type"
+                    required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  >
+                    <option value="">Select grade type</option>
+                    <option value="Hardwood">Hardwood</option>
+                    <option value="Softwood">Softwood</option>
+                    <option value="Custom">Custom</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Description -->
+              <div>
+                <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  v-model="formData.description"
+                  rows="3"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  placeholder="Enter grade description"
+                ></textarea>
+              </div>
+
+              <!-- Specifications -->
+              <div>
+                <h4 class="text-lg font-medium text-gray-900 mb-4">Specifications</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label for="minWidth" class="block text-sm font-medium text-gray-700 mb-2">
+                      Minimum Width (inches)
+                    </label>
+                    <input
+                      id="minWidth"
+                      v-model="formData.specifications.minWidth"
+                      type="number"
+                      step="0.25"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                      placeholder="0"
+                    />
+                  </div>
+
+                  <div>
+                    <label for="minLength" class="block text-sm font-medium text-gray-700 mb-2">
+                      Minimum Length (feet)
+                    </label>
+                    <input
+                      id="minLength"
+                      v-model="formData.specifications.minLength"
+                      type="number"
+                      step="0.5"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                      placeholder="0"
+                    />
+                  </div>
+
+                  <div>
+                    <label for="clearFace" class="block text-sm font-medium text-gray-700 mb-2">
+                      Clear Face Percentage (%)
+                    </label>
+                    <input
+                      id="clearFace"
+                      v-model="formData.specifications.clearFace"
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="0.1"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                      placeholder="0"
+                    />
+                  </div>
+
+                  <div>
+                    <label for="maxDefects" class="block text-sm font-medium text-gray-700 mb-2">
+                      Maximum Defects
+                    </label>
+                    <input
+                      id="maxDefects"
+                      v-model="formData.specifications.maxDefects"
+                      type="text"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                      placeholder="e.g., Minimal, Few, Moderate"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Zone Drawing Canvas -->
+              <div>
+                <h4 class="text-lg font-medium text-gray-900 mb-4">Defect Zone Mapping</h4>
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center bg-gray-50">
+                  <div class="space-y-4">
+                    <div class="w-16 h-16 mx-auto bg-gray-200 rounded-lg flex items-center justify-center">
+                      <Palette class="w-8 h-8 text-gray-400" />
+                    </div>
+                    <div>
+                      <h5 class="text-sm font-medium text-gray-900">Interactive Zone Drawing</h5>
+                      <p class="text-sm text-gray-500 mt-1">
+                        Canvas for drawing acceptable defect zones will be implemented here
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                    >
+                      <Plus class="w-4 h-4 mr-2" />
+                      Add Zone
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Modal footer -->
+          <div class="bg-gray-50 px-6 py-4 flex items-center justify-end space-x-3">
+            <button
+              type="button"
+              @click="closeModal"
+              class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              @click="saveGrade"
+              :disabled="!isFormValid"
+              :class="[
+                'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                isFormValid
+                  ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              ]"
+            >
+              {{ isEditMode ? 'Update Grade' : 'Create Grade' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div> <!-- /root -->
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { Search, Plus, Eye, Edit, Copy, Trash2, Package } from 'lucide-vue-next'
+import { ref, computed } from 'vue'
+import { Search, Plus, Eye, Edit, Copy, Trash2, Package, X, Palette } from 'lucide-vue-next'
 
 // Loading state
 const isLoading = ref(false)
+
+// Modal state
+const showModal = ref(false)
+const isEditMode = ref(false)
+const editingGradeId = ref(null)
+
+// Form data
+const formData = ref({
+  name: '',
+  type: '',
+  description: '',
+  specifications: {
+    minWidth: '',
+    minLength: '',
+    clearFace: '',
+    maxDefects: ''
+  }
+})
 
 // Sample American Hardwood grades data
 const gradeCards = ref([
@@ -277,6 +483,98 @@ const getColorClasses = (color) => {
   return colorMap[color] || colorMap.emerald
 }
 
+// Form validation
+const isFormValid = computed(() => {
+  return formData.value.name.trim() !== '' && formData.value.type !== ''
+})
+
+// Modal methods
+const openCreateModal = () => {
+  isEditMode.value = false
+  editingGradeId.value = null
+  resetForm()
+  showModal.value = true
+}
+
+const openEditModal = (grade) => {
+  isEditMode.value = true
+  editingGradeId.value = grade.id
+  formData.value = {
+    name: grade.name,
+    type: grade.type,
+    description: grade.description,
+    specifications: {
+      minWidth: grade.keySpecs[0]?.split(': ')[1]?.replace(' inches', '') || '',
+      minLength: grade.keySpecs[1]?.split(': ')[1]?.replace(' feet', '') || '',
+      clearFace: grade.keySpecs[2]?.split(': ')[1]?.replace('%', '') || '',
+      maxDefects: grade.keySpecs[3]?.split(': ')[1] || ''
+    }
+  }
+  showModal.value = true
+}
+
+const closeModal = () => {
+  showModal.value = false
+  resetForm()
+}
+
+const resetForm = () => {
+  formData.value = {
+    name: '',
+    type: '',
+    description: '',
+    specifications: {
+      minWidth: '',
+      minLength: '',
+      clearFace: '',
+      maxDefects: ''
+    }
+  }
+}
+
+const saveGrade = () => {
+  if (!isFormValid.value) return
+  
+  if (isEditMode.value) {
+    // Update existing grade
+    const gradeIndex = gradeCards.value.findIndex(g => g.id === editingGradeId.value)
+    if (gradeIndex !== -1) {
+      gradeCards.value[gradeIndex] = {
+        ...gradeCards.value[gradeIndex],
+        name: formData.value.name,
+        type: formData.value.type,
+        description: formData.value.description,
+        keySpecs: [
+          `Min width: ${formData.value.specifications.minWidth} inches`,
+          `Min length: ${formData.value.specifications.minLength} feet`,
+          `Clear face: ${formData.value.specifications.clearFace}%`,
+          `Max defects: ${formData.value.specifications.maxDefects}`
+        ]
+      }
+    }
+  } else {
+    // Create new grade
+    const newGrade = {
+      id: Date.now(),
+      name: formData.value.name,
+      type: formData.value.type,
+      description: formData.value.description,
+      keySpecs: [
+        `Min width: ${formData.value.specifications.minWidth} inches`,
+        `Min length: ${formData.value.specifications.minLength} feet`,
+        `Clear face: ${formData.value.specifications.clearFace}%`,
+        `Max defects: ${formData.value.specifications.maxDefects}`
+      ],
+      usageCount: 0,
+      color: 'emerald',
+      isCustom: formData.value.type === 'Custom'
+    }
+    gradeCards.value.push(newGrade)
+  }
+  
+  closeModal()
+}
+
 // Interactive methods
 const viewGradeDetails = (grade) => {
   console.log('Viewing details for:', grade.name)
@@ -285,7 +583,7 @@ const viewGradeDetails = (grade) => {
 
 const editGrade = (grade) => {
   console.log('Editing grade:', grade.name)
-  // TODO: Open edit modal or navigate to edit page
+  openEditModal(grade)
 }
 
 const duplicateGrade = (grade) => {
