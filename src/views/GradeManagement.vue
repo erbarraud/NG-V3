@@ -385,11 +385,114 @@
       </div>
     </div>
   </div> <!-- /root -->
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="delete-modal-title" role="dialog" aria-modal="true">
+      <!-- Modal backdrop -->
+      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 backdrop-blur-sm transition-opacity" aria-hidden="true" @click="closeDeleteModal"></div>
+
+        <!-- Modal panel -->
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+          <!-- Modal header -->
+          <div class="bg-white px-6 py-4">
+            <div class="flex items-center">
+              <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                <AlertTriangle class="h-6 w-6 text-red-600" />
+              </div>
+              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                <h3 class="text-lg leading-6 font-medium text-gray-900" id="delete-modal-title">
+                  Delete Grade
+                </h3>
+                <div class="mt-2">
+                  <p class="text-sm text-gray-500">
+                    Are you sure you want to delete "{{ gradeToDelete?.name }}"?
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal content -->
+          <div class="bg-white px-6 py-4">
+            <!-- Warning for grades in use -->
+            <div v-if="gradeToDelete && gradeToDelete.usageCount > 0" class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <div class="flex">
+                <AlertTriangle class="h-5 w-5 text-yellow-400 mr-2 mt-0.5" />
+                <div>
+                  <h4 class="text-sm font-medium text-yellow-800">Warning: Grade Currently in Use</h4>
+                  <p class="text-sm text-yellow-700 mt-1">
+                    This grade is currently used in {{ gradeToDelete.usageCount }} order(s). 
+                    Deleting it may affect existing production orders and historical data.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Safe deletion message -->
+            <div v-else class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div class="flex">
+                <CheckCircle class="h-5 w-5 text-green-400 mr-2 mt-0.5" />
+                <div>
+                  <h4 class="text-sm font-medium text-green-800">Safe to Delete</h4>
+                  <p class="text-sm text-green-700 mt-1">
+                    This grade is not currently used in any orders and can be safely deleted.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <p class="text-sm text-gray-600">
+              This action cannot be undone. All grade specifications and zone mappings will be permanently removed.
+            </p>
+          </div>
+
+          <!-- Modal footer -->
+          <div class="bg-gray-50 px-6 py-4 flex items-center justify-end space-x-3">
+            <button
+              type="button"
+              @click="closeDeleteModal"
+              class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              @click="confirmDelete"
+              :class="[
+                'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                gradeToDelete && gradeToDelete.usageCount > 0
+                  ? 'bg-yellow-600 text-white hover:bg-yellow-700'
+                  : 'bg-red-600 text-white hover:bg-red-700'
+              ]"
+            >
+              {{ gradeToDelete && gradeToDelete.usageCount > 0 ? 'Delete Anyway' : 'Delete Grade' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div v-if="showMessage" class="fixed top-4 right-4 z-50">
+      <div :class="[
+        'px-4 py-3 rounded-lg shadow-lg border flex items-center space-x-3 transition-all duration-300',
+        messageType === 'success' 
+          ? 'bg-green-50 border-green-200 text-green-800' 
+          : 'bg-red-50 border-red-200 text-red-800'
+      ]">
+        <CheckCircle v-if="messageType === 'success'" class="h-5 w-5 text-green-600" />
+        <AlertTriangle v-else class="h-5 w-5 text-red-600" />
+        <span class="text-sm font-medium">{{ messageText }}</span>
+        <button @click="hideMessage" class="text-gray-400 hover:text-gray-600">
+          <X class="h-4 w-4" />
+        </button>
+      </div>
+    </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import { Search, Plus, Eye, Edit, Copy, Trash2, Package, X, Palette } from 'lucide-vue-next'
+import { Search, Plus, Eye, Edit, Copy, Trash2, Package, X, Palette, AlertTriangle, CheckCircle } from 'lucide-vue-next'
 
 // Canvas and zones state
 const zones = ref([])
@@ -402,8 +505,15 @@ const isLoading = ref(false)
 
 // Modal state
 const showModal = ref(false)
+const showDeleteModal = ref(false)
+const gradeToDelete = ref(null)
 const isEditMode = ref(false)
 const editingGradeId = ref(null)
+
+// Message state
+const showMessage = ref(false)
+const messageType = ref('success') // 'success' or 'error'
+const messageText = ref('')
 
 // Form data
 const formData = ref({
@@ -863,8 +973,57 @@ const getOrdersUsingGrade = (grade) => {
     loadLumberBackground()
     loadExistingZones()
   }
+  gradeToDelete.value = grade
+  showDeleteModal.value = true
 }
-  // TODO: Show confirmation dialog and delete
+
+const closeDeleteModal = () => {
+  showDeleteModal.value = false
+  gradeToDelete.value = null
+}
+
+const confirmDelete = () => {
+  if (!gradeToDelete.value) return
+  
+  try {
+    // Find and remove the grade
+    const gradeIndex = gradeCards.value.findIndex(g => g.id === gradeToDelete.value.id)
+    if (gradeIndex !== -1) {
+      gradeCards.value.splice(gradeIndex, 1)
+      showSuccessMessage(`Grade "${gradeToDelete.value.name}" has been deleted successfully.`)
+    } else {
+      showErrorMessage('Grade not found. It may have already been deleted.')
+    }
+  } catch (error) {
+    console.error('Error deleting grade:', error)
+    showErrorMessage('Failed to delete grade. Please try again.')
+  }
+  
+  closeDeleteModal()
+}
+
+// Message methods
+const showSuccessMessage = (text) => {
+  messageType.value = 'success'
+  messageText.value = text
+  showMessage.value = true
+  setTimeout(() => {
+    hideMessage()
+  }, 5000)
+}
+
+const showErrorMessage = (text) => {
+  messageType.value = 'error'
+  messageText.value = text
+  showMessage.value = true
+  setTimeout(() => {
+    hideMessage()
+  }, 5000)
+}
+
+const hideMessage = () => {
+  showMessage.value = false
+  messageText.value = ''
 const clearZones = () => {
   zones.value = []
   if (fabricCanvas.value) {
