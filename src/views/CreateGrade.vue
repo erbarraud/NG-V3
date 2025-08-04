@@ -595,6 +595,97 @@ const getColorName = (color) => {
   return colorOption ? colorOption.name : 'Emerald'
 }
 
+// Zone management methods
+const addZone = () => {
+  const zoneColors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple']
+  const colorIndex = formData.value.zones.length % zoneColors.length
+  
+  const newZone = {
+    id: Date.now(),
+    name: `Zone ${formData.value.zones.length + 1}`,
+    type: 'acceptable',
+    color: zoneColors[colorIndex],
+    allowedDefects: []
+  }
+  
+  formData.value.zones.push(newZone)
+}
+
+const removeZone = (index) => {
+  formData.value.zones.splice(index, 1)
+}
+
+const getZoneColorClass = (color) => {
+  const colorMap = {
+    red: 'bg-red-500 border-red-600',
+    orange: 'bg-orange-500 border-orange-600',
+    yellow: 'bg-yellow-500 border-yellow-600',
+    green: 'bg-green-500 border-green-600',
+    blue: 'bg-blue-500 border-blue-600',
+    purple: 'bg-purple-500 border-purple-600'
+  }
+  return colorMap[color] || 'bg-gray-500 border-gray-600'
+}
+
+const applyZoneTemplate = (templateType) => {
+  switch (templateType) {
+    case 'standard':
+      formData.value.zones = [
+        {
+          id: Date.now(),
+          name: 'Clear Center Zone',
+          type: 'restricted',
+          color: 'green',
+          allowedDefects: []
+        },
+        {
+          id: Date.now() + 1,
+          name: 'Edge Utility Zone',
+          type: 'utility',
+          color: 'yellow',
+          allowedDefects: ['wane', 'checks', 'splits']
+        }
+      ]
+      break
+    case 'premium':
+      formData.value.zones = [
+        {
+          id: Date.now(),
+          name: 'Premium Clear Zone',
+          type: 'restricted',
+          color: 'green',
+          allowedDefects: []
+        },
+        {
+          id: Date.now() + 1,
+          name: 'Minor Defect Zone',
+          type: 'limited',
+          color: 'blue',
+          allowedDefects: ['stain']
+        }
+      ]
+      break
+    case 'utility':
+      formData.value.zones = [
+        {
+          id: Date.now(),
+          name: 'Primary Zone',
+          type: 'acceptable',
+          color: 'orange',
+          allowedDefects: ['knots', 'stain', 'checks']
+        },
+        {
+          id: Date.now() + 1,
+          name: 'Secondary Zone',
+          type: 'utility',
+          color: 'red',
+          allowedDefects: ['knots', 'splits', 'wane', 'stain', 'pitch', 'shake', 'checks', 'holes']
+        }
+      ]
+      break
+  }
+}
+
 // Save grade
 const saveGrade = () => {
   if (!isFormValid.value) return
