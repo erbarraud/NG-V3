@@ -330,7 +330,7 @@
             <!-- Defect Cards for Active Category -->
             <div class="space-y-4">
               <div
-                v-for="defect in getCurrentCategoryDefects()"
+                v-for="defect in getCurrentCategoryDefects(activeDefectCategory)"
                 :key="defect.id"
                 class="border border-gray-200 rounded-lg p-6"
               >
