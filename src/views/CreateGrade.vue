@@ -330,7 +330,7 @@
             <!-- Defect Cards for Active Category -->
             <div class="space-y-6">
               <div
-                v-for="defect in getCurrentCategoryDefects(activeDefectCategory)"
+                v-for="defect in getCategoryDefects(activeDefectCategory)"
                 :key="defect.id"
                 class="border border-gray-200 rounded-lg overflow-hidden"
               >
@@ -1044,7 +1044,21 @@ const allDefectTypes = ref([
 
 // Use composables
 const { gradeForm, validationErrors, isFormValid, resetForm } = useGradeForm()
-const { defectRules, getUnitForMetric, getCurrentCategoryDefects, getEnabledDefectsCount } = useDefectRules()
+const { 
+  defectCategories: defectCategoriesData, 
+  aggregationOptions, 
+  referenceOptions,
+  getMetricOptions,
+  getUnitForMetric,
+  getCurrentCategoryName,
+  getCurrentCategoryDefects,
+  getEnabledDefectsCount,
+  enableAllInCategory,
+  disableAllInCategory,
+  enableAllDefects,
+  disableAllDefects,
+  getAllEnabledDefects
+} = useDefectRules()
 const { addZone, removeZone, getZoneColorClass, getZoneStyle } = useZoneManager(gradeForm)
 
 // Helper methods
@@ -1057,6 +1071,18 @@ const getFaceGradingLabel = (option) => {
   return labels[option] || 'Not selected'
 }
 
+// Helper method to get category defects with proper mapping
+const getCategoryDefects = (categoryId) => {
+  const categoryMap = {
+    'knots': 'knots',
+    'cracks': 'cracksAndSplits', 
+    'surface': 'surfaceDefects',
+    'holes': 'holes',
+    'other': 'otherDefects'
+  }
+  const mappedKey = categoryMap[categoryId]
+  return getCurrentCategoryDefects(mappedKey)
+}
 const saveGrade = async () => {
   if (!isFormValid.value) return
   
