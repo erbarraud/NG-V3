@@ -150,13 +150,14 @@
     </div> <!-- /content -->
 
     <!-- Grade Creation/Editing Modal -->
-    <div v-if="showModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <Teleport to="body">
+      <div v-if="showModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
       <!-- Modal backdrop with blur effect -->
       <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 backdrop-blur-sm transition-opacity" aria-hidden="true" @click="closeModal"></div>
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" @click="closeModal"></div>
 
         <!-- Modal panel -->
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full max-h-screen overflow-y-auto">
           <!-- Modal header -->
           <div class="bg-white px-6 py-4 border-b border-gray-200">
             <div class="flex items-center justify-between">
@@ -283,78 +284,6 @@
                 </div>
               </div>
 
-              <!-- Zone Drawing Canvas -->
-              <div>
-                <h4 class="text-lg font-medium text-gray-900 mb-4">Defect Zone Mapping</h4>
-                <div class="space-y-4">
-                  <!-- Canvas Tools -->
-                  <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
-                    <div class="flex items-center space-x-4">
-                      <button
-                        type="button"
-                        @click="addZone"
-                        class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-                      >
-                        <Plus class="w-4 h-4 mr-2" />
-                        Add Zone
-                      </button>
-                      <button
-                        type="button"
-                        @click="clearZones"
-                        class="inline-flex items-center px-3 py-2 border border-red-300 rounded-lg text-sm font-medium text-red-700 bg-white hover:bg-red-50 transition-colors"
-                      >
-                        Clear All
-                      </button>
-                    </div>
-                    <div class="text-sm text-gray-600">
-                      Zones: {{ zones.length }}
-                    </div>
-                  </div>
-                  
-                  <!-- Canvas Container -->
-                  <div 
-                    ref="canvasContainer"
-                    class="border-2 border-gray-300 rounded-lg bg-white relative overflow-hidden"
-                    style="height: 400px;"
-                  >
-                    <canvas 
-                      ref="canvas"
-                      id="zoneCanvas"
-                      class="absolute inset-0"
-                    ></canvas>
-                  </div>
-                  
-                  <!-- Zone List -->
-                  <div v-if="zones.length > 0" class="space-y-2">
-                    <h5 class="text-sm font-medium text-gray-900">Defined Zones:</h5>
-                    <div class="space-y-2 max-h-32 overflow-y-auto">
-                      <div 
-                        v-for="(zone, index) in zones" 
-                        :key="index"
-                        class="flex items-center justify-between p-2 bg-gray-50 rounded border text-sm"
-                      >
-                        <div class="flex items-center space-x-3">
-                          <div 
-                            class="w-4 h-4 rounded border"
-                            :style="{ backgroundColor: zone.fill }"
-                          ></div>
-                          <span class="font-medium">{{ zone.label }}</span>
-                          <span class="text-gray-500">
-                            {{ Math.round(zone.width) }}×{{ Math.round(zone.height) }}
-                          </span>
-                        </div>
-                        <button
-                          type="button"
-                          @click="removeZone(index)"
-                          class="text-red-600 hover:text-red-800 p-1"
-                        >
-                          <X class="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </form>
           </div>
 
@@ -383,7 +312,8 @@
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </Teleport>
   </div> <!-- /root -->
     <!-- Delete Confirmation Modal -->
     <div v-if="showDeleteModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="delete-modal-title" role="dialog" aria-modal="true">
@@ -491,7 +421,7 @@
 </template>
 
 <script setup>
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, nextTick, Teleport } from 'vue'
 import { Search, Plus, Eye, Edit, Copy, Trash2, Package, X, Palette, AlertTriangle, CheckCircle } from 'lucide-vue-next'
 
 // Canvas and zones state
@@ -658,12 +588,6 @@ const openCreateModal = () => {
   editingGradeId.value = null
   resetForm()
   showModal.value = true
-  
-  nextTick(() => {
-    if (canvas.value && canvasContainer.value) {
-      initializeCanvas()
-    }
-  })
 }
 
 const openEditModal = (grade) => {
@@ -680,14 +604,7 @@ const openEditModal = (grade) => {
       maxDefects: grade.keySpecs[3]?.split(': ')[1] || ''
     }
   }
-  zones.value = []
   showModal.value = true
-  
-  nextTick(() => {
-    if (canvas.value && canvasContainer.value) {
-      initializeCanvas()
-    }
-  })
 }
 
 const closeModal = () => {
@@ -707,7 +624,6 @@ const resetForm = () => {
       maxDefects: ''
     }
   }
-  zones.value = []
 }
 
 const saveGrade = () => {
