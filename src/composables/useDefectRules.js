@@ -110,40 +110,6 @@ export function useDefectRules() {
   }
 
   // Aggregation options
-  const aggregationOptions = [
-    { title: 'Maximum', value: 'maximum' },
-    { title: 'Sum', value: 'sum' },
-    { title: 'Average', value: 'average' },
-    { title: 'Count per Linear Meter', value: 'countPerLinearMeter' }
-  ]
-
-  // Reference type options
-  const referenceOptions = [
-    { title: 'Fixed Value', value: 'fixed' },
-    { title: '% of Board Width', value: 'percentBoardWidth' },
-    { title: '% of Board Surface', value: 'percentBoardSurface' }
-  ]
-
-  // Get all defect types for clustering and zones
-  const getAllDefectTypes = computed(() => {
-    const allDefects = []
-    Object.values(defectCategories.value).forEach(category => {
-      category.defects.forEach(defect => {
-        allDefects.push({
-          value: defect.id,
-          label: defect.name
-        })
-      })
-    })
-    return allDefects
-  })
-
-  // Get current category name
-  const getCurrentCategoryName = (categoryKey) => {
-    return defectCategories.value[categoryKey]?.name || ''
-  }
-
-  // Get defects for current category
   const getCurrentCategoryDefects = (categoryKey) => {
     return defectCategories.value[categoryKey]?.defects || []
   }
@@ -195,21 +161,36 @@ export function useDefectRules() {
     return enabledDefects
   }
   return {
+  // Aggregation options
+  const aggregationOptions = [
+    { title: 'Maximum', value: 'maximum' },
+    { title: 'Sum', value: 'sum' },
+    { title: 'Average', value: 'average' },
+    { title: 'Count per Linear Meter', value: 'countPerLinearMeter' }
+  ]
+
+  // Reference type options
+  const referenceOptions = [
+    { title: 'Fixed Value', value: 'fixed' },
+    { title: '% of Board Width', value: 'percentBoardWidth' },
+    { title: '% of Board Surface', value: 'percentBoardSurface' }
+  ]
+
     defectCategories,
     getMetricOptions,
     getUnitForMetric,
     getCurrentCategoryDefects,
     getCurrentCategoryName,
     getEnabledDefectsCount,
-    aggregationOptions,
-    referenceOptions,
-    getAllDefectTypes,
     getCurrentCategoryName,
     getCurrentCategoryDefects,
+    getEnabledDefectsCount,
     enableAllInCategory,
     disableAllInCategory,
     enableAllDefects,
     disableAllDefects,
-    getAllEnabledDefects
+    getAllEnabledDefects,
+    aggregationOptions,
+    referenceOptions
   }
 }
