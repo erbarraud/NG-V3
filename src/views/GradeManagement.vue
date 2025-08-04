@@ -810,6 +810,52 @@ const addZone = () => {
   console.log('Deleting grade:', grade.name)
 const removeZone = (index) => {
   zones.value.splice(index, 1)
+
+// Usage tracking methods
+const getTotalVolume = (grade) => {
+  return grade?.totalVolume || '0 bf'
+}
+
+const getLastUsedDate = (grade) => {
+  if (!grade?.lastUsed) return 'Never'
+  const date = new Date(grade.lastUsed)
+  return date.toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: 'numeric', 
+    year: 'numeric' 
+  })
+}
+
+const getOrdersUsingGrade = (grade) => {
+  if (!grade) return []
+  
+  // Mock data for orders using this grade
+  const mockOrders = [
+    {
+      id: 'ORD-20250115-001',
+      customer: 'Johnson Lumber Co.',
+      volume: '2,400 bf',
+      date: 'Jan 15, 2025',
+      status: 'Completed'
+    },
+    {
+      id: 'ORD-20250112-003',
+      customer: 'Premium Hardwoods',
+      volume: '1,800 bf',
+      date: 'Jan 12, 2025',
+      status: 'Completed'
+    },
+    {
+      id: 'ORD-20250118-002',
+      customer: 'Cabinet Masters',
+      volume: '3,200 bf',
+      date: 'Jan 18, 2025',
+      status: 'Running'
+    }
+  ]
+  
+  return mockOrders.slice(0, Math.min(grade.usageCount, 10))
+}
   
   // Rebuild canvas
   if (fabricCanvas.value) {
