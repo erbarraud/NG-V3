@@ -1024,8 +1024,6 @@ const showErrorMessage = (text) => {
 const hideMessage = () => {
   showMessage.value = false
   messageText.value = ''
-const clearZones = () => {
-  zones.value = []
   if (fabricCanvas.value) {
     fabricCanvas.value.clear()
     loadLumberBackground()
