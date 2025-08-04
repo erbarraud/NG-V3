@@ -14,6 +14,7 @@ import ShiftScheduler from '../views/ShiftScheduler.vue'
 import UserManagement from '../views/UserManagement.vue'
 import ClaimsManagement from '../views/ClaimsManagement.vue'
 import GradeManagement from '../views/GradeManagement.vue'
+import CreateGrade from '../views/CreateGrade.vue'
 import NotFound from '../views/error/NotFound.vue'
 import ServerError from '../views/error/ServerError.vue'
 import NetworkError from '../views/error/NetworkError.vue'
@@ -95,6 +96,11 @@ const routes = [
     path: '/grade-management',
     name: 'GradeManagement',
     component: GradeManagement
+  },
+  {
+    path: '/grade-management/create',
+    name: 'CreateGrade',
+    component: CreateGrade
   },
   {
     path: '/error/server',

@@ -26,10 +26,10 @@
           </select>
           
           <!-- Create New Grade Button -->
-          <button @click="openCreateModal" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors flex items-center">
+          <router-link to="/grade-management/create" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors flex items-center">
             <Plus class="w-4 h-4 mr-2" />
             Create New Grade
-          </button>
+          </router-link>
         </div>
       </div>
     </div> <!-- /header -->
@@ -422,7 +422,10 @@
 
 <script setup>
 import { ref, computed, nextTick, Teleport } from 'vue'
+import { useRouter } from 'vue-router'
 import { Search, Plus, Eye, Edit, Copy, Trash2, Package, X, Palette, AlertTriangle, CheckCircle } from 'lucide-vue-next'
+
+const router = useRouter()
 
 // Canvas and zones state
 const zones = ref([])
@@ -583,30 +586,6 @@ const isFormValid = computed(() => {
 })
 
 // Modal methods
-const openCreateModal = () => {
-  isEditMode.value = false
-  editingGradeId.value = null
-  resetForm()
-  showModal.value = true
-}
-
-const openEditModal = (grade) => {
-  isEditMode.value = true
-  editingGradeId.value = grade.id
-  formData.value = {
-    name: grade.name,
-    type: grade.type,
-    description: grade.description,
-    specifications: {
-      minWidth: grade.keySpecs[0]?.split(': ')[1]?.replace(' inches', '') || '',
-      minLength: grade.keySpecs[1]?.split(': ')[1]?.replace(' feet', '') || '',
-      clearFace: grade.keySpecs[2]?.split(': ')[1]?.replace('%', '') || '',
-      maxDefects: grade.keySpecs[3]?.split(': ')[1] || ''
-    }
-  }
-  showModal.value = true
-}
-
 const closeModal = () => {
   showModal.value = false
   resetForm()
@@ -678,7 +657,7 @@ const viewGradeDetails = (grade) => {
 
 const editGrade = (grade) => {
   console.log('Editing grade:', grade.name)
-  openEditModal(grade)
+  router.push(`/grade-management/create?edit=true&id=${grade.id}`)
 }
 
 const duplicateGrade = (grade) => {
