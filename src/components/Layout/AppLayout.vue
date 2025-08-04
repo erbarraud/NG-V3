@@ -111,6 +111,13 @@
                   >
                     Live Scanning
                   </router-link>
+                  <router-link
+                    to="/grades"
+                    class="block px-4 py-2 text-sm text-slate-700 hover:bg-primary/10 hover:text-primary transition-colors duration-150"
+                    @click="showToolsMenu = false"
+                  >
+                    Grade Management
+                  </router-link>
                 </div>
               </div>
               <button class="text-white hover:bg-primary/80 hover:text-white px-3 py-2 rounded-lg text-sm font-semibold flex items-center transition-all duration-200 hover:shadow-md">
