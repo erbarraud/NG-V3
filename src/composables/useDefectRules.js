@@ -138,16 +138,78 @@ export function useDefectRules() {
     return allDefects
   })
 
+  // Get current category name
+  const getCurrentCategoryName = (categoryKey) => {
+    return defectCategories.value[categoryKey]?.name || ''
+  }
+
+  // Get defects for current category
+  const getCurrentCategoryDefects = (categoryKey) => {
+    return defectCategories.value[categoryKey]?.defects || []
+  }
+
+  // Enable all defects in a category
+  const enableAllInCategory = (categoryKey) => {
+    const category = defectCategories.value[categoryKey]
+    if (category) {
+      category.defects.forEach(defect => {
+        defect.enabled = true
+      })
+    }
+  }
+
+  // Disable all defects in a category
+  const disableAllInCategory = (categoryKey) => {
+    const category = defectCategories.value[categoryKey]
+    if (category) {
+      category.defects.forEach(defect => {
+        defect.enabled = false
+      })
+    }
+  }
+
+  // Enable all defects
+  const enableAllDefects = () => {
+    Object.keys(defectCategories.value).forEach(key => {
+      enableAllInCategory(key)
+    })
+  }
+
+  // Disable all defects
+  const disableAllDefects = () => {
+    Object.keys(defectCategories.value).forEach(key => {
+      disableAllInCategory(key)
+    })
+  }
+
+  // Get all enabled defects across all categories
+  const getAllEnabledDefects = () => {
+    const enabledDefects = []
+    Object.values(defectCategories.value).forEach(category => {
+      category.defects.forEach(defect => {
+        if (defect.enabled) {
+          enabledDefects.push(defect)
+        }
+      })
+    })
+    return enabledDefects
+  }
   return {
     defectCategories,
     getMetricOptions,
     getUnitForMetric,
     getCurrentCategoryDefects,
     getCurrentCategoryName,
-    getEnabledDefectsInCategory,
     getEnabledDefectsCount,
     aggregationOptions,
     referenceOptions,
-    getAllDefectTypes
+    getAllDefectTypes,
+    getCurrentCategoryName,
+    getCurrentCategoryDefects,
+    enableAllInCategory,
+    disableAllInCategory,
+    enableAllDefects,
+    disableAllDefects,
+    getAllEnabledDefects
   }
 }
