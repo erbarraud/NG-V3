@@ -122,8 +122,6 @@
 </template>
 
 <script setup>
-import { Search, Plus } from 'lucide-vue-next'
-
 import { ref } from 'vue'
 import { Search, Plus, Eye, Edit, Copy, Trash2 } from 'lucide-vue-next'
 
