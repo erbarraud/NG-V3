@@ -377,7 +377,7 @@
                             :key="metric"
                             :value="metric"
                           >
-                            {{ metric.charAt(0).toUpperCase() + metric.slice(1) }}
+                            {{ formatMetric(metric) }}
                           </option>
                         </select>
                       </div>
@@ -1084,6 +1084,14 @@ const getCategoryDefects = (categoryId) => {
   return getCurrentCategoryDefects(mappedKey)
 }
 const saveGrade = async () => {
+// Helper method to format metric display
+const formatMetric = (metric) => {
+  if (typeof metric === 'string') {
+    return metric.charAt(0).toUpperCase() + metric.slice(1)
+  }
+  return metric?.title || metric?.value || ''
+}
+
   if (!isFormValid.value) return
   
   isSaving.value = true

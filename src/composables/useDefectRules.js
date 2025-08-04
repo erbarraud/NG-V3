@@ -72,29 +72,22 @@ export function useDefectRules() {
 
   // Get metric options based on defect type
   const getMetricOptions = (defectId) => {
-    const options = [
-      { title: 'Diameter', value: 'diameter' },
-      { title: 'Length', value: 'length' },
-      { title: 'Width', value: 'width' },
-      { title: 'Area', value: 'area' },
-      { title: 'Count', value: 'count' },
-      { title: 'Presence', value: 'presence' }
-    ]
+    const options = ['diameter', 'length', 'width', 'area', 'count', 'presence']
 
     if (defectId.includes('knot')) {
-      return options.filter(o => ['diameter', 'count', 'area'].includes(o.value))
+      return options.filter(o => ['diameter', 'count', 'area'].includes(o))
     } else if (defectId.includes('stain') || defectId.includes('mold')) {
-      return options.filter(o => ['area', 'length', 'width'].includes(o.value))
+      return options.filter(o => ['area', 'length', 'width'].includes(o))
     } else if (defectId.includes('split') || defectId.includes('check') || defectId.includes('shake')) {
-      return options.filter(o => ['length', 'count'].includes(o.value))
+      return options.filter(o => ['length', 'count'].includes(o))
     } else if (defectId.includes('hole')) {
-      return options.filter(o => ['diameter', 'count', 'area'].includes(o.value))
+      return options.filter(o => ['diameter', 'count', 'area'].includes(o))
     } else if (defectId === 'pith') {
-      return options.filter(o => o.value === 'presence')
+      return options.filter(o => o === 'presence')
     } else if (defectId === 'wane') {
-      return options.filter(o => ['length', 'width'].includes(o.value))
+      return options.filter(o => ['length', 'width'].includes(o))
     }
-    return options.filter(o => ['area', 'count', 'length'].includes(o.value))
+    return options.filter(o => ['area', 'count', 'length'].includes(o))
   }
 
   // Get unit based on metric
