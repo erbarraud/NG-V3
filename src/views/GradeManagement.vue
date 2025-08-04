@@ -286,24 +286,72 @@
               <!-- Zone Drawing Canvas -->
               <div>
                 <h4 class="text-lg font-medium text-gray-900 mb-4">Defect Zone Mapping</h4>
-                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center bg-gray-50">
-                  <div class="space-y-4">
-                    <div class="w-16 h-16 mx-auto bg-gray-200 rounded-lg flex items-center justify-center">
-                      <Palette class="w-8 h-8 text-gray-400" />
+                <div class="space-y-4">
+                  <!-- Canvas Tools -->
+                  <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
+                    <div class="flex items-center space-x-4">
+                      <button
+                        type="button"
+                        @click="addZone"
+                        class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                      >
+                        <Plus class="w-4 h-4 mr-2" />
+                        Add Zone
+                      </button>
+                      <button
+                        type="button"
+                        @click="clearZones"
+                        class="inline-flex items-center px-3 py-2 border border-red-300 rounded-lg text-sm font-medium text-red-700 bg-white hover:bg-red-50 transition-colors"
+                      >
+                        Clear All
+                      </button>
                     </div>
-                    <div>
-                      <h5 class="text-sm font-medium text-gray-900">Interactive Zone Drawing</h5>
-                      <p class="text-sm text-gray-500 mt-1">
-                        Canvas for drawing acceptable defect zones will be implemented here
-                      </p>
+                    <div class="text-sm text-gray-600">
+                      Zones: {{ zones.length }}
                     </div>
-                    <button
-                      type="button"
-                      class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-                    >
-                      <Plus class="w-4 h-4 mr-2" />
-                      Add Zone
-                    </button>
+                  </div>
+                  
+                  <!-- Canvas Container -->
+                  <div 
+                    ref="canvasContainer"
+                    class="border-2 border-gray-300 rounded-lg bg-white relative overflow-hidden"
+                    style="height: 400px;"
+                  >
+                    <canvas 
+                      ref="canvas"
+                      id="zoneCanvas"
+                      class="absolute inset-0"
+                    ></canvas>
+                  </div>
+                  
+                  <!-- Zone List -->
+                  <div v-if="zones.length > 0" class="space-y-2">
+                    <h5 class="text-sm font-medium text-gray-900">Defined Zones:</h5>
+                    <div class="space-y-2 max-h-32 overflow-y-auto">
+                      <div 
+                        v-for="(zone, index) in zones" 
+                        :key="index"
+                        class="flex items-center justify-between p-2 bg-gray-50 rounded border text-sm"
+                      >
+                        <div class="flex items-center space-x-3">
+                          <div 
+                            class="w-4 h-4 rounded border"
+                            :style="{ backgroundColor: zone.fill }"
+                          ></div>
+                          <span class="font-medium">{{ zone.label }}</span>
+                          <span class="text-gray-500">
+                            {{ Math.round(zone.width) }}×{{ Math.round(zone.height) }}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          @click="removeZone(index)"
+                          class="text-red-600 hover:text-red-800 p-1"
+                        >
+                          <X class="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -508,13 +556,23 @@ const openEditModal = (grade) => {
       minLength: grade.keySpecs[1]?.split(': ')[1]?.replace(' feet', '') || '',
       clearFace: grade.keySpecs[2]?.split(': ')[1]?.replace('%', '') || '',
       maxDefects: grade.keySpecs[3]?.split(': ')[1] || ''
-    }
+    },
+    zones: grade.zones || []
   }
+  zones.value = [...(grade.zones || [])]
   showModal.value = true
+  
+  nextTick(() => {
+    initializeCanvas()
+  })
 }
 
 const closeModal = () => {
   showModal.value = false
+  if (fabricCanvas.value) {
+    fabricCanvas.value.dispose()
+    fabricCanvas.value = null
+  }
   resetForm()
 }
 
@@ -528,12 +586,21 @@ const resetForm = () => {
       minLength: '',
       clearFace: '',
       maxDefects: ''
-    }
+    },
+    zones: []
+  }
+  zones.value = []
+  if (fabricCanvas.value) {
+    fabricCanvas.value.clear()
+    loadLumberBackground()
   }
 }
 
 const saveGrade = () => {
   if (!isFormValid.value) return
+  
+  // Save zones to form data
+  formData.value.zones = zones.value
   
   if (isEditMode.value) {
     // Update existing grade
@@ -549,7 +616,8 @@ const saveGrade = () => {
           `Min length: ${formData.value.specifications.minLength} feet`,
           `Clear face: ${formData.value.specifications.clearFace}%`,
           `Max defects: ${formData.value.specifications.maxDefects}`
-        ]
+        ],
+        zones: formData.value.zones
       }
     }
   } else {
@@ -567,7 +635,8 @@ const saveGrade = () => {
       ],
       usageCount: 0,
       color: 'emerald',
-      isCustom: formData.value.type === 'Custom'
+      isCustom: formData.value.type === 'Custom',
+      zones: formData.value.zones
     }
     gradeCards.value.push(newGrade)
   }
@@ -589,10 +658,178 @@ const editGrade = (grade) => {
 const duplicateGrade = (grade) => {
   console.log('Duplicating grade:', grade.name)
   // TODO: Create duplicate grade
+// Canvas methods
+const initializeCanvas = () => {
+  if (!canvas.value || !canvasContainer.value) return
+  
+  // Dispose existing canvas
+  if (fabricCanvas.value) {
+    fabricCanvas.value.dispose()
+  }
+  
+  // Create new canvas
+  fabricCanvas.value = new fabric.Canvas(canvas.value, {
+    width: canvasContainer.value.clientWidth,
+    height: 400,
+    backgroundColor: '#f8fafc'
+  })
+  
+  // Load lumber background
+  loadLumberBackground()
+  
+  // Load existing zones
+  loadExistingZones()
+}
+}
+const loadLumberBackground = () => {
+  if (!fabricCanvas.value) return
+  
+  // Create a mock lumber board background
+  const boardWidth = fabricCanvas.value.width * 0.8
+  const boardHeight = fabricCanvas.value.height * 0.6
+  const boardLeft = (fabricCanvas.value.width - boardWidth) / 2
+  const boardTop = (fabricCanvas.value.height - boardHeight) / 2
+  
+  const lumberBoard = new fabric.Rect({
+    left: boardLeft,
+    top: boardTop,
+    width: boardWidth,
+    height: boardHeight,
+    fill: '#d4a574',
+    stroke: '#8b5a2b',
+    strokeWidth: 2,
+    selectable: false,
+    evented: false,
+    rx: 5,
+    ry: 5
+  })
+  
+  // Add wood grain pattern
+  const grainLines = []
+  for (let i = 0; i < 8; i++) {
+    const line = new fabric.Line([
+      boardLeft + 20,
+      boardTop + (boardHeight / 8) * i + 20,
+      boardLeft + boardWidth - 20,
+      boardTop + (boardHeight / 8) * i + 20
+    ], {
+      stroke: '#8b5a2b',
+      strokeWidth: 1,
+      opacity: 0.3,
+      selectable: false,
+      evented: false
+    })
+    grainLines.push(line)
+  }
+  
+  fabricCanvas.value.add(lumberBoard, ...grainLines)
+  fabricCanvas.value.renderAll()
 }
 
+const loadExistingZones = () => {
+  if (!fabricCanvas.value || zones.value.length === 0) return
+  
+  zones.value.forEach(zone => {
+    const rect = new fabric.Rect({
+      left: zone.left,
+      top: zone.top,
+      width: zone.width,
+      height: zone.height,
+      fill: zone.fill,
+      stroke: zone.stroke,
+      strokeWidth: 2,
+      opacity: 0.7
+    })
+    
+    const label = new fabric.Text(zone.label, {
+      left: zone.left + zone.width / 2,
+      top: zone.top + zone.height / 2,
+      fontSize: 12,
+      fill: '#000',
+      textAlign: 'center',
+      originX: 'center',
+      originY: 'center',
+      selectable: false
+    })
+    
+    fabricCanvas.value.add(rect, label)
+  })
+  
+  fabricCanvas.value.renderAll()
+}
 const deleteGrade = (grade) => {
+const addZone = () => {
+  if (!fabricCanvas.value) return
+  
+  const zoneColors = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6']
+  const color = zoneColors[zones.value.length % zoneColors.length]
+  
+  const rect = new fabric.Rect({
+    left: 100 + zones.value.length * 20,
+    top: 100 + zones.value.length * 20,
+    width: 80,
+    height: 60,
+    fill: color,
+    stroke: '#000',
+    strokeWidth: 2,
+    opacity: 0.7
+  })
+  
+  const label = new fabric.Text(`Zone ${zones.value.length + 1}`, {
+    left: rect.left + rect.width / 2,
+    top: rect.top + rect.height / 2,
+    fontSize: 12,
+    fill: '#000',
+    textAlign: 'center',
+    originX: 'center',
+    originY: 'center',
+    selectable: false
+  })
+  
+  fabricCanvas.value.add(rect, label)
+  
+  // Add to zones array
+  zones.value.push({
+    label: `Zone ${zones.value.length + 1}`,
+    left: rect.left,
+    top: rect.top,
+    width: rect.width,
+    height: rect.height,
+    fill: color,
+    stroke: '#000'
+  })
+  
+  fabricCanvas.value.renderAll()
+}
   console.log('Deleting grade:', grade.name)
+const removeZone = (index) => {
+  zones.value.splice(index, 1)
+  
+  // Rebuild canvas
+  if (fabricCanvas.value) {
+    fabricCanvas.value.clear()
+    loadLumberBackground()
+    loadExistingZones()
+  }
+}
   // TODO: Show confirmation dialog and delete
+const clearZones = () => {
+  zones.value = []
+  if (fabricCanvas.value) {
+    fabricCanvas.value.clear()
+    loadLumberBackground()
+  }
+}
+}
+// Initialize canvas when modal opens
+const openCreateModal = () => {
+  isEditMode.value = false
+  editingGradeId.value = null
+  resetForm()
+  showModal.value = true
+  
+  nextTick(() => {
+    initializeCanvas()
+  })
 }
 </script>
