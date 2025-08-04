@@ -391,6 +391,12 @@
 import { ref, computed } from 'vue'
 import { Search, Plus, Eye, Edit, Copy, Trash2, Package, X, Palette } from 'lucide-vue-next'
 
+// Canvas and zones state
+const zones = ref([])
+const fabricCanvas = ref(null)
+const canvas = ref(null)
+const canvasContainer = ref(null)
+
 // Loading state
 const isLoading = ref(false)
 
