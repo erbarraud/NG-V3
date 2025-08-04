@@ -143,6 +143,8 @@ export function useDefectRules() {
     getMetricOptions,
     getUnitForMetric,
     getCurrentCategoryDefects,
+    getCurrentCategoryName,
+    getEnabledDefectsInCategory,
     getEnabledDefectsCount,
     aggregationOptions,
     referenceOptions,

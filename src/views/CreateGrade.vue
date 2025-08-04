@@ -328,92 +328,69 @@
             </div>
 
             <!-- Defect Cards for Active Category -->
-            <div class="space-y-4">
+            <div class="space-y-6">
               <div
                 v-for="defect in getCurrentCategoryDefects(activeDefectCategory)"
                 :key="defect.id"
-                class="border border-gray-200 rounded-lg p-6"
+                class="border border-gray-200 rounded-lg overflow-hidden"
               >
-                <div class="grid grid-cols-1 lg:grid-cols-6 gap-4 items-center">
-                  <!-- Enable/Disable Switch -->
-                  <div class="lg:col-span-1">
-                    <label class="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        v-model="defect.enabled"
-                        class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
-                      />
-                      <span class="text-sm font-medium text-gray-900">{{ defect.name }}</span>
-                    </label>
-                  </div>
-
-                  <!-- Metric Dropdown -->
-                  <div class="lg:col-span-1">
-                    <select
-                      v-model="defect.metric"
-                      :disabled="!defect.enabled"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 disabled:bg-gray-100 disabled:text-gray-500"
-                    >
-                      <option value="">Select metric</option>
-                      <option value="diameter">Diameter</option>
-                      <option value="length">Length</option>
-                      <option value="area">Area</option>
-                      <option value="count">Count</option>
-                      <option value="presence">Presence</option>
-                    </select>
-                  </div>
-
-                  <!-- Unit Display -->
-                  <div class="lg:col-span-1">
-                    <div class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600">
-                      {{ getUnitForMetric(defect.metric) }}
+                <!-- Defect Header -->
+                <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                      <label class="flex items-center space-x-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          v-model="defect.enabled"
+                          class="h-5 w-5 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+                        />
+                        <span class="text-lg font-semibold text-gray-900">{{ defect.name }}</span>
+                      </label>
+                      <div v-if="defect.enabled" class="px-2 py-1 bg-emerald-100 text-emerald-800 text-xs font-medium rounded-full">
+                        Enabled
+                      </div>
+                    </div>
+                    <div v-if="defect.enabled" class="text-sm text-gray-500">
+                      Configure rules for this defect type
                     </div>
                   </div>
-
-                  <!-- Aggregation Method -->
-                  <div class="lg:col-span-1">
-                    <select
-                      v-model="defect.aggregationMethod"
-                      :disabled="!defect.enabled"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 disabled:bg-gray-100 disabled:text-gray-500"
-                    >
-                      <option value="">Aggregation</option>
-                      <option value="maximum">Maximum</option>
-                      <option value="sum">Sum</option>
-                      <option value="average">Average</option>
-                      <option value="count-per-meter">Count per linear meter</option>
-                    </select>
-                  </div>
-
-                  <!-- Limit Value -->
-                  <div class="lg:col-span-1">
-                    <input
-                      v-model="defect.limitValue"
-                      type="number"
-                      min="0"
-                      step="0.1"
-                      :disabled="!defect.enabled"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 disabled:bg-gray-100 disabled:text-gray-500"
-                      placeholder="Limit"
-                    />
-                  </div>
-
-                  <!-- Reference Type -->
-                  <div class="lg:col-span-1">
-                    <select
-                      v-model="defect.referenceType"
-                      :disabled="!defect.enabled"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 disabled:bg-gray-100 disabled:text-gray-500"
-                    >
-                      <option value="">Reference</option>
-                      <option value="fixed-value">Fixed value</option>
-                      <option value="percent-width">% of board width</option>
-                      <option value="percent-surface">% of board surface</option>
-                    </select>
-                  </div>
                 </div>
-              </div>
-            </div>
+
+                <!-- Defect Rules Configuration (only show when enabled) -->
+                <div v-if="defect.enabled" class="p-6 space-y-6">
+                  <!-- Measurement Configuration -->
+                  <div>
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4">Measurement Configuration</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <!-- Metric Selection -->
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                          Measurement Metric
+                        </label>
+                        <select
+                          v-model="defect.metric"
+                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                        >
+                          <option value="">Select metric</option>
+                          <option 
+                            v-for="metric in getMetricOptions(defect.id)"
+                            :key="metric"
+                            :value="metric"
+                          >
+                            {{ metric.charAt(0).toUpperCase() + metric.slice(1) }}
+                          </option>
+                        </select>
+                      </div>
+
+                      <!-- Unit Display -->
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                          Unit
+                        </label>
+                        <div class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600">
+                          {{ getUnitForMetric(defect.metric) || 'Select metric first' }}
+                        </div>
+                      </div>
           </div>
         </div>
 
