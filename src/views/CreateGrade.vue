@@ -473,7 +473,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft, FileText, Settings, Eye, Package, Ruler } from 'lucide-vue-next'
+import { ArrowLeft, FileText, Settings, Eye, Package, Ruler, Map } from 'lucide-vue-next'
 
 const route = useRoute()
 const router = useRouter()
@@ -489,6 +489,7 @@ const tabs = ref([
   { id: 'basic', name: 'Basic Info', icon: FileText },
   { id: 'specifications', name: 'Specifications', icon: Ruler },
   { id: 'rules', name: 'Rules', icon: Settings },
+  { id: 'zones', name: 'Zones', icon: Map },
   { id: 'preview', name: 'Preview', icon: Eye }
 ])
 
@@ -536,7 +537,8 @@ const formData = ref({
     allowWane: false,
     allowSapwood: false,
     requireStraightGrain: false
-  }
+  },
+  zones: []
 })
 
 // Form validation
