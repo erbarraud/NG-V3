@@ -97,6 +97,17 @@
             </ul>
           </div>
 
+          <!-- Key Specifications -->
+          <div class="mb-4">
+            <h4 class="text-sm font-medium text-gray-900 mb-2">Key Specifications:</h4>
+            <ul class="space-y-1">
+              <li v-for="spec in grade.keySpecs" :key="spec" class="text-xs text-gray-600 flex items-start">
+                <span class="w-1 h-1 bg-gray-400 rounded-full mt-1.5 mr-2 flex-shrink-0"></span>
+                {{ spec }}
+              </li>
+            </ul>
+          </div>
+
           <!-- Footer -->
           <div class="flex items-center justify-between pt-4 border-t border-gray-100">
             <div class="flex items-center text-sm text-gray-500">
@@ -162,7 +173,13 @@ const gradeCards = ref([
     ],
     usageCount: 24,
     color: 'emerald',
-    isCustom: false
+    isCustom: false,
+    keySpecs: [
+      'Min width: 6 inches',
+      'Min length: 8 feet',
+      'Clear face: 83.3%',
+      'Max defects: Minimal'
+    ]
   },
   {
     id: 2,
@@ -177,7 +194,13 @@ const gradeCards = ref([
     ],
     usageCount: 18,
     color: 'blue',
-    isCustom: false
+    isCustom: false,
+    keySpecs: [
+      'Min width: 4 inches',
+      'Min length: 6 feet',
+      'Clear face: 83.3%',
+      'Good for staining'
+    ]
   },
   {
     id: 3,
@@ -192,7 +215,13 @@ const gradeCards = ref([
     ],
     usageCount: 32,
     color: 'yellow',
-    isCustom: false
+    isCustom: false,
+    keySpecs: [
+      'Min width: 3 inches',
+      'Min length: 4 feet',
+      'Clear face: 66.7%',
+      'Paint grade quality'
+    ]
   },
   {
     id: 4,
@@ -207,7 +236,13 @@ const gradeCards = ref([
     ],
     usageCount: 15,
     color: 'orange',
-    isCustom: false
+    isCustom: false,
+    keySpecs: [
+      'Min width: 3 inches',
+      'Min length: 4 feet',
+      'Clear face: 50%',
+      'Rustic appearance'
+    ]
   }
 ])
 
