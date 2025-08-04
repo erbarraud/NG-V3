@@ -821,15 +821,4 @@ const clearZones = () => {
   }
 }
 }
-// Initialize canvas when modal opens
-const openCreateModal = () => {
-  isEditMode.value = false
-  editingGradeId.value = null
-  resetForm()
-  showModal.value = true
-  
-  nextTick(() => {
-    initializeCanvas()
-  })
-}
 </script>
