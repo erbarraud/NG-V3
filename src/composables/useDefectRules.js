@@ -55,6 +55,21 @@ export function useDefectRules() {
     }
   })
 
+  // Aggregation options
+  const aggregationOptions = [
+    { title: 'Maximum', value: 'maximum' },
+    { title: 'Sum', value: 'sum' },
+    { title: 'Average', value: 'average' },
+    { title: 'Count per Linear Meter', value: 'countPerLinearMeter' }
+  ]
+
+  // Reference type options
+  const referenceOptions = [
+    { title: 'Fixed Value', value: 'fixed' },
+    { title: '% of Board Width', value: 'percentBoardWidth' },
+    { title: '% of Board Surface', value: 'percentBoardSurface' }
+  ]
+
   // Get metric options based on defect type
   const getMetricOptions = (defectId) => {
     const options = [
@@ -95,6 +110,11 @@ export function useDefectRules() {
     }
   }
 
+  // Get current category name
+  const getCurrentCategoryName = (categoryKey) => {
+    return defectCategories.value[categoryKey]?.name || ''
+  }
+
   // Get defects for current category
   const getCurrentCategoryDefects = (categoryKey) => {
     return defectCategories.value[categoryKey]?.defects || []
@@ -107,11 +127,6 @@ export function useDefectRules() {
       count += category.defects.filter(d => d.enabled).length
     })
     return count
-  }
-
-  // Aggregation options
-  const getCurrentCategoryDefects = (categoryKey) => {
-    return defectCategories.value[categoryKey]?.defects || []
   }
 
   // Enable all defects in a category
@@ -160,28 +175,13 @@ export function useDefectRules() {
     })
     return enabledDefects
   }
+
   return {
-  // Aggregation options
-  const aggregationOptions = [
-    { title: 'Maximum', value: 'maximum' },
-    { title: 'Sum', value: 'sum' },
-    { title: 'Average', value: 'average' },
-    { title: 'Count per Linear Meter', value: 'countPerLinearMeter' }
-  ]
-
-  // Reference type options
-  const referenceOptions = [
-    { title: 'Fixed Value', value: 'fixed' },
-    { title: '% of Board Width', value: 'percentBoardWidth' },
-    { title: '% of Board Surface', value: 'percentBoardSurface' }
-  ]
-
     defectCategories,
+    aggregationOptions,
+    referenceOptions,
     getMetricOptions,
     getUnitForMetric,
-    getCurrentCategoryDefects,
-    getCurrentCategoryName,
-    getEnabledDefectsCount,
     getCurrentCategoryName,
     getCurrentCategoryDefects,
     getEnabledDefectsCount,
@@ -189,8 +189,6 @@ export function useDefectRules() {
     disableAllInCategory,
     enableAllDefects,
     disableAllDefects,
-    getAllEnabledDefects,
-    aggregationOptions,
-    referenceOptions
+    getAllEnabledDefects
   }
 }
