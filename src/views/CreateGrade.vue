@@ -1061,6 +1061,28 @@ const {
 } = useDefectRules()
 const { addZone, removeZone, getZoneColorClass, getZoneStyle } = useZoneManager(gradeForm)
 
+// Add the missing formatMetric function
+const formatMetric = (metric) => {
+  if (!metric) return ''
+  
+  // If metric is a string, capitalize it
+  if (typeof metric === 'string') {
+    return metric.charAt(0).toUpperCase() + metric.slice(1).replace(/([A-Z])/g, ' $1').trim()
+  }
+  
+  // If metric is an object with title property
+  if (metric.title) {
+    return metric.title
+  }
+  
+  // If metric is an object with value property
+  if (metric.value) {
+    return metric.value.charAt(0).toUpperCase() + metric.value.slice(1).replace(/([A-Z])/g, ' $1').trim()
+  }
+  
+  return String(metric)
+}
+
 // Helper methods
 const getFaceGradingLabel = (option) => {
   const labels = {
