@@ -1,5 +1,6 @@
 <template>
-  <div class="grade-management">
+  <ErrorBoundary>
+    <div class="grade-management">
     <div class="header-section w-full px-4 sm:px-6 lg:px-8 py-6">
       <div class="flex items-center justify-between mb-6">
         <div>
@@ -16,13 +17,13 @@
             />
           </div>
           
-          <button 
-            @click="openCreateModal"
+          <router-link 
+            to="/grade-management/create"
             class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors flex items-center"
           >
             <Plus class="w-4 h-4 mr-2" />
             Create New Grade
-          </button>
+          </router-link>
         </div>
       </div>
     </div>
@@ -54,30 +55,12 @@
       <!-- Grades Table -->
       <GradeTable 
         v-else
-        :grades="gradeCards"
+        :grades="gradeStore.grades"
         @view-grade="viewGradeDetails"
         @edit-grade="editGrade"
         @duplicate-grade="handleDuplicateGrade"
       />
     </div>
-
-    <!-- Grade Form Modal -->
-    <GradeFormModal
-      :show="showModal"
-      :form-data="formData"
-      :is-edit-mode="isEditMode"
-      @close="closeModal"
-      @save="saveGrade"
-    />
-
-    <!-- Grade Details Modal -->
-    <GradeDetailsModal
-      :show="showDetailsModal"
-      :grade="selectedGrade"
-      @close="closeDetailsModal"
-      @edit-grade="editGrade"
-      @duplicate-grade="handleDuplicateGrade"
-    />
 
     <!-- Success/Error Messages -->
     <div v-if="showMessage" class="fixed top-4 right-4 z-50">
@@ -95,133 +78,58 @@
         </button>
       </div>
     </div>
-  </div>
+    </div>
+  </ErrorBoundary>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { Search, Plus, CheckCircle, AlertTriangle, X } from 'lucide-vue-next'
+import ErrorBoundary from '@/components/error/error-boundary.vue'
 import GradeTable from '@/components/grade/GradeTable.vue'
-import GradeFormModal from '@/components/grade/GradeFormModal.vue'
-import GradeDetailsModal from '@/components/grade/GradeDetailsModal.vue'
-import { useGradeData } from '@/composables/useGradeData.js'
+import { useGradeStore } from '@/stores/grades'
 
-const { gradeCards, createGrade, updateGrade, duplicateGrade } = useGradeData()
+const router = useRouter()
+const gradeStore = useGradeStore()
 
 // State
 const isLoading = ref(false)
-const showModal = ref(false)
-const showDetailsModal = ref(false)
-const selectedGrade = ref(null)
-const isEditMode = ref(false)
-const editingGradeId = ref(null)
 
 // Message state
 const showMessage = ref(false)
 const messageType = ref('success')
 const messageText = ref('')
 
-// Form data
-const formData = ref({
-  name: '',
-  type: '',
-  description: '',
-  specifications: {
-    minWidth: '',
-    minLength: '',
-    clearFace: '',
-    maxDefects: ''
-  }
-})
-
-// Modal methods
-const openCreateModal = () => {
-  console.log('Opening create modal...')
-  isEditMode.value = false
-  resetForm()
-  showModal.value = true
-  console.log('Modal state:', showModal.value)
-  console.log('Form data:', formData.value)
-}
-
-const closeModal = () => {
-  showModal.value = false
-  resetForm()
-}
-
-const resetForm = () => {
-  formData.value = {
-    name: '',
-    type: '',
-    description: '',
-    specifications: {
-      minWidth: '',
-      minLength: '',
-      clearFace: '',
-      maxDefects: ''
-    }
-  }
-}
-
-const saveGrade = (gradeData) => {
-  try {
-    if (isEditMode.value) {
-      const updatedGrade = updateGrade(editingGradeId.value, gradeData)
-      if (updatedGrade) {
-        showSuccessMessage(`Grade "${gradeData.name}" has been updated successfully.`)
-      } else {
-        showErrorMessage('Failed to update grade. Please try again.')
-      }
-    } else {
-      createGrade(gradeData)
-      showSuccessMessage(`Grade "${gradeData.name}" has been created successfully.`)
-    }
-    closeModal()
-  } catch (error) {
-    console.error('Error saving grade:', error)
-    showErrorMessage('Failed to save grade. Please try again.')
-  }
-}
-
 // Grade actions
 const viewGradeDetails = (grade) => {
-  selectedGrade.value = grade
-  showDetailsModal.value = true
+  try {
+    // Navigate to CreateGrade page with view/edit mode
+    router.push(`/grade-management/create?edit=true&id=${grade.id}`)
+  } catch (error) {
+    console.error('Navigation error:', error)
+    showErrorMessage('Failed to navigate to grade details. Please try again.')
+  }
 }
 
 const editGrade = (grade) => {
-  isEditMode.value = true
-  editingGradeId.value = grade.id
-  
-  // Populate form with grade data
-  formData.value = {
-    name: grade.name,
-    type: grade.type,
-    description: grade.description,
-    specifications: {
-      minWidth: grade.keySpecs[0]?.split(': ')[1]?.replace(' inches', '') || '',
-      minLength: grade.keySpecs[1]?.split(': ')[1]?.replace(' feet', '') || '',
-      clearFace: grade.keySpecs[2]?.split(': ')[1]?.replace('%', '') || '',
-      maxDefects: grade.keySpecs[3]?.split(': ')[1] || ''
-    }
+  try {
+    // Navigate to CreateGrade page with edit mode
+    router.push(`/grade-management/create?edit=true&id=${grade.id}`)
+  } catch (error) {
+    console.error('Navigation error:', error)
+    showErrorMessage('Failed to navigate to edit page. Please try again.')
   }
-  
-  showModal.value = true
 }
 
 const handleDuplicateGrade = (grade) => {
   try {
-    const duplicatedGrade = duplicateGrade(grade)
+    gradeStore.duplicateGrade(grade)
     showSuccessMessage(`Grade "${grade.name}" has been duplicated successfully.`)
   } catch (error) {
     console.error('Error duplicating grade:', error)
     showErrorMessage('Failed to duplicate grade. Please try again.')
   }
-}
-
-const closeDetailsModal = () => {
-  showDetailsModal.value = false
-  selectedGrade.value = null
 }
 
 // Message methods

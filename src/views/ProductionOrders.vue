@@ -135,7 +135,7 @@
               <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-b-2 border-emerald-500">Actions</th>
             </tr>
           </thead>
-          <tbody ref="tableBodyRef" class="bg-white divide-y divide-gray-200">
+          <tbody class="bg-white divide-y divide-gray-200">
             <tr 
               v-for="(order, index) in upcomingOrders" 
               :key="order.id" 

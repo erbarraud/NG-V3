@@ -120,8 +120,8 @@
         <!-- Chart Section -->
         <div>
           <h3 class="text-lg font-semibold text-slate-900 mb-4">Boards Processed per Hour</h3>
-          <div class="h-64 bg-white/40 rounded-lg p-4 border border-slate-100">
-            <Bar :data="chartData" :options="chartOptions" />
+          <div class="bg-white/40 rounded-lg p-4 border border-slate-100">
+            <BarChart :data="chartData" height="256px" />
           </div>
         </div>
       </CardContent>
@@ -372,32 +372,13 @@ import {
   Calendar, Clock, DollarSign, Package, MessageSquare, TrendingUp, TrendingDown,
   MoreHorizontal, Download, ChevronRight, AlertTriangle, FileText, RefreshCw, AlertCircle
 } from 'lucide-vue-next'
-import { Bar } from 'vue-chartjs'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-} from 'chart.js'
+import BarChart from '@/components/charts/BarChart.vue'
 import Button from '@/components/ui/button.vue'
 import Card from '@/components/ui/card.vue'
 import CardContent from '@/components/ui/card-content.vue'
 import Badge from '@/components/ui/badge.vue'
 import LoadingSkeleton from '@/components/ui/loading-skeleton.vue'
-import { useAsyncState } from '@/composables/useAsyncState.js'
-
-// Register Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale, 
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-)
+import { useAsyncState } from '@/composables/useAsyncState'
 
 // Chart data
 const chartData = ref({
@@ -424,57 +405,6 @@ const chartData = ref({
   ]
 })
 
-const chartOptions = ref({
-  responsive: true,
-  maintainAspectRatio: false,
-  scales: {
-    x: {
-      stacked: true,
-      grid: {
-        color: '#f1f5f9',
-        drawBorder: false
-      },
-      ticks: {
-        color: '#6b7280',
-        font: {
-          size: 12
-        }
-      }
-    },
-    y: {
-      stacked: true,
-      grid: {
-        color: '#f1f5f9',
-        drawBorder: false
-      },
-      ticks: {
-        color: '#6b7280',
-        font: {
-          size: 12
-        }
-      }
-    }
-  },
-  plugins: {
-    legend: {
-      display: true,
-      position: 'top',
-      labels: {
-        color: '#6b7280',
-        font: {
-          size: 12
-        }
-      }
-    },
-    tooltip: {
-      backgroundColor: 'rgba(0, 0, 0, 0.8)',
-      titleColor: '#ffffff',
-      bodyColor: '#ffffff',
-      borderColor: '#e2e8f0',
-      borderWidth: 1
-    }
-  }
-})
 
 // Simulate async data loading
 const loadDashboardData = async () => {

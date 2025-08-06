@@ -425,7 +425,7 @@
             <div v-else class="space-y-6">
               <div class="flex items-center justify-center space-x-4 mb-6">
                 <button 
-                  v-for="(camera, index) in row1Cameras" 
+                  v-for="camera in row1Cameras" 
                   :key="camera.id"
                   @click="selectedRow1Camera = camera.id"
                   :class="[
@@ -598,7 +598,7 @@
             <div v-else class="space-y-6">
               <div class="flex items-center justify-center space-x-4 mb-6">
                 <button 
-                  v-for="(camera, index) in row2Cameras" 
+                  v-for="camera in row2Cameras" 
                   :key="camera.id"
                   @click="selectedRow2Camera = camera.id"
                   :class="[

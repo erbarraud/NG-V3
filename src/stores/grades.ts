@@ -1,7 +1,33 @@
-import { ref } from 'vue'
+import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
 
-export function useGradeData() {
-  const gradeCards = ref([
+export interface Grade {
+  id: number
+  name: string
+  type: 'Hardwood' | 'Softwood' | 'Custom'
+  species: string
+  description: string
+  keySpecs: string[]
+  usageCount: number
+  color: 'emerald' | 'blue' | 'yellow' | 'orange'
+  isCustom: boolean
+}
+
+export interface GradeFormData {
+  name: string
+  type: string
+  description: string
+  species?: string
+  specifications: {
+    minWidth: string
+    minLength: string
+    clearFace: string
+    maxDefects: string
+  }
+}
+
+export const useGradeStore = defineStore('grades', () => {
+  const grades = ref<Grade[]>([
     {
       id: 1,
       name: 'FAS (First and Seconds)',
@@ -68,11 +94,22 @@ export function useGradeData() {
     }
   ])
 
-  const createGrade = (gradeData) => {
-    const newGrade = {
+  // Computed properties
+  const customGrades = computed(() => grades.value.filter(g => g.isCustom))
+  const standardGrades = computed(() => grades.value.filter(g => !g.isCustom))
+  const totalGrades = computed(() => grades.value.length)
+  const mostUsedGrade = computed(() => 
+    grades.value.reduce((max, grade) => 
+      grade.usageCount > max.usageCount ? grade : max
+    )
+  )
+
+  // Actions
+  const createGrade = (gradeData: GradeFormData): Grade => {
+    const newGrade: Grade = {
       id: Date.now(),
       name: gradeData.name,
-      type: gradeData.type,
+      type: gradeData.type as Grade['type'],
       description: gradeData.description,
       keySpecs: [
         `Min width: ${gradeData.specifications.minWidth} inches`,
@@ -85,17 +122,17 @@ export function useGradeData() {
       isCustom: gradeData.type === 'Custom',
       species: gradeData.species || 'Mixed'
     }
-    gradeCards.value.push(newGrade)
+    grades.value.push(newGrade)
     return newGrade
   }
 
-  const updateGrade = (gradeId, gradeData) => {
-    const gradeIndex = gradeCards.value.findIndex(g => g.id === gradeId)
+  const updateGrade = (gradeId: number, gradeData: GradeFormData): Grade | null => {
+    const gradeIndex = grades.value.findIndex(g => g.id === gradeId)
     if (gradeIndex !== -1) {
-      gradeCards.value[gradeIndex] = {
-        ...gradeCards.value[gradeIndex],
+      grades.value[gradeIndex] = {
+        ...grades.value[gradeIndex],
         name: gradeData.name,
-        type: gradeData.type,
+        type: gradeData.type as Grade['type'],
         description: gradeData.description,
         keySpecs: [
           `Min width: ${gradeData.specifications.minWidth} inches`,
@@ -104,37 +141,59 @@ export function useGradeData() {
           `Max defects: ${gradeData.specifications.maxDefects}`
         ]
       }
-      return gradeCards.value[gradeIndex]
+      return grades.value[gradeIndex]
     }
     return null
   }
 
-  const deleteGrade = (gradeId) => {
-    const gradeIndex = gradeCards.value.findIndex(g => g.id === gradeId)
+  const deleteGrade = (gradeId: number): Grade | null => {
+    const gradeIndex = grades.value.findIndex(g => g.id === gradeId)
     if (gradeIndex !== -1) {
-      const deletedGrade = gradeCards.value[gradeIndex]
-      gradeCards.value.splice(gradeIndex, 1)
+      const deletedGrade = grades.value[gradeIndex]
+      grades.value.splice(gradeIndex, 1)
       return deletedGrade
     }
     return null
   }
 
-  const duplicateGrade = (grade) => {
-    const duplicatedGrade = {
+  const duplicateGrade = (grade: Grade): Grade => {
+    const duplicatedGrade: Grade = {
       ...grade,
       id: Date.now(),
       name: `${grade.name} (Copy)`,
       usageCount: 0
     }
-    gradeCards.value.push(duplicatedGrade)
+    grades.value.push(duplicatedGrade)
     return duplicatedGrade
   }
 
+  const incrementUsage = (gradeId: number): void => {
+    const grade = grades.value.find(g => g.id === gradeId)
+    if (grade) {
+      grade.usageCount++
+    }
+  }
+
+  const getGradeById = (gradeId: number): Grade | undefined => {
+    return grades.value.find(g => g.id === gradeId)
+  }
+
   return {
-    gradeCards,
+    // State
+    grades,
+    
+    // Getters
+    customGrades,
+    standardGrades,
+    totalGrades,
+    mostUsedGrade,
+    
+    // Actions
     createGrade,
     updateGrade,
     deleteGrade,
-    duplicateGrade
+    duplicateGrade,
+    incrementUsage,
+    getGradeById
   }
-}
+})

@@ -1,13 +1,30 @@
-import { ref, computed } from 'vue'
+import { ref, computed, type Ref } from 'vue'
+
+interface UseAsyncStateOptions<T> {
+  immediate?: boolean
+  resetOnExecute?: boolean
+  onError?: (error: Error) => void
+  onSuccess?: (data: T) => void
+}
+
+interface UseAsyncStateReturn<T> {
+  state: Ref<T | null>
+  isLoading: Ref<boolean>
+  error: Ref<Error | null>
+  isReady: Ref<boolean>
+  isSuccess: Ref<boolean>
+  execute: (...args: any[]) => Promise<T>
+  reset: () => void
+}
 
 /**
  * Composable for managing async operations with loading, error, and success states
- * @param {Function} asyncFn - The async function to execute
- * @param {*} initialState - Initial state value
- * @param {Object} options - Configuration options
- * @returns {Object} Reactive state object with loading, error, and data properties
  */
-export function useAsyncState(asyncFn, initialState = null, options = {}) {
+export function useAsyncState<T>(
+  asyncFn: (...args: any[]) => Promise<T>,
+  initialState: T | null = null,
+  options: UseAsyncStateOptions<T> = {}
+): UseAsyncStateReturn<T> {
   const {
     immediate = true,
     resetOnExecute = true,
@@ -15,19 +32,17 @@ export function useAsyncState(asyncFn, initialState = null, options = {}) {
     onSuccess = null
   } = options
 
-  const state = ref(initialState)
+  const state = ref<T | null>(initialState)
   const isLoading = ref(false)
-  const error = ref(null)
+  const error = ref<Error | null>(null)
 
   const isReady = computed(() => !isLoading.value && error.value === null)
   const isSuccess = computed(() => !isLoading.value && error.value === null && state.value !== null)
 
   /**
    * Execute the async function with proper state management
-   * @param {...any} args - Arguments to pass to the async function
-   * @returns {Promise} The result of the async function
    */
-  const execute = async (...args) => {
+  const execute = async (...args: any[]): Promise<T> => {
     if (resetOnExecute) {
       error.value = null
     }
@@ -44,13 +59,14 @@ export function useAsyncState(asyncFn, initialState = null, options = {}) {
       
       return result
     } catch (err) {
-      error.value = err
+      const errorObj = err instanceof Error ? err : new Error(String(err))
+      error.value = errorObj
       
       if (onError) {
-        onError(err)
+        onError(errorObj)
       }
       
-      throw err
+      throw errorObj
     } finally {
       isLoading.value = false
     }
