@@ -131,13 +131,6 @@
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex items-center space-x-2">
                   <button 
-                    @click.stop="viewGradeDetails(grade)"
-                    class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" 
-                    title="View Details"
-                  >
-                    <Eye class="w-4 h-4" />
-                  </button>
-                  <button 
                     @click.stop="editGrade(grade)"
                     class="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" 
                     title="Edit Grade"
