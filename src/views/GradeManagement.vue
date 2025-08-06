@@ -911,6 +911,6 @@ const showErrorMessage = (text) => {
 
 const hideMessage = () => {
   showMessage.value = false
-}
+  messageText.value = ''
 }
 </script>
