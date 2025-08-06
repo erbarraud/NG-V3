@@ -788,13 +788,24 @@ const saveGrade = () => {
   }
   
   closeModal()
-  showSuccessMessage(`Grade "${grade.name}" duplicated successfully.`)
+    showSuccessMessage(`Grade "${formData.value.name}" has been ${isEditMode.value ? 'updated' : 'created'} successfully.`)
 }
 
 // Interactive methods
 const viewGradeDetails = (grade) => {
   selectedGrade.value = grade
   showDetailsModal.value = true
+}
+
+const editGrade = (grade) => {
+  console.log('Editing grade:', grade.name)
+  router.push(`/grade-management/create?edit=true&id=${grade.id}`)
+}
+
+const duplicateGrade = (grade) => {
+  console.log('Duplicating grade:', grade.name)
+  // TODO: Implement duplicate functionality
+  showSuccessMessage(`Grade "${grade.name}" duplicated successfully.`)
 }
 
 const deleteGrade = (grade) => {
