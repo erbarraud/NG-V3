@@ -115,13 +115,6 @@
               >
                 <Copy class="w-4 h-4" />
               </button>
-              <button 
-                @click.stop="deleteGrade(grade)"
-                class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors" 
-                title="Delete"
-              >
-                <Trash2 class="w-4 h-4" />
-              </button>
             </div>
           </div>
         </div>
