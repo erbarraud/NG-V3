@@ -87,11 +87,10 @@
             <select
               id="species"
               v-model="gradeForm.species"
-              multiple
               required
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              size="4"
             >
+              <option value="">Select a species</option>
               <option value="red-oak">Red Oak</option>
               <option value="white-oak">White Oak</option>
               <option value="soft-maple">Soft Maple</option>
@@ -107,7 +106,6 @@
               <option value="douglas-fir">Douglas Fir</option>
               <option value="cedar">Cedar</option>
             </select>
-            <div class="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple species</div>
           </div>
           
           <div>
@@ -836,7 +834,7 @@ const gradeForm = ref({
   name: '',
   description: '',
   valuePerUnit: '',
-  species: [],
+  species: '',
   faceGradingOption: 'both-faces'
 })
 
@@ -966,7 +964,7 @@ const centerAreaStyle = computed(() => {
 })
 
 const isFormValid = computed(() => {
-  return gradeForm.value.name.trim() !== ''
+  return gradeForm.value.name.trim() !== '' && gradeForm.value.species !== ''
 })
 
 // Helper functions
