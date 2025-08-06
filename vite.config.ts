@@ -18,19 +18,7 @@ export default defineConfig({
   },
   plugins: [
     vue(), 
-    tailwindcss(),
-    {
-      name: 'force-exit-on-build-complete',
-      closeBundle() {
-        if (!process.env.ROLLUP_WATCH) {
-          // Force exit after a short delay to ensure all processes complete
-          setTimeout(() => {
-            console.log('Build complete. Exiting...')
-            process.exit(0)
-          }, 100)
-        }
-      }
-    }
+    tailwindcss()
   ],
   resolve: {
     alias: {
