@@ -73,13 +73,20 @@
           <div class="flex items-start justify-between mb-4">
             <div class="flex-1">
               <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ grade.name }}</h3>
-              <span :class="[
-                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                grade.isCustom ? 'bg-purple-100 text-purple-800' : getColorClasses(grade.color).badge,
-                getColorClasses(grade.color).badge
-              ]">
-                {{ grade.type }}
-              </span>
+              <div class="flex items-center space-x-2">
+                <span :class="[
+                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                  getColorClasses(grade.color).badge
+                ]">
+                  {{ grade.species }}
+                </span>
+                <span :class="[
+                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                  grade.isCustom ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
+                ]">
+                  {{ grade.type }}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -445,6 +452,7 @@ const gradeCards = ref([
     id: 1,
     name: 'FAS (First and Seconds)',
     type: 'Hardwood',
+    species: 'Red Oak',
     description: 'Highest grade with 83.3% clear face cuttings',
     keySpecs: [
       'Min width: 6 inches',
@@ -466,6 +474,7 @@ const gradeCards = ref([
     id: 2,
     name: 'Select & Better',
     type: 'Hardwood',
+    species: 'White Oak',
     description: 'High quality grade combining FAS and Select',
     keySpecs: [
       'Min width: 4 inches',
@@ -487,6 +496,7 @@ const gradeCards = ref([
     id: 3,
     name: 'No.1 Common',
     type: 'Hardwood',
+    species: 'Soft Maple',
     description: 'Good grade suitable for most applications',
     keySpecs: [
       'Min width: 3 inches',
@@ -508,6 +518,7 @@ const gradeCards = ref([
     id: 4,
     name: 'No.2A Common',
     type: 'Hardwood',
+    species: 'Cherry',
     description: 'Economy grade with character marks',
     keySpecs: [
       'Min width: 3 inches',
