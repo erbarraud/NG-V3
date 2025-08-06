@@ -4,6 +4,17 @@ import path from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import { createHash } from 'crypto';
+
+// Polyfill for crypto.hash - fixes Netlify build error
+if (!globalThis.crypto) {
+  globalThis.crypto = {};
+}
+if (!globalThis.crypto.hash) {
+  globalThis.crypto.hash = (algorithm, data) => {
+    return createHash(algorithm).update(data).digest();
+  };
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
