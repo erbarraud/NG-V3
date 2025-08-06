@@ -5,15 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "rimraf dist",
-    "build": "cross-env NODE_ENV=production vite build --mode production && exit 0",
-    "build:fallback": "cross-env NODE_ENV=production vite build --mode production && exit 0",
-    "build:simple": "vite build || exit 0",
-    "lint": "eslint .",
+    "build": "vite build --mode production",
     "preview": "vite preview",
+    "lint": "eslint .",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "deploy": "netlify deploy --prod --dir=dist",
+    "deploy:preview": "netlify deploy --dir=dist"
   },
   "dependencies": {
     "@vitejs/plugin-vue": "^6.0.0",
