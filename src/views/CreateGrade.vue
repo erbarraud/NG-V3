@@ -151,11 +151,7 @@
             <div 
               v-if="zoneConfig.left.enabled"
               class="absolute top-0 bottom-0 left-0 bg-blue-200 border-2 border-blue-400 rounded-l-lg transition-all duration-300"
-              :style="{ 
-                width: `${zoneConfig.left.depth * 6}px`,
-                top: zoneConfig.top.enabled ? `${zoneConfig.top.depth * 3}px` : '0',
-                bottom: zoneConfig.bottom.enabled ? `${zoneConfig.bottom.depth * 3}px` : '0'
-              }"
+              :style="{ width: `${zoneConfig.left.depth * 6}px` }"
             >
               <div class="absolute inset-0 flex items-center justify-center text-xs font-medium text-blue-800 transform -rotate-90">
                 Left ({{ zoneConfig.left.depth }}cm)
@@ -166,11 +162,7 @@
             <div 
               v-if="zoneConfig.right.enabled"
               class="absolute top-0 bottom-0 right-0 bg-blue-200 border-2 border-blue-400 rounded-r-lg transition-all duration-300"
-              :style="{ 
-                width: `${zoneConfig.right.depth * 6}px`,
-                top: zoneConfig.top.enabled ? `${zoneConfig.top.depth * 3}px` : '0',
-                bottom: zoneConfig.bottom.enabled ? `${zoneConfig.bottom.depth * 3}px` : '0'
-              }"
+              :style="{ width: `${zoneConfig.right.depth * 6}px` }"
             >
               <div class="absolute inset-0 flex items-center justify-center text-xs font-medium text-blue-800 transform rotate-90">
                 Right ({{ zoneConfig.right.depth }}cm)
