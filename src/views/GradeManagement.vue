@@ -791,6 +791,12 @@ const saveGrade = () => {
   showSuccessMessage(`Grade "${grade.name}" duplicated successfully.`)
 }
 
+// Interactive methods
+const viewGradeDetails = (grade) => {
+  selectedGrade.value = grade
+  showDetailsModal.value = true
+}
+
 const deleteGrade = (grade) => {
   gradeToDelete.value = grade
   showDeleteModal.value = true
