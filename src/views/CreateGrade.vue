@@ -201,15 +201,16 @@
         </div>
 
         <!-- Zone Controls -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-          <!-- Top Edge -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-4">
+          <!-- Top/Bottom Edge Control -->
           <div class="space-y-3">
             <div class="flex items-center justify-between">
               <label class="text-sm font-medium text-gray-700">Top Edge</label>
               <label class="flex items-center">
                 <input
                   type="checkbox"
-                  v-model="zoneConfig.top.enabled"
+                  v-model="topBottomZoneEnabled"
+                  @change="handleTopBottomZoneChange"
                   class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
                 />
                 <span class="ml-2 text-xs text-gray-600">Enable</span>
@@ -217,51 +218,56 @@
             </div>
             <div class="space-y-2">
               <input
-                v-model="zoneConfig.top.depth"
+                v-model="topBottomZoneDepth"
+                @input="handleTopBottomDepthChange"
                 type="range"
                 min="0"
                 max="50"
-                :disabled="!zoneConfig.top.enabled"
+                :disabled="!topBottomZoneEnabled"
                 class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer disabled:opacity-50"
               />
-              <div class="text-xs text-gray-500 text-center">{{ zoneConfig.top.depth }}cm from edge</div>
+              <div class="text-xs text-gray-500 text-center">{{ topBottomZoneDepth }}cm from edge</div>
             </div>
           </div>
 
-          <!-- Bottom Edge -->
+          <!-- Bottom Edge Display -->
           <div class="space-y-3">
             <div class="flex items-center justify-between">
               <label class="text-sm font-medium text-gray-700">Bottom Edge</label>
               <label class="flex items-center">
                 <input
                   type="checkbox"
-                  v-model="zoneConfig.bottom.enabled"
-                  class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+                  :checked="topBottomZoneEnabled"
+                  disabled
+                  class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded opacity-50"
                 />
                 <span class="ml-2 text-xs text-gray-600">Enable</span>
               </label>
             </div>
             <div class="space-y-2">
               <input
-                v-model="zoneConfig.bottom.depth"
+                :value="topBottomZoneDepth"
                 type="range"
                 min="0"
                 max="50"
-                :disabled="!zoneConfig.bottom.enabled"
-                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer disabled:opacity-50"
+                disabled
+                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer opacity-50"
               />
-              <div class="text-xs text-gray-500 text-center">{{ zoneConfig.bottom.depth }}cm from edge</div>
+              <div class="text-xs text-gray-500 text-center">{{ topBottomZoneDepth }}cm from edge</div>
             </div>
           </div>
+        </div>
 
-          <!-- Left Edge -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-4">
+          <!-- Left Edge Control -->
           <div class="space-y-3">
             <div class="flex items-center justify-between">
               <label class="text-sm font-medium text-gray-700">Left Edge</label>
               <label class="flex items-center">
                 <input
                   type="checkbox"
-                  v-model="zoneConfig.left.enabled"
+                  v-model="leftRightZoneEnabled"
+                  @change="handleLeftRightZoneChange"
                   class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
                 />
                 <span class="ml-2 text-xs text-gray-600">Enable</span>
@@ -269,54 +275,46 @@
             </div>
             <div class="space-y-2">
               <input
-                v-model="zoneConfig.left.depth"
+                v-model="leftRightZoneDepth"
+                @input="handleLeftRightDepthChange"
                 type="range"
                 min="0"
                 max="50"
-                :disabled="!zoneConfig.left.enabled"
+                :disabled="!leftRightZoneEnabled"
                 class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer disabled:opacity-50"
               />
-              <div class="text-xs text-gray-500 text-center">{{ zoneConfig.left.depth }}cm from edge</div>
+              <div class="text-xs text-gray-500 text-center">{{ leftRightZoneDepth }}cm from edge</div>
             </div>
           </div>
 
-          <!-- Right Edge -->
+          <!-- Right Edge Display -->
           <div class="space-y-3">
             <div class="flex items-center justify-between">
               <label class="text-sm font-medium text-gray-700">Right Edge</label>
               <label class="flex items-center">
                 <input
                   type="checkbox"
-                  v-model="zoneConfig.right.enabled"
-                  class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+                  :checked="leftRightZoneEnabled"
+                  disabled
+                  class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded opacity-50"
                 />
                 <span class="ml-2 text-xs text-gray-600">Enable</span>
               </label>
             </div>
             <div class="space-y-2">
               <input
-                v-model="zoneConfig.right.depth"
+                :value="leftRightZoneDepth"
                 type="range"
                 min="0"
                 max="50"
-                :disabled="!zoneConfig.right.enabled"
-                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer disabled:opacity-50"
+                disabled
+                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer opacity-50"
               />
-              <div class="text-xs text-gray-500 text-center">{{ zoneConfig.right.depth }}cm from edge</div>
+              <div class="text-xs text-gray-500 text-center">{{ leftRightZoneDepth }}cm from edge</div>
             </div>
           </div>
         </div>
 
-        <!-- Link All Edges Option -->
-        <div class="flex items-center space-x-2 mb-4">
-          <input
-            type="checkbox"
-            v-model="linkAllEdges"
-            @change="handleLinkEdgesChange"
-            class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
-          />
-          <label class="text-sm font-medium text-gray-700">Link all edges (move all sliders together)</label>
-        </div>
       </div>
 
       <!-- Defect Rules Section -->
@@ -801,7 +799,6 @@ const zoneConfig = ref({
   right: { enabled: false, depth: 10 }
 })
 
-const linkAllEdges = ref(false)
 
 // Convert composable data to flat defect categories for easier template use
 const defectCategories = computed(() => {
@@ -834,6 +831,32 @@ const boardRules = ref(initializeDefectRules())
 const leftRightRules = ref(initializeDefectRules())
 const topBottomRules = ref(initializeDefectRules())
 
+// Simplified zone controls
+const topBottomZoneEnabled = ref(false)
+const topBottomZoneDepth = ref(10)
+const leftRightZoneEnabled = ref(false)
+const leftRightZoneDepth = ref(10)
+
+// Sync simplified controls with zone config
+const handleTopBottomZoneChange = () => {
+  zoneConfig.value.top.enabled = topBottomZoneEnabled.value
+  zoneConfig.value.bottom.enabled = topBottomZoneEnabled.value
+}
+
+const handleTopBottomDepthChange = () => {
+  zoneConfig.value.top.depth = topBottomZoneDepth.value
+  zoneConfig.value.bottom.depth = topBottomZoneDepth.value
+}
+
+const handleLeftRightZoneChange = () => {
+  zoneConfig.value.left.enabled = leftRightZoneEnabled.value
+  zoneConfig.value.right.enabled = leftRightZoneEnabled.value
+}
+
+const handleLeftRightDepthChange = () => {
+  zoneConfig.value.left.depth = leftRightZoneDepth.value
+  zoneConfig.value.right.depth = leftRightZoneDepth.value
+}
 // Add the missing formatMetric function
 const formatMetric = (metric) => {
   if (!metric) return ''
@@ -979,26 +1002,34 @@ const toggleAllInCategory = (categoryId, ruleType) => {
 const applyZoneTemplate = (template) => {
   switch (template) {
     case 'none':
-      Object.keys(zoneConfig.value).forEach(key => {
-        zoneConfig.value[key].enabled = false
-        zoneConfig.value[key].depth = 10
-      })
+      topBottomZoneEnabled.value = false
+      leftRightZoneEnabled.value = false
+      topBottomZoneDepth.value = 10
+      leftRightZoneDepth.value = 10
+      handleTopBottomZoneChange()
+      handleLeftRightZoneChange()
+      handleTopBottomDepthChange()
+      handleLeftRightDepthChange()
       break
     case 'standard':
-      Object.keys(zoneConfig.value).forEach(key => {
-        zoneConfig.value[key].enabled = true
-        zoneConfig.value[key].depth = 10
-      })
+      topBottomZoneEnabled.value = true
+      leftRightZoneEnabled.value = true
+      topBottomZoneDepth.value = 10
+      leftRightZoneDepth.value = 10
+      handleTopBottomZoneChange()
+      handleLeftRightZoneChange()
+      handleTopBottomDepthChange()
+      handleLeftRightDepthChange()
       break
     case 'wide-ends':
-      zoneConfig.value.top.enabled = true
-      zoneConfig.value.top.depth = 20
-      zoneConfig.value.bottom.enabled = true
-      zoneConfig.value.bottom.depth = 20
-      zoneConfig.value.left.enabled = true
-      zoneConfig.value.left.depth = 5
-      zoneConfig.value.right.enabled = true
-      zoneConfig.value.right.depth = 5
+      topBottomZoneEnabled.value = true
+      leftRightZoneEnabled.value = true
+      topBottomZoneDepth.value = 20
+      leftRightZoneDepth.value = 5
+      handleTopBottomZoneChange()
+      handleLeftRightZoneChange()
+      handleTopBottomDepthChange()
+      handleLeftRightDepthChange()
       break
     case 'custom':
       // Keep current settings
@@ -1006,18 +1037,6 @@ const applyZoneTemplate = (template) => {
   }
 }
 
-const handleLinkEdgesChange = () => {
-  if (linkAllEdges.value) {
-    // Set all edges to the same depth as the first enabled zone
-    const firstEnabledZone = Object.values(zoneConfig.value).find(zone => zone.enabled)
-    if (firstEnabledZone) {
-      const depth = firstEnabledZone.depth
-      Object.keys(zoneConfig.value).forEach(key => {
-        zoneConfig.value[key].depth = depth
-      })
-    }
-  }
-}
 
 const copyBoardRulesToZones = (zoneType) => {
   let targetRules
@@ -1038,36 +1057,6 @@ const copyBoardRulesToZones = (zoneType) => {
     }
   })
 }
-
-// Watch for linked edges
-watch(linkAllEdges, (newValue) => {
-  if (newValue) {
-    // When linking is enabled, sync all depths
-    const depths = Object.values(zoneConfig.value).map(zone => zone.depth)
-    const avgDepth = Math.round(depths.reduce((a, b) => a + b, 0) / depths.length)
-    
-    Object.keys(zoneConfig.value).forEach(key => {
-      zoneConfig.value[key].depth = avgDepth
-    })
-  }
-})
-
-// Watch for depth changes when linked
-watch(() => Object.values(zoneConfig.value).map(zone => zone.depth), (newDepths, oldDepths) => {
-  if (linkAllEdges.value && oldDepths) {
-    // Find which depth changed and sync all others
-    const keys = Object.keys(zoneConfig.value)
-    for (let i = 0; i < newDepths.length; i++) {
-      if (newDepths[i] !== oldDepths[i]) {
-        const newDepth = newDepths[i]
-        keys.forEach(key => {
-          zoneConfig.value[key].depth = newDepth
-        })
-        break
-      }
-    }
-  }
-}, { deep: true })
 
 const saveGrade = async () => {
   if (!isFormValid.value) return
