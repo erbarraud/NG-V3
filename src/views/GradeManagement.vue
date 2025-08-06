@@ -1042,6 +1042,71 @@ const closeDetailsModal = () => {
   selectedGrade.value = null
 }
 
+// Usage tracking methods
+const getTotalVolume = (grade) => {
+  // Mock calculation based on usage count
+  if (!grade?.usageCount) return '0 bf'
+  
+  // Simulate total volume based on usage count and typical order sizes
+  const avgOrderVolume = 2500 // average board feet per order
+  const totalBf = grade.usageCount * avgOrderVolume
+  
+  if (totalBf >= 1000000) {
+    return `${(totalBf / 1000000).toFixed(1)}M bf`
+  } else if (totalBf >= 1000) {
+    return `${(totalBf / 1000).toFixed(1)}K bf`
+  } else {
+    return `${totalBf} bf`
+  }
+}
+
+const getLastUsedDate = (grade) => {
+  if (!grade?.usageCount || grade.usageCount === 0) return 'Never'
+  
+  // Mock last used date based on grade usage
+  const daysAgo = Math.floor(Math.random() * 30) + 1
+  const lastUsed = new Date()
+  lastUsed.setDate(lastUsed.getDate() - daysAgo)
+  
+  return lastUsed.toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: 'numeric', 
+    year: 'numeric' 
+  })
+}
+
+const getOrdersUsingGrade = (grade) => {
+  if (!grade || grade.usageCount === 0) return []
+  
+  // Mock data for orders using this grade
+  const mockOrders = [
+    {
+      id: 'ORD-20250115-001',
+      customer: 'Johnson Lumber Co.',
+      volume: '2,400 bf',
+      date: 'Jan 15, 2025',
+      status: 'Completed'
+    },
+    {
+      id: 'ORD-20250112-003',
+      customer: 'Premium Hardwoods',
+      volume: '1,800 bf',
+      date: 'Jan 12, 2025',
+      status: 'Completed'
+    },
+    {
+      id: 'ORD-20250118-002',
+      customer: 'Cabinet Masters',
+      volume: '3,200 bf',
+      date: 'Jan 18, 2025',
+      status: 'Running'
+    }
+  ]
+  
+  // Return a subset based on usage count
+  return mockOrders.slice(0, Math.min(grade.usageCount, 3))
+}
+
 const confirmDelete = () => {
   if (!gradeToDelete.value) return
   
