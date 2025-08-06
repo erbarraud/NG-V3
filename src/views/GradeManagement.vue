@@ -18,13 +18,6 @@
           </div>
           
           <!-- Filter Dropdown -->
-          <select class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-            <option value="">All Grade Types</option>
-            <option value="hardwood">Hardwood</option>
-            <option value="softwood">Softwood</option>
-            <option value="custom">Custom</option>
-          </select>
-          
           <!-- Create New Grade Button -->
           <router-link to="/grade-management/create" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors flex items-center">
             <Plus class="w-4 h-4 mr-2" />
