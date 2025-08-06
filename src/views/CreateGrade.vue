@@ -314,6 +314,64 @@
             </div>
           </div>
         </div>
+        <!-- Zone Controls -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-4">
+          <!-- Top/Bottom Edge Control -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <label class="text-sm font-medium text-gray-700">Top & Bottom Edges</label>
+              <label class="flex items-center">
+                <input
+                  type="checkbox"
+                  v-model="topBottomZoneEnabled"
+                  @change="handleTopBottomZoneChange"
+                  class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+                />
+                <span class="ml-2 text-xs text-gray-600">Enable</span>
+              </label>
+            </div>
+            <div class="space-y-2">
+              <input
+                v-model="topBottomZoneDepth"
+                @input="handleTopBottomDepthChange"
+                type="range"
+                min="0"
+                max="50"
+                :disabled="!topBottomZoneEnabled"
+                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer disabled:opacity-50"
+              />
+              <div class="text-xs text-gray-500 text-center">{{ topBottomZoneDepth }}cm from edge</div>
+            </div>
+          </div>
+
+          <!-- Left/Right Edge Control -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <label class="text-sm font-medium text-gray-700">Left & Right Edges</label>
+              <label class="flex items-center">
+                <input
+                  type="checkbox"
+                  v-model="leftRightZoneEnabled"
+                  @change="handleLeftRightZoneChange"
+                  class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+                />
+                <span class="ml-2 text-xs text-gray-600">Enable</span>
+              </label>
+            </div>
+            <div class="space-y-2">
+              <input
+                v-model="leftRightZoneDepth"
+                @input="handleLeftRightDepthChange"
+                type="range"
+                min="0"
+                max="50"
+                :disabled="!leftRightZoneEnabled"
+                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer disabled:opacity-50"
+              />
+              <div class="text-xs text-gray-500 text-center">{{ leftRightZoneDepth }}cm from edge</div>
+            </div>
+          </div>
+        </div>
 
       </div>
 
