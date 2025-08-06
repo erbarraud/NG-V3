@@ -429,7 +429,7 @@
                       <BarChart3 class="w-5 h-5 text-gray-600 mr-2" />
                       <span class="text-sm font-medium text-gray-700">Total Volume</span>
                     </div>
-                    <div class="text-2xl font-bold text-gray-900">{{ getTotalVolume(selectedGrade) }}</div>
+                    <div class="text-2xl font-bold text-gray-900">{{ selectedGrade.totalVolume || '0 bf' }}</div>
                     <div class="text-sm text-gray-600">Processed to date</div>
                   </div>
                   
