@@ -618,8 +618,393 @@
           </div>
 
           <!-- Zone Rules Summary -->
-          <div class="bg-blue-50 rounded-lg p-4">
-            <h4 class="font-medium text-gray-900 mb-3">Zone Overrides</h4>
+          <div class="space-y-4">
+            <!-- Left/Right Zone Rules Summary -->
+            <div class="bg-blue-50 rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-3">Left/Right Edge Overrides</h4>
+              <div class="space-y-2 text-sm">
+                <div v-for="(rule, defectId) in leftRightRules" :key="defectId">
+                  <div v-if="rule.enabled" class="flex items-center justify-between">
+                    <span class="text-gray-700">{{ getDefectName(defectId) }}</span>
+                    <span class="font-medium text-blue-700">
+                      Max {{ rule.limitValue }} {{ getUnitForMetric(rule.metric) }}
+                    </span>
+                  </div>
+                </div>
+                <div v-if="getEnabledDefectsCount('leftRight') === 0" class="text-gray-500 italic">
+                  {{ (zoneConfig.left.enabled || zoneConfig.right.enabled) ? 'No L/R overrides configured' : 'No left/right zones defined' }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Top/Bottom Zone Rules Summary -->
+            <div class="bg-green-50 rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-3">Top/Bottom Edge Overrides</h4>
+              <div class="space-y-2 text-sm">
+                <div v-for="(rule, defectId) in topBottomRules" :key="defectId">
+                  <div v-if="rule.enabled" class="flex items-center justify-between">
+                    <span class="text-gray-700">{{ getDefectName(defectId) }}</span>
+                    <span class="font-medium text-green-700">
+                      Max {{ rule.limitValue }} {{ getUnitForMetric(rule.metric) }}
+                    </span>
+                  </div>
+                </div>
+                <div v-if="getEnabledDefectsCount('topBottom') === 0" class="text-gray-500 italic">
+                  {{ (zoneConfig.top.enabled || zoneConfig.bottom.enabled) ? 'No T/B overrides configured' : 'No top/bottom zones defined' }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { 
+  ArrowLeft, Package, Map, Copy
+} from 'lucide-vue-next'
+import LoadingSpinner from '@/components/ui/loading-spinner.vue'
+import { useDefectRules } from '@/composables/useDefectRules'
+
+const route = useRoute()
+const router = useRouter()
+
+// Check if we're editing an existing grade
+const isEditMode = computed(() => route.query.edit === 'true')
+
+// Loading state
+const isSaving = ref(false)
+
+// Active tab
+const activeRuleTab = ref('board')
+
+// Use composables
+const { 
+  defectCategories: defectCategoriesData,
+  aggregationOptions, 
+  referenceOptions,
+  getMetricOptions,
+  getUnitForMetric,
+  getCurrentCategoryName,
+  getCurrentCategoryDefects,
+  getEnabledDefectsCount: getEnabledDefectsCountFromComposable,
+  enableAllInCategory,
+  disableAllInCategory,
+  enableAllDefects,
+  disableAllDefects,
+  getAllEnabledDefects
+} = useDefectRules()
+
+// Grade form data
+const gradeForm = ref({
+  name: '',
+  description: '',
+  valuePerUnit: '',
+  species: [],
+  faceGradingOption: 'both-faces'
+})
+
+// Zone configuration
+const zoneConfig = ref({
+  top: { enabled: false, depth: 10 },
+  bottom: { enabled: false, depth: 10 },
+  left: { enabled: false, depth: 10 },
+  right: { enabled: false, depth: 10 }
+})
+
+const linkAllEdges = ref(false)
+
+// Convert composable data to flat defect categories for easier template use
+const defectCategories = computed(() => {
+  return [
+    { id: 'knots', name: 'Natural Characteristics', defects: defectCategoriesData.value.knots.defects },
+    { id: 'cracks', name: 'Cracks & Splits', defects: defectCategoriesData.value.cracksAndSplits.defects },
+    { id: 'surface', name: 'Surface Defects', defects: defectCategoriesData.value.surfaceDefects.defects },
+    { id: 'holes', name: 'Holes', defects: defectCategoriesData.value.holes.defects },
+    { id: 'other', name: 'Other Defects', defects: defectCategoriesData.value.otherDefects.defects }
+  ]
+})
+
+// Initialize defect rules for board and zones
+const initializeDefectRules = () => {
+  const rules = {}
+  defectCategories.value.forEach(category => {
+    category.defects.forEach(defect => {
+      rules[defect.id] = {
+        enabled: false,
+        metric: defect.metric || '',
+        limitValue: defect.limitValue || 0,
+        aggregationMethod: defect.aggregationMethod || 'maximum'
+      }
+    })
+  })
+  return rules
+}
+
+const boardRules = ref(initializeDefectRules())
+const leftRightRules = ref(initializeDefectRules())
+const topBottomRules = ref(initializeDefectRules())
+
+// Add the missing formatMetric function
+const formatMetric = (metric) => {
+  if (!metric) return ''
+  
+  // If metric is a string, capitalize it
+  if (typeof metric === 'string') {
+    return metric.charAt(0).toUpperCase() + metric.slice(1).replace(/([A-Z])/g, ' $1').trim()
+  }
+  
+  // If metric is an object with title property
+  if (metric.title) {
+    return metric.title
+  }
+  
+  // If metric is an object with value property
+  if (metric.value) {
+    return metric.value.charAt(0).toUpperCase() + metric.value.slice(1).replace(/([A-Z])/g, ' $1').trim()
+  }
+  
+  return String(metric)
+}
+
+// Helper function to get category defects
+const getCategoryDefects = (categoryId) => {
+  const categoryMap = {
+    'knots': 'knots',
+    'cracks': 'cracksAndSplits', 
+    'surface': 'surfaceDefects',
+    'holes': 'holes',
+    'other': 'otherDefects'
+  }
+  
+  const composableKey = categoryMap[categoryId]
+  return defectCategoriesData.value[composableKey]?.defects || []
+}
+
+// Computed properties
+const hasAnyZones = computed(() => {
+  return Object.values(zoneConfig.value).some(zone => zone.enabled)
+})
+
+const hasStandardZones = computed(() => {
+  return Object.values(zoneConfig.value).every(zone => zone.enabled && zone.depth === 10)
+})
+
+const centerAreaStyle = computed(() => {
+  const topOffset = zoneConfig.value.top.enabled ? zoneConfig.value.top.depth * 3 : 0
+  const bottomOffset = zoneConfig.value.bottom.enabled ? zoneConfig.value.bottom.depth * 3 : 0
+  const leftOffset = zoneConfig.value.left.enabled ? zoneConfig.value.left.depth * 6 : 0
+  const rightOffset = zoneConfig.value.right.enabled ? zoneConfig.value.right.depth * 6 : 0
+  
+  return {
+    top: `${topOffset}px`,
+    bottom: `${bottomOffset}px`,
+    left: `${leftOffset}px`,
+    right: `${rightOffset}px`
+  }
+})
+
+const isFormValid = computed(() => {
+  return gradeForm.value.name.trim() !== ''
+})
+
+// Helper functions
+const getDefectName = (defectId) => {
+  for (const category of defectCategories.value) {
+    const defect = category.defects.find(d => d.id === defectId)
+    if (defect) return defect.name
+  }
+  return defectId
+}
+
+const getEnabledDefectsCount = (ruleType) => {
+  let rules
+  switch (ruleType) {
+    case 'board':
+      rules = boardRules.value
+      break
+    case 'leftRight':
+      rules = leftRightRules.value
+      break
+    case 'topBottom':
+      rules = topBottomRules.value
+      break
+    case 'zones':
+      // For backward compatibility, count both zone types
+      const leftRightCount = Object.values(leftRightRules.value).filter(rule => rule.enabled).length
+      const topBottomCount = Object.values(topBottomRules.value).filter(rule => rule.enabled).length
+      return leftRightCount + topBottomCount
+    default:
+      rules = boardRules.value
+  }
+  return Object.values(rules).filter(rule => rule.enabled).length
+}
+
+const getEnabledInCategory = (categoryId, ruleType) => {
+  const category = defectCategories.value.find(c => c.id === categoryId)
+  if (!category) return 0
+  
+  let rules
+  switch (ruleType) {
+    case 'board':
+      rules = boardRules.value
+      break
+    case 'leftRight':
+      rules = leftRightRules.value
+      break
+    case 'topBottom':
+      rules = topBottomRules.value
+      break
+    default:
+      rules = boardRules.value
+  }
+  return category.defects.filter(defect => rules[defect.id]?.enabled).length
+}
+
+const toggleAllInCategory = (categoryId, ruleType) => {
+  const category = defectCategories.value.find(c => c.id === categoryId)
+  if (!category) return
+  
+  let rules
+  switch (ruleType) {
+    case 'board':
+      rules = boardRules.value
+      break
+    case 'leftRight':
+      rules = leftRightRules.value
+      break
+    case 'topBottom':
+      rules = topBottomRules.value
+      break
+    default:
+      rules = boardRules.value
+  }
+  
+  const enabledCount = getEnabledInCategory(categoryId, ruleType)
+  const shouldEnable = enabledCount < category.defects.length
+  
+  category.defects.forEach(defect => {
+    if (rules[defect.id]) {
+      rules[defect.id].enabled = shouldEnable
+    }
+  })
+}
+
+// Zone template methods
+const applyZoneTemplate = (template) => {
+  switch (template) {
+    case 'none':
+      Object.keys(zoneConfig.value).forEach(key => {
+        zoneConfig.value[key].enabled = false
+        zoneConfig.value[key].depth = 10
+      })
+      break
+    case 'standard':
+      Object.keys(zoneConfig.value).forEach(key => {
+        zoneConfig.value[key].enabled = true
+        zoneConfig.value[key].depth = 10
+      })
+      break
+    case 'wide-ends':
+      zoneConfig.value.top.enabled = true
+      zoneConfig.value.top.depth = 20
+      zoneConfig.value.bottom.enabled = true
+      zoneConfig.value.bottom.depth = 20
+      zoneConfig.value.left.enabled = true
+      zoneConfig.value.left.depth = 5
+      zoneConfig.value.right.enabled = true
+      zoneConfig.value.right.depth = 5
+      break
+    case 'custom':
+      // Keep current settings
+      break
+  }
+}
+
+const handleLinkEdgesChange = () => {
+  if (linkAllEdges.value) {
+    // Set all edges to the same depth as the first enabled zone
+    const firstEnabledZone = Object.values(zoneConfig.value).find(zone => zone.enabled)
+    if (firstEnabledZone) {
+      const depth = firstEnabledZone.depth
+      Object.keys(zoneConfig.value).forEach(key => {
+        zoneConfig.value[key].depth = depth
+      })
+    }
+  }
+}
+
+const copyBoardRulesToZones = () => {
+  Object.keys(boardRules.value).forEach(defectId => {
+    if (boardRules.value[defectId].enabled) {
+      leftRightRules.value[defectId] = { ...boardRules.value[defectId] }
+      topBottomRules.value[defectId] = { ...boardRules.value[defectId] }
+    }
+  })
+}
+
+// Watch for linked edges
+watch(linkAllEdges, (newValue) => {
+  if (newValue) {
+    // When linking is enabled, sync all depths
+    const depths = Object.values(zoneConfig.value).map(zone => zone.depth)
+    const avgDepth = Math.round(depths.reduce((a, b) => a + b, 0) / depths.length)
+    
+    Object.keys(zoneConfig.value).forEach(key => {
+      zoneConfig.value[key].depth = avgDepth
+    })
+  }
+})
+
+// Watch for depth changes when linked
+watch(() => Object.values(zoneConfig.value).map(zone => zone.depth), (newDepths, oldDepths) => {
+  if (linkAllEdges.value && oldDepths) {
+    // Find which depth changed and sync all others
+    const keys = Object.keys(zoneConfig.value)
+    for (let i = 0; i < newDepths.length; i++) {
+      if (newDepths[i] !== oldDepths[i]) {
+        const newDepth = newDepths[i]
+        keys.forEach(key => {
+          zoneConfig.value[key].depth = newDepth
+        })
+        break
+      }
+    }
+  }
+}, { deep: true })
+
+const saveGrade = async () => {
+  if (!isFormValid.value) return
+  
+  isSaving.value = true
+  
+  try {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    
+    const gradeData = {
+      ...gradeForm.value,
+      zones: zoneConfig.value,
+      boardRules: boardRules.value,
+      leftRightRules: leftRightRules.value,
+      topBottomRules: topBottomRules.value
+    }
+    
+    console.log('Saving grade:', gradeData)
+    
+    // Navigate back to grade management
+    router.push('/grade-management')
+  } catch (error) {
+    console.error('Error saving grade:', error)
+  } finally {
+    isSaving.value = false
+  }
+}
+</script>
             <div class="space-y-2 text-sm">
               <div v-for="(rule, defectId) in zoneRules" :key="defectId">
                 <div v-if="rule.enabled" class="flex items-center justify-between">
