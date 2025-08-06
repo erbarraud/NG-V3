@@ -77,6 +77,112 @@
             </div>
           </div>
         </div>
+        
+        <!-- Species and Grading Face Selection -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+          <div>
+            <label for="species" class="block text-sm font-medium text-gray-700 mb-2">
+              Species *
+            </label>
+            <select
+              id="species"
+              v-model="gradeForm.species"
+              multiple
+              required
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              size="4"
+            >
+              <option value="red-oak">Red Oak</option>
+              <option value="white-oak">White Oak</option>
+              <option value="soft-maple">Soft Maple</option>
+              <option value="hard-maple">Hard Maple</option>
+              <option value="cherry">Cherry</option>
+              <option value="walnut">Walnut</option>
+              <option value="ash">Ash</option>
+              <option value="hickory">Hickory</option>
+              <option value="birch">Birch</option>
+              <option value="beech">Beech</option>
+              <option value="poplar">Poplar</option>
+              <option value="pine">Pine</option>
+              <option value="douglas-fir">Douglas Fir</option>
+              <option value="cedar">Cedar</option>
+            </select>
+            <div class="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple species</div>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Grading Face *
+            </label>
+            <div class="space-y-3">
+              <label class="flex items-center">
+                <input
+                  type="radio"
+                  value="both-faces"
+                  v-model="gradeForm.faceGradingOption"
+                  class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300"
+                />
+                <div class="ml-3">
+                  <div class="text-sm font-medium text-gray-900">Both Faces</div>
+                  <div class="text-xs text-gray-600">Grade based on both face 1 and face 2</div>
+                </div>
+              </label>
+              
+              <label class="flex items-center">
+                <input
+                  type="radio"
+                  value="better-face"
+                  v-model="gradeForm.faceGradingOption"
+                  class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300"
+                />
+                <div class="ml-3">
+                  <div class="text-sm font-medium text-gray-900">Better Face</div>
+                  <div class="text-xs text-gray-600">Grade based on the better of the two faces</div>
+                </div>
+              </label>
+              
+              <label class="flex items-center">
+                <input
+                  type="radio"
+                  value="worse-face"
+                  v-model="gradeForm.faceGradingOption"
+                  class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300"
+                />
+                <div class="ml-3">
+                  <div class="text-sm font-medium text-gray-900">Worse Face</div>
+                  <div class="text-xs text-gray-600">Grade based on the worse of the two faces</div>
+                </div>
+              </label>
+              
+              <label class="flex items-center">
+                <input
+                  type="radio"
+                  value="face-1-only"
+                  v-model="gradeForm.faceGradingOption"
+                  class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300"
+                />
+                <div class="ml-3">
+                  <div class="text-sm font-medium text-gray-900">Face 1 Only</div>
+                  <div class="text-xs text-gray-600">Grade based only on face 1</div>
+                </div>
+              </label>
+              
+              <label class="flex items-center">
+                <input
+                  type="radio"
+                  value="face-2-only"
+                  v-model="gradeForm.faceGradingOption"
+                  class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300"
+                />
+                <div class="ml-3">
+                  <div class="text-sm font-medium text-gray-900">Face 2 Only</div>
+                  <div class="text-xs text-gray-600">Grade based only on face 2</div>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+        
         <div class="mt-6">
           <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
             Description
