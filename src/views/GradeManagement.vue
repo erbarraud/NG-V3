@@ -911,11 +911,6 @@ const showErrorMessage = (text) => {
 
 const hideMessage = () => {
   showMessage.value = false
-  messageText.value = ''
-  if (fabricCanvas.value) {
-    fabricCanvas.value.clear()
-    loadLumberBackground()
-  }
 }
 }
 </script>
