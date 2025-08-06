@@ -151,32 +151,6 @@
                   <div class="text-xs text-gray-600">Grade based on the worse of the two faces</div>
                 </div>
               </label>
-              
-              <label class="flex items-center">
-                <input
-                  type="radio"
-                  value="face-1-only"
-                  v-model="gradeForm.faceGradingOption"
-                  class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300"
-                />
-                <div class="ml-3">
-                  <div class="text-sm font-medium text-gray-900">Face 1 Only</div>
-                  <div class="text-xs text-gray-600">Grade based only on face 1</div>
-                </div>
-              </label>
-              
-              <label class="flex items-center">
-                <input
-                  type="radio"
-                  value="face-2-only"
-                  v-model="gradeForm.faceGradingOption"
-                  class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300"
-                />
-                <div class="ml-3">
-                  <div class="text-sm font-medium text-gray-900">Face 2 Only</div>
-                  <div class="text-xs text-gray-600">Grade based only on face 2</div>
-                </div>
-              </label>
             </div>
           </div>
         </div>
