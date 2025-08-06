@@ -438,7 +438,7 @@
                       <Clock class="w-5 h-5 text-gray-600 mr-2" />
                       <span class="text-sm font-medium text-gray-700">Last Used</span>
                     </div>
-                    <div class="text-lg font-bold text-gray-900">{{ getLastUsedDate(selectedGrade) }}</div>
+                    <div class="text-lg font-bold text-gray-900">{{ selectedGrade.lastUsed || 'Never' }}</div>
                     <div class="text-sm text-gray-600">Most recent order</div>
                   </div>
                 </div>
@@ -973,20 +973,6 @@ const removeZone = (index) => {
   zones.value.splice(index, 1)
 
 // Usage tracking methods
-const getTotalVolume = (grade) => {
-  return grade?.totalVolume || '0 bf'
-}
-
-const getLastUsedDate = (grade) => {
-  if (!grade?.lastUsed) return 'Never'
-  const date = new Date(grade.lastUsed)
-  return date.toLocaleDateString('en-US', { 
-    month: 'short', 
-    day: 'numeric', 
-    year: 'numeric' 
-  })
-}
-
 const getOrdersUsingGrade = (grade) => {
   if (!grade) return []
   
