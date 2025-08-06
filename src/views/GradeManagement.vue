@@ -835,12 +835,10 @@ const saveGrade = () => {
 
 // Interactive methods
 const viewGradeDetails = (grade) => {
-  selectedGrade.value = grade
-  showDetailsModal.value = true
+  router.push(`/grade-management/create?edit=true&id=${grade.id}`)
 }
 
 const editGrade = (grade) => {
-  console.log('Editing grade:', grade.name)
   router.push(`/grade-management/create?edit=true&id=${grade.id}`)
 }
 
