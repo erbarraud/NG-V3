@@ -86,28 +86,6 @@
           <!-- Description -->
           <p class="text-sm text-gray-600 mb-4">{{ grade.description }}</p>
 
-          <!-- Key Specifications -->
-          <div class="mb-4">
-            <h4 class="text-sm font-medium text-gray-900 mb-2">Key Specifications:</h4>
-            <ul class="space-y-1">
-              <li v-for="spec in grade.keySpecs" :key="spec" class="text-xs text-gray-600 flex items-start">
-                <span class="w-1 h-1 bg-gray-400 rounded-full mt-1.5 mr-2 flex-shrink-0"></span>
-                {{ spec }}
-              </li>
-            </ul>
-          </div>
-
-          <!-- Key Specifications -->
-          <div class="mb-4">
-            <h4 class="text-sm font-medium text-gray-900 mb-2">Key Specifications:</h4>
-            <ul class="space-y-1">
-              <li v-for="spec in grade.keySpecs" :key="spec" class="text-xs text-gray-600 flex items-start">
-                <span class="w-1 h-1 bg-gray-400 rounded-full mt-1.5 mr-2 flex-shrink-0"></span>
-                {{ spec }}
-              </li>
-            </ul>
-          </div>
-
           <!-- Footer -->
           <div class="flex items-center justify-between pt-4 border-t border-gray-100">
             <div class="flex items-center text-sm text-gray-500">
