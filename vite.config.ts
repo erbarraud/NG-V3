@@ -1,3 +1,5 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 import path from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite';
@@ -6,6 +8,9 @@ import vue from '@vitejs/plugin-vue';
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/',
+  define: {
+    global: 'globalThis',
+  },
   build: {
     emptyOutDir: true,
     outDir: 'dist',
