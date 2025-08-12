@@ -1,0 +1,2046 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://server1.lefebvre.neuralgrader.net:8082/processing
+  description: Generated server url
+paths:
+  /thicknessValues/updateSelected/{id}:
+    put:
+      tags:
+      - thickness-value-controller
+      operationId: updateSelected
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponse"
+  /system-properties/{id}:
+    put:
+      tags:
+      - system-property-controller
+      operationId: updateProperty
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SystemPropertyRequestDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SystemPropertyResponseDto"
+  /species/updateSelected/{id}:
+    put:
+      tags:
+      - specie-controller
+      operationId: updateSelected_1
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponse"
+  /graders/updateSelected/{id}:
+    put:
+      tags:
+      - grader-controller
+      operationId: updateSelected_2
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponse"
+  /dryStatuses/updateSelected/{id}:
+    put:
+      tags:
+      - dry-status-controller
+      operationId: updateSelected_3
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponse"
+  /custom-grades/{id}:
+    put:
+      tags:
+      - custom-grades-controller
+      operationId: updateCustomGrade
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomGradesUpdateDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseCustomGradesDto"
+    delete:
+      tags:
+      - custom-grades-controller
+      operationId: deleteCustomGrade
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseCustomGradesDto"
+  /batches/{id}:
+    get:
+      tags:
+      - batch-controller
+      operationId: getBatch
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseBatchSettingsDTO"
+    put:
+      tags:
+      - batch-controller
+      operationId: update
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BatchSettingsDTO"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseObject"
+    delete:
+      tags:
+      - batch-controller
+      operationId: deleteBatch
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseObject"
+  /suppliers:
+    get:
+      tags:
+      - supplier-controller
+      operationId: getSuppliers
+      parameters:
+      - name: params
+        in: query
+        required: true
+        schema:
+          type: object
+          additionalProperties:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponse"
+    post:
+      tags:
+      - supplier-controller
+      operationId: create
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseObject"
+  /graders:
+    get:
+      tags:
+      - grader-controller
+      operationId: getGraders
+      parameters:
+      - name: params
+        in: query
+        required: true
+        schema:
+          type: object
+          additionalProperties:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponse"
+    post:
+      tags:
+      - grader-controller
+      operationId: create_1
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseObject"
+  /custom-grades:
+    get:
+      tags:
+      - custom-grades-controller
+      operationId: getCustomGrades
+      parameters:
+      - name: pageable
+        in: query
+        required: true
+        schema:
+          $ref: "#/components/schemas/Pageable"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseListCustomGradesDto"
+    post:
+      tags:
+      - custom-grades-controller
+      operationId: createCustomGrade
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomGradesUpdateDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseCustomGradesDto"
+  /bundles/{id}/label:
+    post:
+      tags:
+      - bundle-controller
+      operationId: generateBundleLabel
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: printerName
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: labelLanguage
+        in: query
+        required: false
+        schema:
+          type: string
+          default: en
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseObject"
+  /bundles/{id}/export:
+    post:
+      tags:
+      - bundle-controller
+      operationId: exportClosedBundle
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ExportResult"
+  /bundles/{id}/close:
+    post:
+      tags:
+      - bundle-controller
+      operationId: closeAndCreate
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: excludedBoardIds
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseObject"
+  /boards/{id}/grade:
+    post:
+      tags:
+      - board-controller
+      operationId: updateGrade
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeBoardGradeDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseVoid"
+  /batches:
+    get:
+      tags:
+      - batch-controller
+      operationId: getBatches
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: specieId
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: thicknessId
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: startDate
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: endDate
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: pageNumber
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: pageSize
+        in: query
+        required: false
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+          default: 10
+      - name: sortBy
+        in: query
+        required: false
+        schema:
+          type: string
+          default: id
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseListBatchDto"
+    post:
+      tags:
+      - batch-controller
+      operationId: create_2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BatchSettingsDTO"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseObject"
+  /batches/templates:
+    get:
+      tags:
+      - batch-controller
+      operationId: getTemplates
+      parameters:
+      - name: specieId
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: thicknessId
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseListBatchTemplateDto"
+    post:
+      tags:
+      - batch-controller
+      operationId: createTemplate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BatchSettingsDTO"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseBatchSettingsDTO"
+  /batches/open:
+    get:
+      tags:
+      - batch-controller
+      operationId: getCurrentBatch
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseObject"
+    post:
+      tags:
+      - batch-controller
+      operationId: start
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BatchSettingsDTO"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseBatchSettingsDTO"
+    delete:
+      tags:
+      - batch-controller
+      operationId: closeBatch
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseObject"
+  /batches/open/{id}:
+    post:
+      tags:
+      - batch-controller
+      operationId: start_1
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseBatchSettingsDTO"
+  /auth/register:
+    post:
+      tags:
+      - auth-controller
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /auth/login:
+    post:
+      tags:
+      - auth-controller
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /auth/change-password:
+    post:
+      tags:
+      - auth-controller
+      operationId: changePassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePasswordRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /units:
+    get:
+      tags:
+      - unit-controller
+      operationId: getUnits
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseListUnitMeasurementDto"
+  /ui/images/render/frame/{id}/{faceName}/{position}/{fileName}:
+    get:
+      tags:
+      - image-controller
+      operationId: getFrameImage
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: faceName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: position
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: fileName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: targetSize
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: woodbox
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: OK
+          content:
+            image/jpeg:
+              schema:
+                type: object
+  /ui/images/render/board/{id}/{faceName}/{type}:
+    get:
+      tags:
+      - image-controller
+      operationId: getFaceImage
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: faceName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: targetSize
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: format
+        in: query
+        required: false
+        schema:
+          type: string
+          default: jpg
+      responses:
+        "200":
+          description: OK
+          content:
+            image/jpeg:
+              schema:
+                type: object
+  /ui/boards/download/shot/{id}:
+    get:
+      tags:
+      - board-controller
+      operationId: downloadBoard
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: date
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: keepOriginalDate
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: byte
+            text/plain:
+              schema:
+                type: string
+                format: byte
+  /ui/boards/download/shot/{id}/stitches:
+    get:
+      tags:
+      - board-controller
+      operationId: downloadBoardStitches
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: date
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: keepOriginalDate
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: byte
+            text/plain:
+              schema:
+                type: string
+                format: byte
+  /ui/boards/download/board/{id}:
+    get:
+      tags:
+      - board-controller
+      operationId: downloadBoard_1
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: keepOriginalDate
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: byte
+            text/plain:
+              schema:
+                type: string
+                format: byte
+  /ui/boards/download/board/{id}/stitches:
+    get:
+      tags:
+      - board-controller
+      operationId: downloadBoardStitches_1
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: keepOriginalDate
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: byte
+            text/plain:
+              schema:
+                type: string
+                format: byte
+  /thicknessValues:
+    get:
+      tags:
+      - thickness-value-controller
+      operationId: getThicknessValues
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponse"
+  /system-properties:
+    get:
+      tags:
+      - system-property-controller
+      operationId: getAllProperties
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SystemPropertyResponseDto"
+  /species:
+    get:
+      tags:
+      - specie-controller
+      operationId: getSpecies
+      parameters:
+      - name: params
+        in: query
+        required: true
+        schema:
+          type: object
+          additionalProperties:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponse"
+  /printers:
+    get:
+      tags:
+      - printers-controller
+      operationId: index
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponse"
+  /markets:
+    get:
+      tags:
+      - market-controller
+      operationId: getMarkets
+      parameters:
+      - name: params
+        in: query
+        required: true
+        schema:
+          type: object
+          additionalProperties:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponse"
+  /grades:
+    get:
+      tags:
+      - grade-controller
+      operationId: getGrades
+      parameters:
+      - name: params
+        in: query
+        required: true
+        schema:
+          type: object
+          additionalProperties:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JsonResponseObject"
+  /grades/{specieId}:
+    get:
+      tags:
+      - grade-controller
+      operationId: getGrades_1
+      parameters:
+      - name: specieId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JsonResponseObject"
+  /grades/{specieId}/{thicknessId}:
+    get:
+      tags:
+      - grade-controller
+      operationId: getGrades_2
+      parameters:
+      - name: specieId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: thicknessId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JsonResponseObject"
+  /feedback-categories:
+    get:
+      tags:
+      - feedback-category-controller
+      operationId: getCategories
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/IdNameDto"
+  /ext/bundles/v1/g/{bundleId}:
+    get:
+      tags:
+      - secure-bundle-controller
+      operationId: generateSignature
+      parameters:
+      - name: bundleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: expirationInDays
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 180
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /dryStatuses:
+    get:
+      tags:
+      - dry-status-controller
+      operationId: getDryStatuses
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponse"
+  /defect-types:
+    get:
+      tags:
+      - defect-type-controller
+      operationId: getDefectTypes
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/IdNameDto"
+  /config/species:
+    get:
+      tags:
+      - runtime-configuration-controller
+      operationId: getSpecies_1
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /company:
+    get:
+      tags:
+      - company-controller
+      operationId: getCompany
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseObject"
+  /check:
+    get:
+      tags:
+      - monitoring-controller
+      operationId: checkServer
+      parameters:
+      - name: params
+        in: query
+        required: true
+        schema:
+          type: object
+          additionalProperties:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseObject"
+  /bundles/{id}/label-details:
+    get:
+      tags:
+      - bundle-controller
+      operationId: getBundleLabelDetails
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseWrapperObject"
+  /boards:
+    get:
+      tags:
+      - board-controller
+      operationId: getBoards
+      parameters:
+      - name: pageNumber
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        required: false
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      - name: sortBy
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: sortDesc
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: batchId
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: shotId
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int32
+      - name: latestBoardId
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JsonResponseWrapperObject"
+  /boards/with-feedback:
+    get:
+      tags:
+      - board-controller
+      operationId: getBoards_1
+      parameters:
+      - name: date
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BoardShotDto"
+  /boards-events:
+    get:
+      tags:
+      - board-controller
+      operationId: getBoardsEvents
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SseEmitter"
+  /board/{id}:
+    get:
+      tags:
+      - board-controller
+      operationId: getBoard
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: gradeId
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JsonResponseWrapperObject"
+  /batches/{batchId}/grades-with-boards:
+    get:
+      tags:
+      - batch-controller
+      operationId: getCurrentGrades
+      parameters:
+      - name: batchId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseObject"
+  /batches/{batchId}/bundles:
+    get:
+      tags:
+      - batch-controller
+      operationId: getBundles
+      parameters:
+      - name: batchId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - OPEN
+          - CLOSED
+      - name: pageable
+        in: query
+        required: true
+        schema:
+          $ref: "#/components/schemas/Pageable"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseWrapperObject"
+  /batches/{batchId}/bundles/{bundleId}/boards:
+    get:
+      tags:
+      - batch-controller
+      operationId: getCurrentBoards
+      parameters:
+      - name: batchId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: pageNumber
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: pageSize
+        in: query
+        required: false
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+          default: 10
+      - name: sortBy
+        in: query
+        required: false
+        schema:
+          type: string
+          default: id
+      - name: bundleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseObject"
+  /batches/{batchId}/bundles/stats:
+    get:
+      tags:
+      - batch-controller
+      operationId: getCurrentBundles
+      parameters:
+      - name: batchId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - OPEN
+          - CLOSED
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseObject"
+  /batches/{batchId}/bundle/{bundleId}/stats:
+    get:
+      tags:
+      - batch-controller
+      operationId: getBundleStats
+      parameters:
+      - name: batchId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: bundleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: excludedBoardIds
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JsonResponseObject"
+  /auth/validate-token:
+    get:
+      tags:
+      - auth-controller
+      operationId: validateToken
+      parameters:
+      - name: token
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /attributes:
+    get:
+      tags:
+      - attribute-controller
+      operationId: getAttributes
+      parameters:
+      - name: specieId
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AttributeDto"
+components:
+  schemas:
+    JsonResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        data:
+          type: object
+        errors:
+          type: object
+        details:
+          type: object
+    SystemPropertyRequestDto:
+      type: object
+      properties:
+        value:
+          type: string
+    SystemPropertyCategoryDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+    SystemPropertyResponseDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        category:
+          $ref: "#/components/schemas/SystemPropertyCategoryDto"
+        name:
+          type: string
+        value:
+          type: string
+        unit:
+          type: string
+        valueType:
+          type: string
+    CustomGradesUpdateDto:
+      type: object
+      properties:
+        name:
+          type: string
+        printLabel:
+          type: string
+        sortingBin:
+          type: integer
+          format: int32
+    CustomGradesDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        printLabel:
+          type: string
+        sortingBin:
+          type: integer
+          format: int32
+        deleted:
+          type: boolean
+    JsonResponseCustomGradesDto:
+      type: object
+      properties:
+        status:
+          type: string
+        data:
+          $ref: "#/components/schemas/CustomGradesDto"
+        errors:
+          type: object
+        details:
+          type: object
+    BatchCustomGradeAttributeDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        values:
+          type: array
+          items:
+            type: integer
+            format: int32
+    BatchCustomGradeDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        customGrade:
+          $ref: "#/components/schemas/CustomGradeDto"
+        market:
+          $ref: "#/components/schemas/IdNameDto"
+        priority:
+          type: integer
+          format: int32
+        price:
+          type: number
+          format: float
+        standardGrades:
+          uniqueItems: true
+          type: array
+          items:
+            type: integer
+            format: int32
+        boardSize:
+          $ref: "#/components/schemas/BoardSizeCustomGradeRuleDto"
+        defects:
+          type: array
+          items:
+            $ref: "#/components/schemas/DefectCustomGradeRuleDto"
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/BatchCustomGradeAttributeDto"
+        remanufacturingSorting:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+            enum:
+            - NO_REMANUFACTURING
+            - TRIMMING
+            - RIPPING
+    BatchSettingsDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        graderId:
+          type: integer
+          format: int32
+        supplierId:
+          type: integer
+          format: int32
+        specieId:
+          type: integer
+          format: int32
+        dryStatusId:
+          type: integer
+          format: int32
+        thicknessValueId:
+          type: integer
+          format: int32
+        createDate:
+          type: string
+          format: date-time
+        customGrades:
+          type: array
+          items:
+            $ref: "#/components/schemas/BatchCustomGradeDto"
+        boardsCount:
+          type: integer
+          format: int32
+        template:
+          $ref: "#/components/schemas/IdNameDto"
+        startDate:
+          type: string
+          format: date-time
+        closeDate:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+          - BatchStatusDto.PLANNED
+          - BatchStatusDto.OPEN
+          - BatchStatusDto.CLOSED
+        lumberStage:
+          type: string
+          enum:
+          - SURFACED
+          - ROUGH
+    BoardSizeCustomGradeRuleDto:
+      type: object
+      properties:
+        lengthMin:
+          type: number
+          format: double
+        lengthMax:
+          type: number
+          format: double
+        widthMin:
+          type: number
+          format: double
+        widthMax:
+          type: number
+          format: double
+        thicknessMin:
+          type: number
+          format: double
+        thicknessMax:
+          type: number
+          format: double
+        surfaceMin:
+          type: number
+          format: double
+        surfaceMax:
+          type: number
+          format: double
+        measuredThicknessMin:
+          type: number
+          format: double
+        measuredThicknessMax:
+          type: number
+          format: double
+        empty:
+          type: boolean
+    CustomGradeDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        printLabel:
+          type: string
+        sortingBin:
+          type: integer
+          format: int32
+    DefectCustomGradeRuleDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        description:
+          type: string
+        defectTypes:
+          uniqueItems: true
+          type: array
+          items:
+            type: integer
+            format: int32
+        defectsSourceFace:
+          type: string
+          enum:
+          - CURRENT
+          - REVERSE
+        aggregation:
+          type: string
+          enum:
+          - AVERAGE
+          - DIVERGENCE
+          - MAX
+          - MAX_SUM_EDGE
+          - SUM
+          - SUM_MAX_EDGE
+        dimension:
+          type: string
+          enum:
+          - DIAMETER
+          - LENGTH
+          - WIDTH
+          - STANDARD_DEFECT_COUNT
+          - AREA
+          - COUNT
+        limit:
+          $ref: "#/components/schemas/LimitDto"
+        aggregateDefectTypes:
+          type: boolean
+        faceType:
+          type: string
+          enum:
+          - ANY
+          - GOOD
+          - POOR
+        action:
+          type: string
+          enum:
+          - DOWNGRADE
+          - REJECT
+        ignoreInFirstLineal:
+          type: boolean
+        trimmingEnabled:
+          type: boolean
+        rippingEnabled:
+          type: boolean
+    IdNameDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+    LimitDto:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - DIV
+          - PERCENT
+          - FIXED
+        dimension:
+          type: string
+          enum:
+          - FIXED
+          - LENGTH
+          - WIDTH
+          - SURFACE
+          - REQUIRED_CUTTING_AREA
+          - CUTTING_AREA
+        valueMin:
+          type: number
+          format: double
+        valueMax:
+          type: number
+          format: double
+    JsonResponseObject:
+      type: object
+      properties:
+        status:
+          type: string
+        data:
+          type: object
+        errors:
+          type: object
+        details:
+          type: object
+    ExportResult:
+      type: object
+      properties:
+        fileName:
+          type: string
+        extension:
+          type: string
+        exportPath:
+          type: string
+        methodName:
+          type: string
+    BoundingBoxDto:
+      type: object
+      properties:
+        x:
+          type: number
+          format: double
+        "y":
+          type: number
+          format: double
+        width:
+          type: number
+          format: double
+        height:
+          type: number
+          format: double
+    ChangeBoardGradeDto:
+      type: object
+      properties:
+        gradeId:
+          type: integer
+          format: int32
+        reason:
+          type: string
+        categories:
+          type: array
+          items:
+            type: integer
+            format: int32
+        userSelection:
+          $ref: "#/components/schemas/UserSelectionDto"
+    UserSelectionDto:
+      type: object
+      properties:
+        face1:
+          type: array
+          items:
+            $ref: "#/components/schemas/BoundingBoxDto"
+        face2:
+          type: array
+          items:
+            $ref: "#/components/schemas/BoundingBoxDto"
+    JsonResponseVoid:
+      type: object
+      properties:
+        status:
+          type: string
+        data:
+          type: object
+        errors:
+          type: object
+        details:
+          type: object
+    JsonResponseBatchSettingsDTO:
+      type: object
+      properties:
+        status:
+          type: string
+        data:
+          $ref: "#/components/schemas/BatchSettingsDTO"
+        errors:
+          type: object
+        details:
+          type: object
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    ChangePasswordRequest:
+      required:
+      - currentPassword
+      - newPassword
+      - verifyPassword
+      type: object
+      properties:
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+        verifyPassword:
+          type: string
+    JsonResponseListUnitMeasurementDto:
+      type: object
+      properties:
+        status:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/UnitMeasurementDto"
+        errors:
+          type: object
+        details:
+          type: object
+    UnitMeasurementDto:
+      type: object
+      properties:
+        type:
+          type: string
+        defaultName:
+          type: string
+        label:
+          type: string
+    Pageable:
+      type: object
+      properties:
+        page:
+          minimum: 0
+          type: integer
+          format: int32
+        size:
+          minimum: 1
+          type: integer
+          format: int32
+        sort:
+          type: array
+          items:
+            type: string
+    JsonResponseListCustomGradesDto:
+      type: object
+      properties:
+        status:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/CustomGradesDto"
+        errors:
+          type: object
+        details:
+          type: object
+    JsonResponseWrapperObject:
+      type: object
+      properties:
+        status:
+          type: string
+        data:
+          type: object
+        errors:
+          type: string
+    BoardShotDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        shotId:
+          type: integer
+          format: int32
+        createDate:
+          type: string
+          format: date-time
+    SseEmitter:
+      type: object
+      properties:
+        timeout:
+          type: integer
+          format: int64
+    BatchDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        specie:
+          $ref: "#/components/schemas/IdNameDto"
+        thickness:
+          $ref: "#/components/schemas/IdNameDto"
+        dryStatus:
+          $ref: "#/components/schemas/IdNameDto"
+        startDate:
+          type: string
+          format: date
+        closeDate:
+          type: string
+          format: date
+        status:
+          type: string
+          enum:
+          - BatchStatusDto.PLANNED
+          - BatchStatusDto.OPEN
+          - BatchStatusDto.CLOSED
+    JsonResponseListBatchDto:
+      type: object
+      properties:
+        status:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/BatchDto"
+        errors:
+          type: object
+        details:
+          type: object
+    BatchTemplateDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        specie:
+          $ref: "#/components/schemas/IdNameDto"
+        thickness:
+          $ref: "#/components/schemas/IdNameDto"
+    JsonResponseListBatchTemplateDto:
+      type: object
+      properties:
+        status:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/BatchTemplateDto"
+        errors:
+          type: object
+        details:
+          type: object
+    AttributeDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        specieId:
+          type: integer
+          format: int32
+        name:
+          type: string
+        type:
+          type: string
+        values:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdNameDto"

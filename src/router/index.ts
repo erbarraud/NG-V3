@@ -164,6 +164,15 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/api-test',
+    name: 'ApiTest',
+    component: () => import('../views/ApiTest.vue'),
+    meta: {
+      requiresAuth: false,
+      title: 'API Bridge Test'
+    }
+  },
+  {
     path: '/error/server',
     name: 'ServerError',
     component: ServerError
