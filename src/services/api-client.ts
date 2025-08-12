@@ -49,7 +49,12 @@ class ApiClient {
       return cached
     }
     
-    const queryString = params ? '?' + new URLSearchParams(params).toString() : ''
+    // Only add query string if params exists and has properties
+    let queryString = ''
+    if (params && Object.keys(params).length > 0) {
+      queryString = '?' + new URLSearchParams(params).toString()
+    }
+    
     const response = await this.adapter.request<T>(`${endpoint}${queryString}`, {
       method: 'GET'
     })

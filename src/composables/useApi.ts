@@ -13,8 +13,8 @@ interface UseApiReturn<T> {
   data: Ref<T | null>
   loading: Ref<boolean>
   error: Ref<Error | null>
-  execute: (params?: any) => Promise<void>
-  refresh: () => Promise<void>
+  execute: (params?: any) => Promise<V3Response<T> | null>
+  refresh: () => Promise<V3Response<T> | null>
 }
 
 export function useApi<T>(
@@ -38,9 +38,11 @@ export function useApi<T>(
       
       data.value = response.data
       options.onSuccess?.(response.data)
+      return response
     } catch (err) {
       error.value = err as Error
       options.onError?.(err)
+      return null
     } finally {
       loading.value = false
     }
@@ -50,7 +52,7 @@ export function useApi<T>(
     if (!options.cache) {
       apiClient.clearCache()
     }
-    await execute()
+    return await execute()
   }
 
   if (options.immediate) {
