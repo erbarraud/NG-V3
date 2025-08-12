@@ -4,6 +4,7 @@ import router from './router'
 import App from './App.vue'
 import { setupErrorHandler } from './plugins/errorHandler'
 import { usePerformance } from './composables/usePerformance'
+import { useAuthStore } from './stores/auth'
 import './index.css'
 
 const app = createApp(App)
@@ -17,6 +18,11 @@ const performance = usePerformance()
 
 app.use(pinia)
 app.use(router)
+
+// Initialize auth after pinia is set up
+const authStore = useAuthStore()
+authStore.initializeAuth()
+
 app.mount('#app')
 
 // Performance logging is disabled for cleaner development experience

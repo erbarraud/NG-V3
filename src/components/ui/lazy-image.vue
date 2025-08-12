@@ -140,13 +140,17 @@ const handleImageError = () => {
   imageLoaded.value = false
 }
 
-onMounted(async () => {
-  await nextTick()
-  if (props.loading === 'eager') {
-    shouldLoad.value = true
-  } else {
-    initIntersectionObserver()
+onMounted(() => {
+  const initializeImage = async () => {
+    await nextTick()
+    if (props.loading === 'eager') {
+      shouldLoad.value = true
+    } else {
+      initIntersectionObserver()
+    }
   }
+  
+  initializeImage()
 })
 
 onUnmounted(() => {

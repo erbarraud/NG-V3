@@ -46,7 +46,7 @@ class ApiAdapter {
   async request<T>(endpoint: string, options: RequestInit = {}): Promise<V3Response<T>> {
     try {
       const legacyEndpoint = this.mapToLegacyEndpoint(endpoint)
-      const legacyOptions = this.transformRequestOptions(options)
+      const legacyOptions = this.transformRequestOptions(options, endpoint)
       
       const response = await fetch(`${this.legacyBaseUrl}${legacyEndpoint}`, legacyOptions)
       
@@ -104,16 +104,34 @@ class ApiAdapter {
     return endpointMap[v3Endpoint] || v3Endpoint.replace('/api/v3', '')
   }
 
-  private transformRequestOptions(options: RequestInit): RequestInit {
+  private transformRequestOptions(options: RequestInit, endpoint?: string): RequestInit {
     const headers = new Headers(options.headers)
     
     if (!headers.has('Content-Type')) {
-      headers.set('Content-Type', 'application/json')
+      headers.set('Content-Type', 'application/json; charset=utf-8')
     }
     
-    const token = localStorage.getItem('auth_token')
-    if (token && !headers.has('Authorization')) {
-      headers.set('Authorization', `Bearer ${token}`)
+    if (!headers.has('Accept')) {
+      headers.set('Accept', 'application/json; charset=utf-8')
+    }
+    
+    // Only add auth headers for endpoints that explicitly require authentication
+    // Most lumber grading data endpoints should work without authentication for now
+    const requiresAuth = endpoint && (
+      endpoint.includes('/auth/') ||
+      endpoint.includes('/user') ||
+      endpoint.includes('/admin') ||
+      endpoint.includes('/private') ||
+      // Add other endpoints that specifically need authentication
+      endpoint.includes('/claims') ||
+      endpoint.includes('/shifts')
+    )
+    
+    if (requiresAuth) {
+      const token = localStorage.getItem('auth_token')
+      if (token && !headers.has('Authorization')) {
+        headers.set('Authorization', `Bearer ${token}`)
+      }
     }
     
     if (options.body && typeof options.body === 'object') {
@@ -188,8 +206,14 @@ class ApiAdapter {
   }
 
   private transformGrades(legacy: LegacyResponse): V3Response<any> {
-    const gradesData = legacy.data?.data || legacy.data || []
-    const grades = Array.isArray(gradesData) ? gradesData : []
+    let grades = []
+    
+    if ((legacy.status === 'success' || Number(legacy.status) === 200) && Array.isArray(legacy.data)) {
+      grades = legacy.data
+    } else if (legacy.data) {
+      const gradesData = legacy.data?.data || legacy.data || []
+      grades = Array.isArray(gradesData) ? gradesData : []
+    }
     
     return {
       data: grades,
@@ -201,8 +225,14 @@ class ApiAdapter {
   }
 
   private transformCustomGrades(legacy: LegacyResponse): V3Response<any> {
-    const gradesData = legacy.data?.data || legacy.data || []
-    const grades = Array.isArray(gradesData) ? gradesData : []
+    let grades = []
+    
+    if ((legacy.status === 'success' || Number(legacy.status) === 200) && Array.isArray(legacy.data)) {
+      grades = legacy.data
+    } else if (legacy.data) {
+      const gradesData = legacy.data?.data || legacy.data || []
+      grades = Array.isArray(gradesData) ? gradesData : []
+    }
     
     return {
       data: grades.map(grade => ({
@@ -220,8 +250,14 @@ class ApiAdapter {
   }
 
   private transformBatches(legacy: LegacyResponse): V3Response<any> {
-    const batchesData = legacy.data?.data || legacy.data || []
-    const batches = Array.isArray(batchesData) ? batchesData : []
+    let batches = []
+    
+    if ((legacy.status === 'success' || Number(legacy.status) === 200) && Array.isArray(legacy.data)) {
+      batches = legacy.data
+    } else if (legacy.data) {
+      const batchesData = legacy.data?.data || legacy.data || []
+      batches = Array.isArray(batchesData) ? batchesData : []
+    }
     
     return {
       data: batches.map(batch => ({
@@ -247,33 +283,66 @@ class ApiAdapter {
   }
 
   private transformBoards(legacy: LegacyResponse): V3Response<any> {
-    const wrapper = legacy.data || {}
-    const boardsData = wrapper.data || wrapper.boards || []
-    const boards = Array.isArray(boardsData) ? boardsData : []
+    // Handle backend response structure: { status: "success", data: [...] }
+    let boards = []
     
+    if ((legacy.status === 'success' || Number(legacy.status) === 200) && Array.isArray(legacy.data)) {
+      // Direct array response from backend
+      boards = legacy.data
+    } else if (legacy.data) {
+      // Wrapped response
+      const wrapper = legacy.data
+      boards = wrapper.data || wrapper.boards || []
+      if (!Array.isArray(boards)) {
+        boards = []
+      }
+    }
+    
+    // Return boards as direct array for client-side pagination
     return {
-      data: {
-        boards: boards.map(board => ({
+      data: boards.map(board => {
+        // Determine the actual grade based on validation results
+        let gradeId = board.gradeId
+        let gradeName = board.gradeName
+        
+        // If no direct gradeId, check validation results
+        if (!gradeId && board.grades && board.grades.length > 0) {
+          // Find the first valid grade, or default to Rebut if all fail
+          const validGrade = board.grades.find(g => g.valid === true)
+          if (validGrade) {
+            gradeId = validGrade.id
+          } else {
+            // All grades failed - this is a reject/rebut
+            gradeName = 'Rebut'
+            gradeId = 4 // Standard ID for Rebut from grades API
+          }
+        }
+        
+        return {
           id: board.id,
           shotId: board.shotId,
-          batchId: board.batchId,
+          batchId: board.batch?.id || board.batchId,
+          batchName: board.batch?.name,
           bundleId: board.bundleId,
-          gradeId: board.gradeId,
+          gradeId: gradeId,
+          gradeName: gradeName,
           customGradeId: board.customGradeId,
           length: board.length,
           width: board.width,
           thickness: board.thickness,
           surface: board.surface,
+          volume: board.volume?.value || board.volume,
+          volumeGraded: board.volumeGraded?.value || board.volumeGraded,
+          species: board.specie || board.species,
+          dryStatus: board.dryStatus,
           createDate: board.createDate,
           defects: board.defects || [],
-          faces: board.faces || []
-        })),
-        pagination: wrapper.pagination || {
-          page: wrapper.pageNumber || 0,
-          size: wrapper.pageSize || 10,
-          total: wrapper.totalElements || boards.length
+          face1: board.face1 || null,  // Include face1 directly
+          face2: board.face2 || null,  // Include face2 directly
+          faces: [board.face1, board.face2].filter(Boolean) || board.faces || [],
+          grades: board.grades || []
         }
-      },
+      }),
       meta: {
         timestamp: new Date().toISOString(),
         version: '3.0.0'
@@ -311,7 +380,10 @@ class ApiAdapter {
     // Handle the legacy response format which wraps data in a 'data' field
     let items = []
     
-    if (legacy.data) {
+    if ((legacy.status === 'success' || Number(legacy.status) === 200) && Array.isArray(legacy.data)) {
+      // Direct array response from backend with status
+      items = legacy.data
+    } else if (legacy.data) {
       // Check if it's already an array
       if (Array.isArray(legacy.data)) {
         items = legacy.data

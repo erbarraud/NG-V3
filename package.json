@@ -16,13 +16,16 @@
   },
   "dependencies": {
     "@vitejs/plugin-vue": "^5.1.4",
+    "@vueuse/core": "^13.6.0",
     "chart.js": "^4.5.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "fabric": "^6.7.1",
     "lucide-vue-next": "^0.525.0",
     "pinia": "^3.0.3",
+    "radix-vue": "^1.9.17",
     "tailwind-merge": "^3.3.1",
+    "vaul-vue": "^0.4.1",
     "vue": "^3.5.18",
     "vue-chartjs": "^5.3.2",
     "vue-router": "^4.5.1"

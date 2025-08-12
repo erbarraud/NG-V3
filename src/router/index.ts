@@ -194,16 +194,16 @@ const router = createRouter({
   routes
 })
 
-// Global navigation guard to initialize auth
-router.beforeEach(async (to, from, next) => {
-  // Initialize auth store on first navigation
-  if (!from.name) {
-    const { useAuthStore } = await import('@/stores/auth')
-    const authStore = useAuthStore()
-    authStore.initializeAuth()
-  }
-  
-  next()
-})
+// Note: Auth initialization is disabled for development
+// Global navigation guard would be here for production auth
+// router.beforeEach(async (to, from, next) => {
+//   // Initialize auth store on first navigation
+//   if (!from.name) {
+//     const { useAuthStore } = await import('@/stores/auth')
+//     const authStore = useAuthStore()
+//     authStore.initializeAuth()
+//   }
+//   next()
+// })
 
 export default router

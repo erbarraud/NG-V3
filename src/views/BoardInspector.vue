@@ -1,5 +1,20 @@
 <template>
   <div class="w-full px-4 sm:px-6 lg:px-8 py-6 bg-gray-50 min-h-screen">
+    <!-- Loading State -->
+    <div v-if="isLoading" class="flex justify-center items-center py-12">
+      <div class="text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+        <p class="text-gray-600">Loading board data...</p>
+      </div>
+    </div>
+    
+    <!-- Error State -->
+    <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+      <p class="text-red-700">{{ error }}</p>
+    </div>
+    
+    <!-- Main Content -->
+    <div v-else>
     <!-- Page Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
@@ -8,7 +23,7 @@
       </div>
       <div class="flex items-center space-x-4">
         <div class="text-right">
-          <div class="text-sm text-gray-600">Order: B-4873 - Red Oak 4/4 Premium</div>
+          <div class="text-sm text-gray-600" v-if="boardData">Order: {{ boardData.batchId || 'Unknown' }}</div>
         </div>
         <Button variant="outline" class="flex items-center">
           <List class="w-4 h-4 mr-2" />
@@ -27,8 +42,8 @@
             </div>
           </button>
           <div class="flex items-center space-x-3">
-            <h2 class="text-2xl font-bold text-gray-900">{{ currentBoardId }}</h2>
-            <span class="px-3 py-1 bg-emerald-600 text-white text-sm font-medium rounded-full">1COMMON</span>
+            <h2 class="text-2xl font-bold text-gray-900">Board #{{ currentBoardId }}</h2>
+            <span v-if="boardData" class="px-3 py-1 bg-emerald-600 text-white text-sm font-medium rounded-full">{{ getGradeName(boardData) }}</span>
             <button class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
               <ChevronRight class="w-5 h-5" />
             </button>
@@ -36,24 +51,24 @@
           <div class="flex items-center space-x-4 text-sm text-gray-600">
             <div class="flex items-center">
               <TreePine class="w-4 h-4 mr-1" />
-              <span>Red Oak</span>
+              <span>{{ boardData?.species || 'Unknown' }}</span>
             </div>
             <div class="flex items-center">
               <Droplets class="w-4 h-4 mr-1" />
-              <span>Kiln Dried</span>
+              <span>{{ boardData?.dryStatus || 'Unknown' }}</span>
             </div>
           </div>
         </div>
         <div class="text-right">
           <div class="text-sm text-gray-600">Value</div>
-          <div class="text-2xl font-bold text-gray-900">$4.90</div>
+          <div class="text-2xl font-bold text-gray-900" v-if="boardData">${{ (boardData.value || 0).toFixed(2) }}</div>
         </div>
       </div>
 
       <!-- Timestamp -->
       <div class="flex items-center text-sm text-gray-500 mb-6">
         <Clock class="w-4 h-4 mr-1" />
-        03/18/2025 3:58 PM
+        {{ boardData ? formatDate(boardData.scanDate || boardData.createDate) : 'N/A' }}
       </div>
 
       <!-- Board Specifications -->
@@ -64,7 +79,7 @@
               <Ruler class="w-5 h-5 text-amber-600 mr-1" />
               <span class="text-sm font-medium text-gray-700">Length</span>
             </div>
-            <div class="text-lg font-bold text-gray-900">8' 3 3/4"</div>
+            <div class="text-lg font-bold text-gray-900">{{ boardData ? formatLength(boardData.length) : 'N/A' }}</div>
           </div>
         </div>
         <div class="text-center">
@@ -73,7 +88,7 @@
               <ArrowLeftRight class="w-5 h-5 text-blue-600 mr-1" />
               <span class="text-sm font-medium text-gray-700">Width</span>
             </div>
-            <div class="text-lg font-bold text-gray-900">5 1/2"</div>
+            <div class="text-lg font-bold text-gray-900">{{ boardData ? formatLength(boardData.width) : 'N/A' }}</div>
           </div>
         </div>
         <div class="text-center">
@@ -82,7 +97,7 @@
               <Layers class="w-5 h-5 text-purple-600 mr-1" />
               <span class="text-sm font-medium text-gray-700">Thickness</span>
             </div>
-            <div class="text-lg font-bold text-gray-900">15/16"</div>
+            <div class="text-lg font-bold text-gray-900">{{ boardData ? formatLength(boardData.thickness) : 'N/A' }}</div>
           </div>
         </div>
         <div class="text-center">
@@ -91,7 +106,7 @@
               <Box class="w-5 h-5 text-green-600 mr-1" />
               <span class="text-sm font-medium text-gray-700">Volume</span>
             </div>
-            <div class="text-lg font-bold text-gray-900">4 bf</div>
+            <div class="text-lg font-bold text-gray-900">{{ boardData ? formatVolume(boardData) : 'N/A' }}</div>
           </div>
         </div>
         <div class="text-center">
@@ -100,7 +115,7 @@
               <AlertTriangle class="w-5 h-5 text-red-600 mr-1" />
               <span class="text-sm font-medium text-gray-700">Total Defects</span>
             </div>
-            <div class="text-lg font-bold text-gray-900">2</div>
+            <div class="text-lg font-bold text-gray-900">{{ boardData?.defects?.length || 0 }}</div>
           </div>
         </div>
         <div class="text-center">
@@ -140,7 +155,10 @@
           <XCircle class="w-4 h-4 mr-2" />
           Disagree with NG AI
         </button>
-        <button class="flex items-center px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border-2 border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+        <button 
+          @click="showRejectionRules = true"
+          class="flex items-center px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border-2 border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+        >
           <FileText class="w-4 h-4 mr-2" />
           See rejected rules
         </button>
@@ -164,7 +182,8 @@
           style="overflow: visible;"
         >
           <img 
-            src="/image.png" 
+            :key="`face1-${imageKeys.face1}`"
+            :src="boardImageUrl('face1')" 
             alt="Board Face 1" 
             class="w-full h-auto object-contain"
             ref="face1Image"
@@ -191,13 +210,19 @@
           :key="defect.name"
           @click="toggleDefect('face1', defect.name)"
           :class="[
-            'px-3 py-1 text-sm font-medium rounded-full transition-all duration-200 border-2',
+            'px-2 py-1 text-sm rounded-full transition-all duration-200 border flex items-center gap-1.5',
             isDefectVisible('face1', defect.name)
-              ? `${defect.activeClass} ${defect.activeBorder} shadow-md`
-              : `${defect.inactiveClass} ${defect.inactiveBorder} opacity-50 hover:opacity-75`
+              ? 'bg-white border-gray-400 text-gray-800'
+              : 'bg-gray-50 border-gray-200 text-gray-500 opacity-60 hover:opacity-100'
           ]"
+          :title="`${defect.count} ${defect.name} defect(s) detected`"
         >
-          {{ defect.name }}
+          <div 
+            class="w-2 h-2 rounded-full" 
+            :style="`background-color: ${defect.color}`"
+          ></div>
+          <span>{{ defect.name }}</span>
+          <span v-if="defect.count > 0" class="text-xs text-gray-500">({{ defect.count }})</span>
         </button>
       </div>
     </div>
@@ -215,7 +240,8 @@
           style="overflow: visible;"
         >
           <img 
-            src="/image.png" 
+            :key="`face2-${imageKeys.face2}`"
+            :src="boardImageUrl('face2')" 
             alt="Board Face 2" 
             class="w-full h-auto object-contain"
             ref="face2Image"
@@ -242,13 +268,19 @@
           :key="defect.name"
           @click="toggleDefect('face2', defect.name)"
           :class="[
-            'px-3 py-1 text-sm font-medium rounded-full transition-all duration-200 border-2',
+            'px-2 py-1 text-sm rounded-full transition-all duration-200 border flex items-center gap-1.5',
             isDefectVisible('face2', defect.name)
-              ? `${defect.activeClass} ${defect.activeBorder} shadow-md`
-              : `${defect.inactiveClass} ${defect.inactiveBorder} opacity-50 hover:opacity-75`
+              ? 'bg-white border-gray-400 text-gray-800'
+              : 'bg-gray-50 border-gray-200 text-gray-500 opacity-60 hover:opacity-100'
           ]"
+          :title="`${defect.count} ${defect.name} defect(s) detected`"
         >
-          {{ defect.name }}
+          <div 
+            class="w-2 h-2 rounded-full" 
+            :style="`background-color: ${defect.color}`"
+          ></div>
+          <span>{{ defect.name }}</span>
+          <span v-if="defect.count > 0" class="text-xs text-gray-500">({{ defect.count }})</span>
         </button>
       </div>
     </div>
@@ -310,6 +342,7 @@
             <Search class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
             <input
               type="text"
+              v-model="previousBoardsSearch"
               placeholder="Search boards..."
               class="pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 w-64"
             />
@@ -330,191 +363,99 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr class="hover:bg-gray-50">
+            <tr v-for="board in filteredPreviousBoards" :key="board.id" class="hover:bg-gray-50">
               <td class="px-6 py-4 whitespace-nowrap">
                 <router-link 
-                  to="/inspector/BRD-58918"
+                  :to="`/board-inspector/${board.id}`"
                   class="text-sm font-medium text-emerald-600 hover:text-emerald-800 hover:underline"
                 >
-                  BRD-58918
+                  Board #{{ board.id }}
                 </router-link>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">03/18/2025 3:40 PM</div>
+                <div class="text-sm text-gray-900">{{ formatDate(board.createDate || board.scanDate) }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-emerald-100 text-emerald-800">
-                  1COMMON
+                <span v-if="board.gradeId" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-emerald-100 text-emerald-800">
+                  {{ board.gradeId }}
                 </span>
+                <span v-else class="text-sm text-gray-500">-</span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-500">-</div>
+                <div v-if="board.defects && board.defects.length > 0" class="flex items-center space-x-2">
+                  <span class="text-xs text-gray-700">{{ board.defects.length }} defect(s)</span>
+                </div>
+                <div v-else class="text-sm text-gray-500">-</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex items-center space-x-2">
                   <button class="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-100" title="Reprocess">
                     <RotateCcw class="w-4 h-4" />
                   </button>
-                  <button class="text-emerald-600 hover:text-emerald-800 text-sm">View</button>
+                  <button @click="navigateToBoard(board.id)" class="text-emerald-600 hover:text-emerald-800 text-sm">View</button>
                 </div>
               </td>
             </tr>
-            <tr class="hover:bg-gray-50">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <router-link 
-                  to="/inspector/BRD-58917"
-                  class="text-sm font-medium text-emerald-600 hover:text-emerald-800 hover:underline"
-                >
-                  BRD-58917
-                </router-link>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">03/18/2025 3:40 PM</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-emerald-100 text-emerald-800">
-                  1COMMON
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center space-x-2">
-                  <span class="px-2 py-1 text-xs rounded bg-red-100 text-red-800">Knot</span>
-                  <span class="text-xs text-gray-500">+1</span>
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div class="flex items-center space-x-2">
-                  <button class="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-100" title="Reprocess">
-                    <RotateCcw class="w-4 h-4" />
-                  </button>
-                  <button class="text-emerald-600 hover:text-emerald-800 text-sm">View</button>
-                </div>
-              </td>
-            </tr>
-            <tr class="hover:bg-gray-50">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <router-link 
-                  to="/inspector/BRD-58916"
-                  class="text-sm font-medium text-emerald-600 hover:text-emerald-800 hover:underline"
-                >
-                  BRD-58916
-                </router-link>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">03/18/2025 3:39 PM</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-emerald-100 text-emerald-800">
-                  1COMMON
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center space-x-2">
-                  <span class="px-2 py-1 text-xs rounded bg-red-100 text-red-800">Knot</span>
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div class="flex items-center space-x-2">
-                  <button class="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-100" title="Reprocess">
-                    <RotateCcw class="w-4 h-4" />
-                  </button>
-                  <button class="text-emerald-600 hover:text-emerald-800 text-sm">View</button>
-                </div>
-              </td>
-            </tr>
-            <tr class="hover:bg-gray-50">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <router-link 
-                  to="/inspector/BRD-58915"
-                  class="text-sm font-medium text-emerald-600 hover:text-emerald-800 hover:underline"
-                >
-                  BRD-58915
-                </router-link>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">03/18/2025 3:39 PM</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-emerald-100 text-emerald-800">
-                  1COMMON
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center space-x-2">
-                  <span class="px-2 py-1 text-xs rounded bg-orange-100 text-orange-800">Split</span>
-                  <span class="text-xs text-gray-500">+1</span>
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div class="flex items-center space-x-2">
-                  <button class="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-100" title="Reprocess">
-                    <RotateCcw class="w-4 h-4" />
-                  </button>
-                  <button class="text-emerald-600 hover:text-emerald-800 text-sm">View</button>
-                </div>
-              </td>
-            </tr>
-            <tr class="hover:bg-gray-50">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <router-link 
-                  to="/inspector/BRD-58914"
-                  class="text-sm font-medium text-emerald-600 hover:text-emerald-800 hover:underline"
-                >
-                  BRD-58914
-                </router-link>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">03/18/2025 3:38 PM</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                  2COMMON
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center space-x-2">
-                  <span class="px-2 py-1 text-xs rounded bg-red-100 text-red-800">Knot</span>
-                  <span class="text-xs text-gray-500">+2</span>
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div class="flex items-center space-x-2">
-                  <button class="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-100" title="Reprocess">
-                    <RotateCcw class="w-4 h-4" />
-                  </button>
-                  <button class="text-emerald-600 hover:text-emerald-800 text-sm">View</button>
-                </div>
+            <tr v-if="filteredPreviousBoards.length === 0">
+              <td colspan="5" class="px-6 py-8 text-center text-sm text-gray-500">
+                No previously scanned boards found
               </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
+    </div> <!-- End of main content v-else -->
   </div>
+  
+  <!-- Rejection Rules Modal -->
+  <RejectionRulesModal 
+    v-model="showRejectionRules" 
+    :board="boardData"
+    :grades="availableGrades"
+  />
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { 
   Clock, Ruler, Layers, TreePine, Droplets,
   ZoomIn, EyeOff, CheckCircle, XCircle, FileText, BookOpen, List,
   Search, RotateCcw, ArrowLeftRight, Box, AlertTriangle, TrendingUp
 } from 'lucide-vue-next'
 import Button from '@/components/ui/button.vue'
+import RejectionRulesModal from '@/components/board/RejectionRulesModal.vue'
+import { useApi } from '@/composables/useApi'
 
 const route = useRoute()
+const router = useRouter()
 
-// Get board ID from route params or default
-const currentBoardId = computed(() => route.params.boardId || 'BRD-4625')
+// Get board ID from route params
+const currentBoardId = computed(() => route.params.id)
+
+// Board data
+const boardData = ref(null)
+const isLoading = ref(false)
+const error = ref(null)
+const previousBoards = ref([])
+const previousBoardsSearch = ref('')
+const showRejectionRules = ref(false)
+const availableGrades = ref([])
+
+// API composables
+const { execute: fetchBoardDetails } = useApi(`/api/v3/boards`)
+const { execute: fetchAllBoards } = useApi('/api/v3/boards')
+const { execute: fetchGrades } = useApi('/api/v3/grades')
 
 // Magnifier state
 const magnifierEnabled = ref(false)
 const showMagnifier = ref(false)
 const mousePosition = ref({ x: 0, y: 0 })
 const activeMagnifierBoard = ref(null) // Track which board has active magnifier
-const magnifierSize = 200
-const magnificationLevel = 2.5
+const magnifierSize = 250  // Increased size for better visibility
+const magnificationLevel = 1.2  // Fixed zoom level at 1.2x (20% magnification)
+const useImageSmoothing = ref(true)  // Toggle for image smoothing
 
 // Template refs
 const face1Container = ref(null)
@@ -522,96 +463,34 @@ const face2Container = ref(null)
 const face1Image = ref(null)
 const face2Image = ref(null)
 
-// Defect types with styling
-const face1DefectTypes = ref([
-  { 
-    name: 'Knot', 
-    activeClass: 'bg-red-500 text-white', 
-    activeBorder: 'border-red-600',
-    inactiveClass: 'bg-red-50 text-red-700', 
-    inactiveBorder: 'border-red-200'
-  },
-  { 
-    name: 'Split', 
-    activeClass: 'bg-orange-500 text-white', 
-    activeBorder: 'border-orange-600',
-    inactiveClass: 'bg-orange-50 text-orange-700', 
-    inactiveBorder: 'border-orange-200'
-  },
-  { 
-    name: 'Wane', 
-    activeClass: 'bg-amber-500 text-white', 
-    activeBorder: 'border-amber-600',
-    inactiveClass: 'bg-amber-50 text-amber-700', 
-    inactiveBorder: 'border-amber-200'
-  },
-  { 
-    name: 'Stain', 
-    activeClass: 'bg-violet-500 text-white', 
-    activeBorder: 'border-violet-600',
-    inactiveClass: 'bg-violet-50 text-violet-700', 
-    inactiveBorder: 'border-violet-200'
-  },
-  { 
-    name: 'Pitch Pocket', 
-    activeClass: 'bg-blue-500 text-white', 
-    activeBorder: 'border-blue-600',
-    inactiveClass: 'bg-blue-50 text-blue-700', 
-    inactiveBorder: 'border-blue-200'
-  },
-  { 
-    name: 'Shake', 
-    activeClass: 'bg-slate-500 text-white', 
-    activeBorder: 'border-slate-600',
-    inactiveClass: 'bg-slate-50 text-slate-700', 
-    inactiveBorder: 'border-slate-200'
-  }
-])
+// Defect types will be populated from board data
+const face1DefectTypes = computed(() => {
+  if (!boardData.value?.face1?.defects) return []
+  
+  return boardData.value.face1.defects.map(defect => ({
+    name: defect.name,
+    color: defect.color,
+    count: defect.defects?.length || 0,
+    activeClass: 'bg-emerald-500 text-white',
+    activeBorder: 'border-emerald-600',
+    inactiveClass: 'bg-gray-100 text-gray-700',
+    inactiveBorder: 'border-gray-300'
+  }))
+})
 
-const face2DefectTypes = ref([
-  { 
-    name: 'Knot', 
-    activeClass: 'bg-red-500 text-white', 
-    activeBorder: 'border-red-600',
-    inactiveClass: 'bg-red-50 text-red-700', 
-    inactiveBorder: 'border-red-200'
-  },
-  { 
-    name: 'Split', 
-    activeClass: 'bg-orange-500 text-white', 
-    activeBorder: 'border-orange-600',
-    inactiveClass: 'bg-orange-50 text-orange-700', 
-    inactiveBorder: 'border-orange-200'
-  },
-  { 
-    name: 'Wane', 
-    activeClass: 'bg-amber-500 text-white', 
-    activeBorder: 'border-amber-600',
-    inactiveClass: 'bg-amber-50 text-amber-700', 
-    inactiveBorder: 'border-amber-200'
-  },
-  { 
-    name: 'Stain', 
-    activeClass: 'bg-violet-500 text-white', 
-    activeBorder: 'border-violet-600',
-    inactiveClass: 'bg-violet-50 text-violet-700', 
-    inactiveBorder: 'border-violet-200'
-  },
-  { 
-    name: 'Pitch Pocket', 
-    activeClass: 'bg-blue-500 text-white', 
-    activeBorder: 'border-blue-600',
-    inactiveClass: 'bg-blue-50 text-blue-700', 
-    inactiveBorder: 'border-blue-200'
-  },
-  { 
-    name: 'Shake', 
-    activeClass: 'bg-slate-500 text-white', 
-    activeBorder: 'border-slate-600',
-    inactiveClass: 'bg-slate-50 text-slate-700', 
-    inactiveBorder: 'border-slate-200'
-  }
-])
+const face2DefectTypes = computed(() => {
+  if (!boardData.value?.face2?.defects) return []
+  
+  return boardData.value.face2.defects.map(defect => ({
+    name: defect.name,
+    color: defect.color,
+    count: defect.defects?.length || 0,
+    activeClass: 'bg-emerald-500 text-white',
+    activeBorder: 'border-emerald-600',
+    inactiveClass: 'bg-gray-100 text-gray-700',
+    inactiveBorder: 'border-gray-300'
+  }))
+})
 
 // Toggle magnifier
 const toggleMagnifier = () => {
@@ -655,10 +534,16 @@ const onImageLoad = () => {
   // Image loaded, magnifier ready
 }
 
-// Defect visibility state
+// Defect visibility state - start with all defects visible
 const visibleDefects = ref({
-  face1: new Set(['Knot', 'Split', 'Wane', 'Stain', 'Pitch Pocket', 'Shake']),
-  face2: new Set(['Knot', 'Split', 'Wane', 'Stain', 'Pitch Pocket', 'Shake'])
+  face1: new Set(),
+  face2: new Set()
+})
+
+// Image keys to force reload when defects toggle
+const imageKeys = ref({
+  face1: 0,
+  face2: 0
 })
 
 // Toggle defect visibility
@@ -668,6 +553,9 @@ function toggleDefect(face, defectName) {
   } else {
     visibleDefects.value[face].add(defectName)
   }
+  
+  // Force image reload by changing the key
+  imageKeys.value[face]++
 }
 
 // Check if defect is visible
@@ -736,11 +624,202 @@ const magnifiedImageStyle = computed(() => {
   const backgroundWidth = activeImage.naturalWidth * magnificationLevel
   const backgroundHeight = activeImage.naturalHeight * magnificationLevel
   
+  // Choose rendering mode based on smoothing preference
+  const renderingMode = useImageSmoothing.value 
+    ? 'auto'  // Smooth scaling
+    : 'pixelated'  // Crisp pixels
+  
   return {
-    // Use the same image for both boards
-    backgroundImage: 'url(/image.png)',
+    // Use high-res images for the magnifier
+    backgroundImage: activeMagnifierBoard.value === 'face1' 
+      ? `url(${boardImageUrl('face1', true)})` 
+      : `url(${boardImageUrl('face2', true)})`,
     backgroundSize: `${backgroundWidth}px ${backgroundHeight}px`,
-    backgroundPosition: `${backgroundX}px ${backgroundY}px`
+    backgroundPosition: `${backgroundX}px ${backgroundY}px`,
+    // Add image rendering optimizations
+    imageRendering: renderingMode,
+    '-webkit-image-rendering': renderingMode === 'auto' ? 'auto' : '-webkit-optimize-contrast',
+    '-moz-image-rendering': renderingMode === 'auto' ? 'auto' : '-moz-crisp-edges',
+    'transform': 'translateZ(0) scale(1.001)',  // Hardware acceleration with micro-scale to force smoothing
+    'backface-visibility': 'hidden',  // Reduce flickering
+    'filter': useImageSmoothing.value ? 'contrast(1.02) brightness(1.01)' : 'none'  // Subtle enhancement
   }
+})
+
+// Load board data from API
+const loadBoardData = async () => {
+  if (!currentBoardId.value) {
+    error.value = 'No board ID provided'
+    return
+  }
+  
+  isLoading.value = true
+  error.value = null
+  
+  try {
+    // Fetch all boards and find the one with matching ID
+    const response = await fetchBoardDetails()
+    
+    if (response && response.data) {
+      const boards = Array.isArray(response.data) ? response.data : response.data.boards || []
+      
+      // Find board with matching ID
+      boardData.value = boards.find(b => {
+        const boardId = b.id?.toString()
+        const targetId = currentBoardId.value?.toString()
+        return boardId === targetId
+      })
+      
+      if (boardData.value) {
+        // Initialize all defects as visible
+        if (boardData.value.face1?.defects) {
+          visibleDefects.value.face1 = new Set(boardData.value.face1.defects.map(d => d.name))
+        }
+        if (boardData.value.face2?.defects) {
+          visibleDefects.value.face2 = new Set(boardData.value.face2.defects.map(d => d.name))
+        }
+        
+        // Preload high-res images for better magnifier quality
+        preloadHighResImages()
+      } else {
+        error.value = `Board ${currentBoardId.value} not found`
+      }
+    } else {
+      error.value = 'Failed to load board data'
+    }
+  } catch (err) {
+    console.error('Error loading board:', err)
+    error.value = 'Failed to load board data'
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Format length to metric (cm)
+const formatLength = (value) => {
+  if (!value) return 'N/A'
+  if (typeof value === 'object' && value.value) {
+    const rawValue = parseFloat(value.value)
+    const unit = value.unit || 'cm'
+    if (unit === 'cm') {
+      return `${rawValue.toFixed(1)} cm`
+    } else if (unit === 'mm') {
+      const cm = rawValue / 10
+      return `${cm.toFixed(1)} cm`
+    }
+    return `${rawValue.toFixed(1)} ${unit}`
+  }
+  const cm = value / 10
+  return `${cm.toFixed(1)} cm`
+}
+
+// Format volume
+const formatVolume = (board) => {
+  if (!board) return 'N/A'
+  const volume = board.volumeGraded || (board.length * board.width * board.thickness) / 1000000000
+  return `${volume.toFixed(4)} m³`
+}
+
+// Check if any defects should be shown
+const shouldShowDefects = (face) => {
+  return visibleDefects.value[face].size > 0
+}
+
+// Track failed image URLs to avoid retrying
+const failedImages = ref(new Set())
+
+// Get board image URL (with or without defect overlays)
+const boardImageUrl = (face, highRes = false) => {
+  if (!boardData.value || !boardData.value.id) return '/boardpic.png'
+  
+  // Use the same approach as BoardFinder - render endpoint
+  const proxyPath = '/api/legacy'
+  const faceNum = face === 'face1' ? '1' : '2'
+  
+  // Use the render endpoint which works in BoardFinder
+  return `${proxyPath}/ui/images/render/board/${boardData.value.id}/face${faceNum}/original`
+}
+
+// Preload high-resolution images for magnifier
+const preloadHighResImages = () => {
+  if (!boardData.value || !boardData.value.id) return
+  
+  // Preload images silently
+  const img1 = new Image()
+  img1.src = boardImageUrl('face1', true)
+  
+  const img2 = new Image()
+  img2.src = boardImageUrl('face2', true)
+}
+
+// Get grade name
+const getGradeName = (board) => {
+  if (!board) return 'Unknown'
+  // You might need to fetch grade names from API
+  return board.gradeName || board.gradeId || 'Unknown'
+}
+
+// Format date
+const formatDate = (dateStr) => {
+  if (!dateStr) return 'N/A'
+  return new Date(dateStr).toLocaleString()
+}
+
+// Load grades from API
+const loadGrades = async () => {
+  try {
+    const response = await fetchGrades()
+    if (response && response.data) {
+      availableGrades.value = Array.isArray(response.data) ? response.data : []
+    }
+  } catch (err) {
+    console.error('Error loading grades:', err)
+  }
+}
+
+// Load previously scanned boards
+const loadPreviousBoards = async () => {
+  try {
+    const response = await fetchAllBoards()
+    if (response && response.data) {
+      const boards = Array.isArray(response.data) ? response.data : response.data.boards || []
+      // Sort by scan date and take most recent 10
+      previousBoards.value = boards
+        .sort((a, b) => new Date(b.createDate || b.scanDate) - new Date(a.createDate || a.scanDate))
+        .slice(0, 10)
+    }
+  } catch (err) {
+    console.error('Error loading previous boards:', err)
+  }
+}
+
+// Filtered previous boards based on search
+const filteredPreviousBoards = computed(() => {
+  if (!previousBoardsSearch.value) return previousBoards.value
+  
+  const query = previousBoardsSearch.value.toLowerCase()
+  return previousBoards.value.filter(board => 
+    board.id?.toString().toLowerCase().includes(query)
+  )
+})
+
+// Navigate to board
+const navigateToBoard = (boardId) => {
+  router.push(`/board-inspector/${boardId}`)
+}
+
+// Watch for route changes to reload board data
+watch(() => route.params.id, (newId) => {
+  if (newId) {
+    loadBoardData()
+  }
+})
+
+// Initialize on mount
+onMounted(() => {
+  // Wrap async operations to avoid lifecycle warnings
+  loadBoardData()
+  loadPreviousBoards()
+  loadGrades()
 })
 </script>

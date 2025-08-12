@@ -400,25 +400,29 @@ const sampleOrders = {
   }
 }
 
-onMounted(async () => {
-  try {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    const orderId = route.params.orderId
-    const foundOrder = sampleOrders[orderId]
-    
-    if (foundOrder) {
-      order.value = foundOrder
-      orderNotes.value = foundOrder.notes || ''
-    } else {
-      error.value = `Order ${orderId} not found. Please check the order ID and try again.`
+onMounted(() => {
+  const initializeOrder = async () => {
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      const orderId = route.params.orderId
+      const foundOrder = sampleOrders[orderId]
+      
+      if (foundOrder) {
+        order.value = foundOrder
+        orderNotes.value = foundOrder.notes || ''
+      } else {
+        error.value = `Order ${orderId} not found. Please check the order ID and try again.`
+      }
+    } catch (err) {
+      error.value = 'Failed to load order details. Please try again later.'
+    } finally {
+      loading.value = false
     }
-  } catch (err) {
-    error.value = 'Failed to load order details. Please try again later.'
-  } finally {
-    loading.value = false
   }
+  
+  initializeOrder()
 })
 
 const getStatusVariant = (status) => {

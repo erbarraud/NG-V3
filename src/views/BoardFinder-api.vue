@@ -14,7 +14,7 @@
             <Search class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search by board ID..."
+              placeholder="Search boards by ID, batch, or grade..."
               v-model="searchQuery"
               @input="debouncedSearch"
               class="pl-10 pr-3 py-2 w-full border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-ring"
@@ -60,13 +60,13 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Order Filter -->
+        <!-- Batch Filter -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Order</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Batch</label>
           <select v-model="filters.batchId" @change="loadBoards" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-            <option value="">All Orders</option>
-            <option v-for="order in availableOrders" :key="order.id" :value="order.id">
-              {{ order.name }} ({{ order.status }})
+            <option value="">All Batches</option>
+            <option v-for="batch in availableBatches" :key="batch.id" :value="batch.id">
+              {{ batch.name }} ({{ batch.status }})
             </option>
           </select>
         </div>
@@ -151,10 +151,7 @@
       <!-- Filter Summary -->
       <div v-if="hasActiveFilters" class="mt-4 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
         <div class="text-sm text-emerald-700">
-          <strong>{{ totalBoards }}</strong> board(s) match your current filters
-          <span v-if="searchQuery" class="ml-2 font-mono bg-white px-2 py-1 rounded">
-            Search: "{{ searchQuery }}"
-          </span>
+          <strong>{{ boards.length }}</strong> board(s) match your current filters
         </div>
       </div>
     </div>
@@ -225,7 +222,7 @@
                   </div>
                 </div>
                 <div class="text-xs text-gray-500 mt-1">
-                  <span v-if="board.batchId">Order {{ board.batchId }}</span>
+                  <span v-if="board.batchId">Batch {{ board.batchId }}</span>
                   <span v-if="board.bundleId" class="ml-2">Bundle {{ board.bundleId }}</span>
                 </div>
                 <div class="text-xs text-gray-400 mt-1">
@@ -258,138 +255,101 @@
                   Custom: {{ selectedBoard.customGradeId }}
                 </span>
               </div>
-              <!-- Date stamp in top right -->
-              <div class="text-sm text-gray-500">
-                Scanned: {{ formatDate(selectedBoard.createDate) }}
-              </div>
             </div>
 
             <!-- Divider -->
             <div class="border-b border-gray-200 mb-8"></div>
 
-            <!-- All KPI Cards in One Row (now 8 cards instead of 9) -->
-            <div class="grid grid-cols-4 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-8">
-              <!-- Dimensions -->
-              <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                <div class="flex flex-col items-center">
-                  <Ruler class="w-4 h-4 text-gray-600 mb-1" />
-                  <span class="text-xs text-gray-600">Length</span>
-                  <div class="text-sm font-bold text-gray-900 mt-1">{{ formatLength(selectedBoard.length) }}</div>
+            <!-- Board Specifications -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+              <div class="text-center">
+                <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                  <div class="flex items-center justify-center mb-2">
+                    <Ruler class="w-5 h-5 text-amber-600 mr-1" />
+                    <span class="text-sm font-medium text-gray-700">Length</span>
+                  </div>
+                  <div class="text-lg font-bold text-gray-900">{{ formatLength(selectedBoard.length) }}</div>
                 </div>
               </div>
-              
-              <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                <div class="flex flex-col items-center">
-                  <ArrowLeftRight class="w-4 h-4 text-gray-600 mb-1" />
-                  <span class="text-xs text-gray-600">Width</span>
-                  <div class="text-sm font-bold text-gray-900 mt-1">{{ formatLength(selectedBoard.width) }}</div>
+              <div class="text-center">
+                <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                  <div class="flex items-center justify-center mb-2">
+                    <ArrowLeftRight class="w-5 h-5 text-blue-600 mr-1" />
+                    <span class="text-sm font-medium text-gray-700">Width</span>
+                  </div>
+                  <div class="text-lg font-bold text-gray-900">{{ formatLength(selectedBoard.width) }}</div>
                 </div>
               </div>
-              
-              <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                <div class="flex flex-col items-center">
-                  <Layers class="w-4 h-4 text-gray-600 mb-1" />
-                  <span class="text-xs text-gray-600">Thickness</span>
-                  <div class="text-sm font-bold text-gray-900 mt-1">{{ formatLength(selectedBoard.thickness) }}</div>
+              <div class="text-center">
+                <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                  <div class="flex items-center justify-center mb-2">
+                    <Layers class="w-5 h-5 text-purple-600 mr-1" />
+                    <span class="text-sm font-medium text-gray-700">Thickness</span>
+                  </div>
+                  <div class="text-lg font-bold text-gray-900">{{ formatLength(selectedBoard.thickness) }}</div>
                 </div>
               </div>
-              
-              <!-- Volume -->
-              <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                <div class="flex flex-col items-center">
-                  <Box class="w-4 h-4 text-gray-600 mb-1" />
-                  <span class="text-xs text-gray-600">Volume</span>
-                  <div class="text-sm font-bold text-gray-900 mt-1">{{ formatVolume(selectedBoard) }}</div>
-                </div>
-              </div>
-              
-              <!-- Value -->
-              <div class="bg-green-50 rounded-lg p-3 border border-green-200">
-                <div class="flex flex-col items-center">
-                  <DollarSign class="w-4 h-4 text-green-600 mb-1" />
-                  <span class="text-xs text-gray-600">Value</span>
-                  <div class="text-sm font-bold text-green-700 mt-1">${{ calculateValue(selectedBoard) }}</div>
-                </div>
-              </div>
-              
-              <!-- Yield -->
-              <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                <div class="flex flex-col items-center">
-                  <Percent class="w-4 h-4 text-gray-600 mb-1" />
-                  <span class="text-xs text-gray-600">Yield</span>
-                  <div class="text-sm font-bold text-gray-900 mt-1">{{ calculateYield(selectedBoard) }}%</div>
-                </div>
-              </div>
-              
-              <!-- Defects -->
-              <div :class="(selectedBoard.defects?.length || 0) > 0 ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'" class="rounded-lg p-3 border">
-                <div class="flex flex-col items-center">
-                  <AlertTriangle :class="(selectedBoard.defects?.length || 0) > 0 ? 'text-red-500' : 'text-gray-500'" class="w-4 h-4 mb-1" />
-                  <span class="text-xs text-gray-600">Defects</span>
-                  <div :class="(selectedBoard.defects?.length || 0) > 0 ? 'text-red-700' : 'text-gray-900'" class="text-sm font-bold mt-1">{{ selectedBoard.defects?.length || 0 }}</div>
-                </div>
-              </div>
-              
-              <!-- Faces -->
-              <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                <div class="flex flex-col items-center">
-                  <Maximize2 class="w-4 h-4 text-gray-500 mb-1" />
-                  <span class="text-xs text-gray-600">Faces</span>
-                  <div class="text-sm font-bold text-gray-900 mt-1">{{ selectedBoard.faces?.length || 0 }}</div>
+              <div class="text-center">
+                <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                  <div class="flex items-center justify-center mb-2">
+                    <Box class="w-5 h-5 text-green-600 mr-1" />
+                    <span class="text-sm font-medium text-gray-700">Surface</span>
+                  </div>
+                  <div class="text-lg font-bold text-gray-900">{{ formatSurface(selectedBoard.surface) }}</div>
                 </div>
               </div>
             </div>
 
-            <!-- Board Images -->
-            <div class="space-y-4 mb-6">
-              <div v-if="boardImages && boardImages.length > 0">
-                <div v-for="(image, index) in boardImages" :key="index" class="mb-4">
-                  <div class="flex items-center gap-2 mb-2">
-                    <h5 class="text-md font-medium text-gray-700">{{ image.faceName }}</h5>
-                    <!-- Grading face indicator -->
-                    <span v-if="selectedBoard.gradingFace === index + 1 || (index === 0 && !selectedBoard.gradingFace)" 
-                          class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-medium rounded-full">
-                      Grading Face
-                    </span>
-                  </div>
-                  <div class="border border-gray-300 bg-gray-100">
-                    <img 
-                      :src="image.url" 
-                      :alt="`Board ${selectedBoard.id} - ${image.faceName}`"
-                      class="w-full h-auto"
-                      @error="handleImageError"
-                    />
-                  </div>
-                </div>
+            <!-- Board Metadata -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+              <div class="bg-gray-50 rounded-lg p-3">
+                <div class="text-xs text-gray-500 mb-1">Shot ID</div>
+                <div class="font-semibold text-gray-900">{{ selectedBoard.shotId || 'N/A' }}</div>
               </div>
-              <div v-else class="flex justify-center items-center py-8 bg-gray-50 rounded-lg">
-                <LoadingSpinner class="w-6 h-6 text-gray-400" />
-                <span class="ml-2 text-gray-500">Loading board images...</span>
+              <div class="bg-gray-50 rounded-lg p-3">
+                <div class="text-xs text-gray-500 mb-1">Batch</div>
+                <div class="font-semibold text-gray-900">{{ selectedBoard.batchId || 'N/A' }}</div>
+              </div>
+              <div class="bg-gray-50 rounded-lg p-3">
+                <div class="text-xs text-gray-500 mb-1">Bundle</div>
+                <div class="font-semibold text-gray-900">{{ selectedBoard.bundleId || 'N/A' }}</div>
+              </div>
+              <div class="bg-gray-50 rounded-lg p-3">
+                <div class="text-xs text-gray-500 mb-1">Created</div>
+                <div class="font-semibold text-gray-900">{{ formatDate(selectedBoard.createDate) }}</div>
+              </div>
+              <div class="bg-gray-50 rounded-lg p-3">
+                <div class="text-xs text-gray-500 mb-1">Defects</div>
+                <div class="font-semibold text-gray-900">{{ selectedBoard.defects?.length || 0 }}</div>
+              </div>
+              <div class="bg-gray-50 rounded-lg p-3">
+                <div class="text-xs text-gray-500 mb-1">Faces</div>
+                <div class="font-semibold text-gray-900">{{ selectedBoard.faces?.length || 0 }}</div>
+              </div>
+            </div>
+
+            <!-- Board Images (if available) -->
+            <div v-if="boardImages && boardImages.length > 0" class="space-y-4 mb-6">
+              <h4 class="text-lg font-semibold text-gray-900 mb-2">Board Images</h4>
+              <div v-for="(image, index) in boardImages" :key="index">
+                <h5 class="text-md font-medium text-gray-700 mb-2">{{ image.faceName }}</h5>
+                <div class="border border-gray-300 rounded-lg overflow-hidden bg-gray-100">
+                  <img 
+                    :src="image.url" 
+                    :alt="`Board ${selectedBoard.id} - ${image.faceName}`"
+                    class="w-full h-auto"
+                    @error="handleImageError"
+                  />
+                </div>
               </div>
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex flex-wrap items-center gap-3 mb-8">
-              <button class="flex items-center px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border-2 border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-                <EyeOff class="w-4 h-4 mr-2" />
-                Hide Minor Defects
-              </button>
-              <button class="flex items-center px-3 py-1.5 text-sm font-medium text-emerald-600 bg-white border-2 border-emerald-300 rounded-md hover:bg-gray-50 transition-colors">
-                <CheckCircle class="w-4 h-4 mr-2" />
-                Agree with NG AI
-              </button>
-              <button class="flex items-center px-3 py-1.5 text-sm font-medium text-red-600 bg-white border-2 border-red-300 rounded-md hover:bg-gray-50 transition-colors">
-                <XCircle class="w-4 h-4 mr-2" />
-                Disagree with NG AI
-              </button>
-              <button @click="showGradeModal = true" class="flex items-center px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border-2 border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-                <FileText class="w-4 h-4 mr-2" />
-                See rejection rules
-              </button>
-              <button class="flex items-center px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border-2 border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-                <BookOpen class="w-4 h-4 mr-2" />
-                Add to Reference Bundle
-              </button>
+            <div class="flex items-center gap-3 mb-8">
+              <Button @click="loadBoardImages" variant="outline" v-if="!boardImages">
+                <ImageIcon class="w-4 h-4 mr-2" />
+                Load Images
+              </Button>
               <Button @click="downloadBoardData" variant="outline">
                 <Download class="w-4 h-4 mr-2" />
                 Download Data
@@ -422,13 +382,6 @@
         Clear Filters
       </Button>
     </div>
-    
-    <!-- Rejection Rules Modal (Reusable Component) -->
-    <RejectionRulesModal 
-      v-model="showGradeModal" 
-      :board="selectedBoard"
-      :grades="availableGrades"
-    />
   </div>
 </template>
 
@@ -437,19 +390,11 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { 
   Search, Filter, RefreshCw, X, Ruler, ArrowLeftRight, Box, AlertTriangle,
-  Layers, Download, Eye, Package, ImageIcon, CheckCircle, XCircle, FileText,
-  BookOpen, EyeOff, TrendingUp, DollarSign, Layers as LayersIcon, Calendar,
-  Hash, Archive, Camera, Shield, Maximize2, BarChart3, Percent
+  Layers, Download, Eye, Package, ImageIcon
 } from 'lucide-vue-next'
 import Button from '@/components/ui/button.vue'
 import LoadingSpinner from '@/components/ui/loading-spinner.vue'
 import { useApi } from '@/composables/useApi'
-import Sheet from '@/components/ui/sheet.vue'
-import SheetContent from '@/components/ui/sheet-content.vue'
-import SheetHeader from '@/components/ui/sheet-header.vue'
-import SheetTitle from '@/components/ui/sheet-title.vue'
-import SheetDescription from '@/components/ui/sheet-description.vue'
-import RejectionRulesModal from '@/components/board/RejectionRulesModal.vue'
 
 const router = useRouter()
 
@@ -457,11 +402,9 @@ const router = useRouter()
 const searchQuery = ref('')
 const selectedBoard = ref(null)
 const showFilters = ref(false)
-const showGradeModal = ref(false)
 const isLoading = ref(false)
 const error = ref(null)
 const boards = ref([])
-const allBoards = ref([]) // Cache all boards for filtering
 const boardImages = ref(null)
 
 // Pagination
@@ -471,12 +414,9 @@ const totalBoards = ref(0)
 const totalPages = computed(() => Math.ceil(totalBoards.value / pageSize.value))
 
 // Available filter options (will be loaded from API)
-const availableOrders = ref([]) // Note: API still uses 'batches', but we display as 'orders'
+const availableBatches = ref([])
 const availableGrades = ref([])
 const availableBundles = ref([])
-
-// Cache for order custom grades mapping (API uses batch terminology)
-const orderCustomGradesCache = ref({})
 
 // Filters
 const filters = ref({
@@ -495,7 +435,6 @@ const { execute: fetchBoards } = useApi('/api/v3/boards')
 const { execute: fetchBatches } = useApi('/api/v3/batches')
 const { execute: fetchGrades } = useApi('/api/v3/grades')
 const { execute: fetchBundles } = useApi('/api/v3/bundles')
-const { execute: fetchBatchDetails } = useApi('/api/v3/batches')
 
 // Load boards from API
 const loadBoards = async () => {
@@ -503,87 +442,63 @@ const loadBoards = async () => {
   error.value = null
   
   try {
-    // Only reload data from API if we don't have it or filters changed
-    const shouldReloadFromAPI = allBoards.value.length === 0 || hasBackendFilters()
+    // TEMPORARY FIX: Backend /boards endpoint doesn't handle pagination params
+    // Only send filter params without pagination until backend is fixed
+    const params = {}
     
-    if (shouldReloadFromAPI) {
-      const params = {}
-      
-      // Add backend filters
-      if (filters.value.batchId) params.batchId = filters.value.batchId
-      if (filters.value.gradeId) params.gradeId = filters.value.gradeId
-      if (filters.value.bundleId) params.bundleId = filters.value.bundleId
-      if (filters.value.shotId) params.shotId = filters.value.shotId
-      
-      const response = await fetchBoards(params)
-      
-      if (response && response.data) {
-        // Handle the response structure from the API
-        if (response.data.boards) {
-          allBoards.value = response.data.boards
-        } else if (Array.isArray(response.data)) {
-          allBoards.value = response.data
-        } else {
-          allBoards.value = []
-        }
+    // Add filters (these still work)
+    if (filters.value.batchId) params.batchId = filters.value.batchId
+    if (filters.value.gradeId) params.gradeId = filters.value.gradeId
+    if (filters.value.bundleId) params.bundleId = filters.value.bundleId
+    if (filters.value.shotId) params.shotId = filters.value.shotId
+    if (searchQuery.value) params.search = searchQuery.value
+    
+    const response = await fetchBoards(params)
+    
+    if (response && response.data) {
+      // Handle the response structure from the API
+      if (response.data.boards) {
+        boards.value = response.data.boards
+        totalBoards.value = response.data.pagination?.total || response.data.boards.length
+      } else if (Array.isArray(response.data)) {
+        // TEMPORARY: Since we're not using pagination, implement client-side pagination
+        const allBoards = response.data
+        totalBoards.value = allBoards.length
+        
+        // Client-side pagination
+        const startIndex = (currentPage.value - 1) * pageSize.value
+        const endIndex = startIndex + pageSize.value
+        boards.value = allBoards.slice(startIndex, endIndex)
       } else {
-        allBoards.value = []
+        boards.value = []
+        totalBoards.value = 0
       }
-    }
-    
-    // Apply client-side search filtering to cached data
-    const filteredBoards = applySearchFilter(allBoards.value)
-    
-    // Apply client-side pagination to filtered results
-    totalBoards.value = filteredBoards.length
-    const startIndex = (currentPage.value - 1) * pageSize.value
-    const endIndex = startIndex + pageSize.value
-    boards.value = filteredBoards.slice(startIndex, endIndex)
-    
-    // Auto-select first board if none selected
-    if (boards.value.length > 0 && !selectedBoard.value) {
-      selectBoard(boards.value[0])
+      
+      // Auto-select first board if none selected
+      if (boards.value.length > 0 && !selectedBoard.value) {
+        selectBoard(boards.value[0])
+      }
+    } else {
+      // Handle null response (error case)
+      boards.value = []
+      totalBoards.value = 0
     }
   } catch (err) {
     console.error('Error loading boards:', err)
     error.value = 'Failed to load boards. Please try again.'
     boards.value = []
-    allBoards.value = []
   } finally {
     isLoading.value = false
   }
 }
 
-// Check if any backend filters are active
-const hasBackendFilters = () => {
-  return filters.value.batchId || 
-         filters.value.gradeId || 
-         filters.value.bundleId || 
-         filters.value.shotId
-}
-
-// Apply search filter to boards array (only searches by board ID)
-const applySearchFilter = (boardsList) => {
-  if (!searchQuery.value) {
-    return boardsList
-  }
-  
-  const query = searchQuery.value.trim()
-  
-  return boardsList.filter(board => {
-    // Only search by board ID for simplicity
-    const boardId = board.id?.toString() || ''
-    return boardId.includes(query)
-  })
-}
-
 // Load filter options
 const loadFilterOptions = async () => {
   try {
-    // Load orders (API endpoint still uses 'batches') - TEMPORARY: Use no params to avoid pagination issues
-    const batchResponse = await fetchBatches({}) // Note: API uses 'batches', but we call them 'orders' in UI
+    // Load batches - TEMPORARY: Use no params to avoid pagination issues
+    const batchResponse = await fetchBatches({})
     if (batchResponse && batchResponse.data) {
-      availableOrders.value = Array.isArray(batchResponse.data) ? batchResponse.data : []
+      availableBatches.value = Array.isArray(batchResponse.data) ? batchResponse.data : []
     }
     
     // Load grades
@@ -629,37 +544,18 @@ const loadBoardImages = async () => {
 }
 
 // Utility functions
-const selectBoard = async (board) => {
+const selectBoard = (board) => {
   selectedBoard.value = board
   boardImages.value = null // Reset images when selecting new board
-  
-  // Automatically load board images
-  if (board) {
-    await loadBoardImages()
-  }
 }
 
 const formatLength = (value) => {
   if (!value) return 'N/A'
-  
-  // Handle object format from API
-  if (typeof value === 'object' && value.value) {
-    const rawValue = parseFloat(value.value)
-    const unit = value.unit || 'cm'
-    
-    if (unit === 'cm') {
-      return `${rawValue.toFixed(1)} cm`
-    } else if (unit === 'mm') {
-      // Convert mm to cm for display
-      const cm = rawValue / 10
-      return `${cm.toFixed(1)} cm`
-    }
-    return `${rawValue.toFixed(1)} ${unit}`
-  }
-  
-  // Handle numeric value (assume mm, convert to cm)
-  const cm = value / 10
-  return `${cm.toFixed(1)} cm`
+  // Convert mm to inches and format
+  const inches = value / 25.4
+  const feet = Math.floor(inches / 12)
+  const remainingInches = (inches % 12).toFixed(2)
+  return feet > 0 ? `${feet}' ${remainingInches}"` : `${remainingInches}"`
 }
 
 const formatSurface = (value) => {
@@ -678,114 +574,13 @@ const formatDate = (dateStr) => {
   return new Date(dateStr).toLocaleDateString()
 }
 
-// Fix encoding issues from legacy API
-const fixEncoding = (text) => {
-  if (!text) return text
-  // Common French character replacements
-  return text
-    .replace(/�|Ã¨/g, 'è')
-    .replace(/Ã©/g, 'é')
-    .replace(/Ã /g, 'à')
-    .replace(/Ã¢/g, 'â')
-    .replace(/Ã§/g, 'ç')
-    .replace(/Ã´/g, 'ô')
-    .replace(/Ã»/g, 'û')
-    .replace(/Ã®/g, 'î')
-    .replace(/Ãª/g, 'ê')
-    .replace(/Ã¹/g, 'ù')
-}
-
-// Load order custom grades mapping (API still uses batch terminology)
-const loadOrderCustomGrades = async (orderId) => {
-  if (!orderId || orderCustomGradesCache.value[orderId]) {
-    return orderCustomGradesCache.value[orderId]
-  }
-  
-  try {
-    // Use direct fetch to legacy API since the adapter might not handle this properly
-    // Note: API endpoint uses 'batches' but we refer to them as 'orders' in the new app
-    const response = await fetch(`/api/legacy/batches/${orderId}`, {
-      headers: {
-        'Accept': 'application/json; charset=utf-8',
-        'Content-Type': 'application/json; charset=utf-8'
-      }
-    })
-    const data = await response.json()
-    
-    if (data && data.data && data.data.customGrades) {
-      const mapping = {}
-      data.data.customGrades.forEach(cg => {
-        mapping[cg.id] = cg.customGrade?.name || cg.name || `Grade ${cg.id}`
-      })
-      orderCustomGradesCache.value[orderId] = mapping
-      console.log(`Loaded order ${orderId} custom grades:`, mapping)
-      return mapping
-    }
-  } catch (err) {
-    console.error('Error loading order custom grades:', err)
-  }
-  return {}
-}
-
-const getGradeName = (gradeId, board = null) => {
-  // First check if we have order custom grades cached for this grade ID
-  // Grade IDs > 100 are typically order custom grade assignment IDs
-  if (gradeId > 100) {
-    // Look through all cached order custom grades
-    for (const orderId in orderCustomGradesCache.value) {
-      const mapping = orderCustomGradesCache.value[orderId]
-      if (mapping && mapping[gradeId]) {
-        console.log(`Found grade ${gradeId} in order ${orderId}: ${mapping[gradeId]}`)
-        return mapping[gradeId]
-      }
-    }
-    // Try to find from selected board's order
-    if (selectedBoard.value && selectedBoard.value.batchId) {
-      const mapping = orderCustomGradesCache.value[selectedBoard.value.batchId]
-      if (mapping && mapping[gradeId]) {
-        return mapping[gradeId]
-      }
-    }
-    console.log(`Grade ${gradeId} not found in cache, orders cached:`, Object.keys(orderCustomGradesCache.value))
-  }
-  
-  // If board has grade info, use it
-  if (board && board.grade && board.grade.name) {
-    return board.grade.name
-  }
-  
-  // Otherwise look up in available grades
+const getGradeName = (gradeId) => {
   const grade = availableGrades.value.find(g => g.id === gradeId)
   return grade?.name || `Grade ${gradeId}`
 }
 
 const handleImageError = (event) => {
   event.target.src = '/boardpic.png' // Fallback image
-}
-
-// Calculate the board's value (placeholder logic)
-const calculateValue = (board) => {
-  if (!board) return '0.00'
-  // Simple calculation based on volume and grade
-  const basePrice = 100 // Base price per unit
-  const volume = board.volumeGraded || (board.length * board.width * board.thickness) / 1000000000
-  return (basePrice * volume).toFixed(2)
-}
-
-// Calculate yield percentage
-const calculateYield = (board) => {
-  if (!board) return 0
-  // Mock calculation - would be based on defects and usable area
-  const totalDefects = board.defects?.length || 0
-  const yieldPercentage = Math.max(0, 100 - (totalDefects * 5))
-  return yieldPercentage.toFixed(1)
-}
-
-// Format volume
-const formatVolume = (board) => {
-  if (!board) return 'N/A'
-  const volume = board.volumeGraded || (board.length * board.width * board.thickness) / 1000000000
-  return `${volume.toFixed(4)} m³`
 }
 
 const downloadBoardData = () => {
@@ -806,14 +601,14 @@ const downloadBoardData = () => {
 const nextPage = () => {
   if (currentPage.value < totalPages.value) {
     currentPage.value++
-    applySearchAndPagination() // Use cached data for pagination
+    loadBoards()
   }
 }
 
 const previousPage = () => {
   if (currentPage.value > 1) {
     currentPage.value--
-    applySearchAndPagination() // Use cached data for pagination
+    loadBoards()
   }
 }
 
@@ -850,62 +645,24 @@ const hasActiveFilters = computed(() => {
     filters.value.widthMax
 })
 
-// Apply search and pagination without reloading from API
-const applySearchAndPagination = () => {
-  // Apply client-side search filtering to cached data
-  const filteredBoards = applySearchFilter(allBoards.value)
-  
-  // Apply client-side pagination to filtered results
-  totalBoards.value = filteredBoards.length
-  const startIndex = (currentPage.value - 1) * pageSize.value
-  const endIndex = startIndex + pageSize.value
-  boards.value = filteredBoards.slice(startIndex, endIndex)
-  
-  // Auto-select first board if none selected
-  if (boards.value.length > 0 && !selectedBoard.value) {
-    selectBoard(boards.value[0])
-  }
-}
-
 // Debounced search
 let searchTimeout = null
 const debouncedSearch = () => {
   clearTimeout(searchTimeout)
   searchTimeout = setTimeout(() => {
-    currentPage.value = 1 // Reset to first page when searching
-    
-    // If we have backend filters, reload from API, otherwise just filter cached data
-    if (hasBackendFilters()) {
-      loadBoards()
-    } else {
-      applySearchAndPagination()
-    }
-  }, 300)
+    currentPage.value = 1
+    loadBoards()
+  }, 500)
 }
 
 // Initialize on mount
 onMounted(() => {
-  const initializeApp = async () => {
-    try {
-      await loadFilterOptions()
-      // Preload order 84 custom grades (common order for testing)
-      await loadOrderCustomGrades(84)
-      await loadBoards()
-    } catch (error) {
-      console.error('Failed to initialize app:', error)
-    }
-  }
-  
-  initializeApp()
+  loadFilterOptions()
+  loadBoards()
 })
 
 // Watch for filter changes
 watch(() => filters.value, () => {
   currentPage.value = 1
-  // Clear cached data when backend filters change to force reload
-  if (hasBackendFilters()) {
-    allBoards.value = []
-  }
-  loadBoards()
 }, { deep: true })
 </script>
