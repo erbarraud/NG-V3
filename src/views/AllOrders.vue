@@ -45,22 +45,15 @@
               class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
             >
               <option value="">All Statuses</option>
-              <option value="Running">Running</option>
-              <option value="Scheduled">Scheduled</option>
-              <option value="Completed">Completed</option>
-              <option value="Cancelled">Cancelled</option>
+              <option value="OPEN">Open</option>
+              <option value="CLOSED">Closed</option>
             </select>
             <select
               v-model="speciesFilter"
               class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
             >
               <option value="">All Species</option>
-              <option value="Red Oak">Red Oak</option>
-              <option value="White Oak">White Oak</option>
-              <option value="Soft Maple">Soft Maple</option>
-              <option value="Hard Maple">Hard Maple</option>
-              <option value="Cherry">Cherry</option>
-              <option value="Walnut">Walnut</option>
+              <option value="Hêtre">Hêtre</option>
             </select>
             <Button variant="outline" @click="clearFilters">
               <X class="w-4 h-4 mr-2" />
@@ -202,7 +195,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { Search, Plus, X, Edit, Eye, MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import Button from '@/components/ui/button.vue'
 import Badge from '@/components/ui/badge.vue'
@@ -218,8 +211,36 @@ const speciesFilter = ref('')
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
 
-// Sample data - expanded from the existing orders
-const allOrders = ref([
+// API data
+const apiOrders = ref([])
+
+// Load orders from API
+const loadOrders = async () => {
+  const response = await fetch('/api/legacy/batches')
+  if (!response.ok) throw new Error('Failed to fetch orders')
+  const data = await response.json()
+  apiOrders.value = data.data || []
+  return apiOrders.value
+}
+
+// Map API data to display format
+const allOrders = computed(() => {
+  return apiOrders.value.map(order => ({
+    id: `ORD-${order.id}`,
+    name: order.name,
+    customer: 'N/A', // Not in API
+    species: order.specie?.name || 'N/A',
+    dryStatus: order.dryStatus?.name || 'N/A',
+    volume: 'N/A', // Not in API
+    date: order.startDate ? new Date(order.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A',
+    time: 'N/A', // Not in API
+    status: order.status || 'N/A',
+    sorts: [] // Not in API
+  }))
+})
+
+// Original sample data for reference (shows desired data structure)
+const sampleOrders = ref([
   {
     id: 'ORD-20250701-001',
     name: 'Red Oak - Prime Run',
@@ -383,23 +404,13 @@ const clearFilters = () => {
 
 const getStatusVariant = (status) => {
   switch (status) {
-    case 'Running':
+    case 'OPEN':
       return 'default'
-    case 'Scheduled':
+    case 'CLOSED':
       return 'secondary'
-    case 'Completed':
-      return 'outline'
-    case 'Cancelled':
-      return 'destructive'
     default:
-      return 'secondary'
+      return 'outline'
   }
-}
-
-// Simulate loading state
-const loadOrders = async () => {
-  await new Promise(resolve => setTimeout(resolve, 800))
-  return allOrders.value
 }
 
 const { isLoading } = useAsyncState(

@@ -1,0 +1,731 @@
+openapi: 3.0.3
+info:
+  title: NG-V3 Lumber Grading API
+  description: RESTful API for lumber grading and quality control system
+  version: 3.0.0
+  contact:
+    name: API Support
+    email: support@neuralgrader.com
+    
+servers:
+  - url: http://localhost:5173/api/v3
+    description: Development server
+  - url: https://api.neuralgrader.com/v3
+    description: Production server
+    
+tags:
+  - name: Orders
+    description: Production order management
+  - name: Boards
+    description: Board scanning and grading
+  - name: Grades
+    description: Grade definitions and rules
+  - name: Resources
+    description: System resources and lookups
+  - name: Auth
+    description: Authentication and authorization
+    
+paths:
+  /orders:
+    get:
+      tags: [Orders]
+      summary: List all orders
+      operationId: listOrders
+      parameters:
+        - $ref: '#/components/parameters/StatusFilter'
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/SortBy'
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderList'
+                
+    post:
+      tags: [Orders]
+      summary: Create a new order
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreate'
+      responses:
+        201:
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+                
+  /orders/{orderId}:
+    get:
+      tags: [Orders]
+      summary: Get order by ID
+      operationId: getOrder
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        404:
+          $ref: '#/components/responses/NotFound'
+          
+    patch:
+      tags: [Orders]
+      summary: Update order
+      operationId: updateOrder
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderUpdate'
+      responses:
+        200:
+          description: Order updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+                
+  /orders/{orderId}/boards:
+    get:
+      tags: [Orders]
+      summary: List boards in an order
+      operationId: listOrderBoards
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BoardList'
+                
+  /boards:
+    get:
+      tags: [Boards]
+      summary: List all boards
+      operationId: listBoards
+      parameters:
+        - name: orderId
+          in: query
+          schema:
+            type: integer
+          description: Filter by order ID
+        - name: gradeId
+          in: query
+          schema:
+            type: integer
+          description: Filter by grade ID
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search boards
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BoardList'
+                
+  /boards/{boardId}:
+    get:
+      tags: [Boards]
+      summary: Get board by ID
+      operationId: getBoard
+      parameters:
+        - $ref: '#/components/parameters/BoardId'
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Board'
+        404:
+          $ref: '#/components/responses/NotFound'
+          
+  /boards/{boardId}/images/{face}:
+    get:
+      tags: [Boards]
+      summary: Get board face image
+      operationId: getBoardImage
+      parameters:
+        - $ref: '#/components/parameters/BoardId'
+        - name: face
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [face1, face2]
+        - name: quality
+          in: query
+          schema:
+            type: string
+            enum: [thumbnail, reduced, original]
+            default: original
+        - name: annotations
+          in: query
+          schema:
+            type: boolean
+            default: false
+          description: Include defect annotations
+      responses:
+        200:
+          description: Board image
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+                
+  /grades:
+    get:
+      tags: [Grades]
+      summary: List all grades
+      operationId: listGrades
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [standard, custom]
+          description: Filter by grade type
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GradeList'
+                
+  /grades/{gradeId}:
+    get:
+      tags: [Grades]
+      summary: Get grade by ID
+      operationId: getGrade
+      parameters:
+        - $ref: '#/components/parameters/GradeId'
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Grade'
+                
+  /species:
+    get:
+      tags: [Resources]
+      summary: List wood species
+      operationId: listSpecies
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpeciesList'
+                
+  /thickness-values:
+    get:
+      tags: [Resources]
+      summary: List thickness values
+      operationId: listThicknessValues
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThicknessList'
+                
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: User login
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        200:
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+                
+components:
+  parameters:
+    OrderId:
+      name: orderId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Order ID
+      
+    BoardId:
+      name: boardId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Board ID
+      
+    GradeId:
+      name: gradeId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Grade ID
+      
+    StatusFilter:
+      name: status
+      in: query
+      schema:
+        type: string
+        enum: [open, closed, all]
+        default: all
+      description: Filter by order status
+      
+    PageNumber:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: Page number
+      
+    PageSize:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+      description: Items per page
+      
+    SortBy:
+      name: sort
+      in: query
+      schema:
+        type: string
+        enum: [id, name, created_at, -id, -name, -created_at]
+        default: -id
+      description: Sort field and direction (- for descending)
+      
+  schemas:
+    Order:
+      type: object
+      required: [id, name, status]
+      properties:
+        id:
+          type: integer
+          example: 84
+        name:
+          type: string
+          example: "20250730-16-Hêtre-30"
+        status:
+          type: string
+          enum: [open, closed, scheduled]
+        customer:
+          $ref: '#/components/schemas/Customer'
+        species:
+          $ref: '#/components/schemas/Species'
+        thickness:
+          $ref: '#/components/schemas/Thickness'
+        dryStatus:
+          $ref: '#/components/schemas/DryStatus'
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+          nullable: true
+        boardCount:
+          type: integer
+        volume:
+          $ref: '#/components/schemas/Volume'
+        customGrades:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomGrade'
+            
+    OrderCreate:
+      type: object
+      required: [name, speciesId, thicknessId]
+      properties:
+        name:
+          type: string
+        customerId:
+          type: integer
+        speciesId:
+          type: integer
+        thicknessId:
+          type: integer
+        dryStatusId:
+          type: integer
+        customGrades:
+          type: array
+          items:
+            type: integer
+            
+    OrderUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        status:
+          type: string
+          enum: [open, closed]
+        customerId:
+          type: integer
+          
+    OrderList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+          
+    Board:
+      type: object
+      required: [id, orderId]
+      properties:
+        id:
+          type: integer
+          example: 106762
+        shotId:
+          type: integer
+        orderId:
+          type: integer
+        gradeId:
+          type: integer
+          nullable: true
+        gradeName:
+          type: string
+        dimensions:
+          $ref: '#/components/schemas/Dimensions'
+        volume:
+          $ref: '#/components/schemas/Volume'
+        species:
+          $ref: '#/components/schemas/Species'
+        dryStatus:
+          $ref: '#/components/schemas/DryStatus'
+        defects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Defect'
+        grades:
+          type: array
+          items:
+            $ref: '#/components/schemas/GradeValidation'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+          
+    BoardList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Board'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+          
+    Grade:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        code:
+          type: string
+        description:
+          type: string
+        sortOrder:
+          type: integer
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/GradeRule'
+            
+    GradeList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Grade'
+            
+    GradeValidation:
+      type: object
+      properties:
+        gradeId:
+          type: integer
+        gradeName:
+          type: string
+        passed:
+          type: boolean
+        failedRules:
+          type: array
+          items:
+            type: string
+            
+    GradeRule:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        condition:
+          type: string
+        threshold:
+          type: number
+          
+    CustomGrade:
+      type: object
+      properties:
+        id:
+          type: integer
+        gradeId:
+          type: integer
+        name:
+          type: string
+        printLabel:
+          type: string
+        sortingBin:
+          type: integer
+          
+    Species:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        code:
+          type: string
+          
+    SpeciesList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Species'
+            
+    Thickness:
+      type: object
+      properties:
+        id:
+          type: integer
+        value:
+          type: number
+        unit:
+          type: string
+          enum: [mm, inch]
+          
+    ThicknessList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Thickness'
+            
+    DryStatus:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        code:
+          type: string
+          
+    Dimensions:
+      type: object
+      properties:
+        length:
+          type: number
+          description: Length in millimeters
+        width:
+          type: number
+          description: Width in millimeters
+        thickness:
+          type: number
+          description: Thickness in millimeters
+          
+    Volume:
+      type: object
+      properties:
+        value:
+          type: number
+        unit:
+          type: string
+          enum: [m3, ft3, bf]
+          
+    Defect:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        severity:
+          type: string
+          enum: [minor, major, critical]
+        position:
+          $ref: '#/components/schemas/Position'
+        dimensions:
+          $ref: '#/components/schemas/Dimensions'
+          
+    Position:
+      type: object
+      properties:
+        x:
+          type: number
+        y:
+          type: number
+        face:
+          type: string
+          enum: [face1, face2]
+          
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        code:
+          type: string
+        contact:
+          type: string
+          
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+          
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
+        user:
+          $ref: '#/components/schemas/User'
+          
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+            
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+          
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+            
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+            
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+            
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      
+security:
+  - bearerAuth: []

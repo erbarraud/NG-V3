@@ -696,10 +696,22 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { 
-  Activity, Camera, Clock, Pause, RefreshCw, Maximize, Settings, Expand, X, Download, Play
+  Activity, Camera, Clock, Pause, RefreshCw, Maximize, Settings, Expand, X, Download, Play, Monitor
 } from 'lucide-vue-next'
-import { Monitor } from 'lucide-vue-next'
+import Button from '@/components/ui/button.vue'
 
+// Tab state
+const activeTab = ref('live')
+
+// Live scanning state
+const isScanning = ref(false)
+const scanInterval = ref(10000)
+const countdown = ref(10)
+const currentTime = ref(new Date().toLocaleTimeString())
+const totalBoardsScanned = ref(0)
+const recentBoards = ref([])
+
+// Camera view modes
 const row1ViewMode = ref('grid')
 const row2ViewMode = ref('grid')
 const selectedRow1Camera = ref('entry')
@@ -791,4 +803,95 @@ const getCurrentRow2Camera = () => {
 const expandCamera = (cameraId) => {
   expandedCamera.value = cameraId
 }
+
+// Toggle scanning function
+const toggleScanning = () => {
+  isScanning.value = !isScanning.value
+  if (isScanning.value) {
+    startScanning()
+  } else {
+    stopScanning()
+  }
+}
+
+// Update scan interval
+const updateScanInterval = () => {
+  // Reset countdown when interval changes
+  countdown.value = Math.floor(scanInterval.value / 1000)
+}
+
+// Start scanning simulation
+let scanIntervalTimer = null
+let countdownTimer = null
+
+const startScanning = () => {
+  // Start countdown
+  countdownTimer = setInterval(() => {
+    countdown.value--
+    if (countdown.value <= 0) {
+      simulateScan()
+      countdown.value = Math.floor(scanInterval.value / 1000)
+    }
+  }, 1000)
+  
+  // Initial scan
+  simulateScan()
+}
+
+const stopScanning = () => {
+  if (countdownTimer) {
+    clearInterval(countdownTimer)
+    countdownTimer = null
+  }
+  if (scanIntervalTimer) {
+    clearInterval(scanIntervalTimer)
+    scanIntervalTimer = null
+  }
+}
+
+// Simulate a board scan
+const simulateScan = () => {
+  totalBoardsScanned.value++
+  const newBoard = {
+    id: `BD-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`,
+    orderId: 'ORD-20250701-001',
+    batch: 'B-4873',
+    grade: ['AW', 'AR', 'BW', 'BR', 'CW', 'CR'][Math.floor(Math.random() * 6)],
+    value: (Math.random() * 100 + 20).toFixed(2),
+    scannedTime: new Date().toLocaleTimeString(),
+    isNew: true
+  }
+  
+  // Add to recent boards
+  recentBoards.value.unshift(newBoard)
+  
+  // Remove "new" flag from previous boards
+  recentBoards.value.forEach((board, index) => {
+    if (index > 0) board.isNew = false
+  })
+  
+  // Keep only last 10 boards
+  if (recentBoards.value.length > 10) {
+    recentBoards.value = recentBoards.value.slice(0, 10)
+  }
+}
+
+// Update current time
+let timeInterval = null
+
+onMounted(() => {
+  // Update time every second
+  timeInterval = setInterval(() => {
+    currentTime.value = new Date().toLocaleTimeString()
+  }, 1000)
+})
+
+onUnmounted(() => {
+  // Clean up intervals
+  stopScanning()
+  if (timeInterval) {
+    clearInterval(timeInterval)
+    timeInterval = null
+  }
+})
 </script>

@@ -14,7 +14,7 @@
             <Search class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search by board ID..."
+              placeholder="Search by board ID, order, grade..."
               v-model="searchQuery"
               @input="debouncedSearch"
               class="pl-10 pr-3 py-2 w-full border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-ring"
@@ -27,644 +27,502 @@
               Active
             </span>
           </Button>
-          <Button @click="loadBoards" variant="outline">
-            <RefreshCw :class="isLoading ? 'animate-spin' : ''" class="w-4 h-4 mr-2" />
-            Refresh
-          </Button>
-        </div>
-        <div class="flex items-center space-x-2">
-          <span class="text-sm text-gray-600">Show</span>
-          <select v-model="pageSize" @change="loadBoards" class="border border-input rounded-lg px-2 py-1 text-sm focus:ring-2 focus:ring-ring focus:border-ring">
-            <option :value="10">10</option>
-            <option :value="25">25</option>
-            <option :value="50">50</option>
-            <option :value="100">100</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <!-- Filters Panel -->
-    <div v-if="showFilters" class="bg-white rounded-lg shadow p-6 mb-6 border border-gray-200">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-gray-900">Filter Boards</h3>
-        <div class="flex items-center space-x-2">
-          <Button variant="outline" size="sm" @click="clearAllFilters" v-if="hasActiveFilters">
-            <X class="w-4 h-4 mr-1" />
-            Clear All
-          </Button>
-          <Button variant="ghost" size="sm" @click="showFilters = false">
-            <X class="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Order Filter -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Order</label>
-          <select v-model="filters.batchId" @change="loadBoards" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-            <option value="">All Orders</option>
-            <option v-for="order in availableOrders" :key="order.id" :value="order.id">
-              {{ order.name }} ({{ order.status }})
-            </option>
-          </select>
-        </div>
-
-        <!-- Grade Filter -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Grade</label>
-          <select v-model="filters.gradeId" @change="loadBoards" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-            <option value="">All Grades</option>
-            <option v-for="grade in availableGrades" :key="grade.id" :value="grade.id">
-              {{ grade.name }}
-            </option>
-          </select>
-        </div>
-
-        <!-- Bundle Filter -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Bundle</label>
-          <select v-model="filters.bundleId" @change="loadBoards" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-            <option value="">All Bundles</option>
-            <option v-for="bundle in availableBundles" :key="bundle.id" :value="bundle.id">
-              Bundle {{ bundle.id }} ({{ bundle.boardCount }} boards)
-            </option>
-          </select>
-        </div>
-
-        <!-- Shot ID Filter -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Shot ID</label>
-          <input
-            v-model="filters.shotId"
-            type="number"
-            placeholder="Enter shot ID"
-            @input="debouncedSearch"
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          <DateRangePicker 
+            v-model="dateRange"
+            v-model:custom-start-date="customStartDate"
+            v-model:custom-end-date="customEndDate"
+            @change="onDateRangeChange"
           />
         </div>
+      </div>
+    </div>
 
-        <!-- Length Range -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Length Range</label>
-          <div class="flex space-x-2">
-            <input
-              v-model="filters.lengthMin"
-              type="number"
-              placeholder="Min"
-              @input="debouncedSearch"
-              class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-            />
-            <input
-              v-model="filters.lengthMax"
-              type="number"
-              placeholder="Max"
-              @input="debouncedSearch"
-              class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-            />
+    <!-- Main Layout -->
+    <div class="flex gap-6">
+      <!-- Board List Sidebar -->
+      <div class="w-1/3 max-w-md">
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-semibold text-gray-700">
+                {{ filteredBoards.length }} boards
+              </h3>
+              <span class="text-xs text-gray-500">
+                Page {{ currentPage }} of {{ totalPages }}
+              </span>
+            </div>
           </div>
-        </div>
-
-        <!-- Width Range -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Width Range</label>
-          <div class="flex space-x-2">
-            <input
-              v-model="filters.widthMin"
-              type="number"
-              placeholder="Min"
-              @input="debouncedSearch"
-              class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-            />
-            <input
-              v-model="filters.widthMax"
-              type="number"
-              placeholder="Max"
-              @input="debouncedSearch"
-              class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-            />
-          </div>
-        </div>
-      </div>
-
-      <!-- Filter Summary -->
-      <div v-if="hasActiveFilters" class="mt-4 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
-        <div class="text-sm text-emerald-700">
-          <strong>{{ totalBoards }}</strong> board(s) match your current filters
-          <span v-if="searchQuery" class="ml-2 font-mono bg-white px-2 py-1 rounded">
-            Search: "{{ searchQuery }}"
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Loading State -->
-    <div v-if="isLoading" class="flex justify-center items-center py-12">
-      <LoadingSpinner class="w-8 h-8 text-emerald-600" />
-      <span class="ml-3 text-gray-600">Loading boards...</span>
-    </div>
-
-    <!-- Error State -->
-    <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-      <div class="flex items-center">
-        <AlertTriangle class="w-5 h-5 text-red-600 mr-2" />
-        <span class="text-red-800">{{ error }}</span>
-      </div>
-    </div>
-
-    <!-- Results Section -->
-    <div v-else-if="boards.length > 0">
-      <div class="flex items-center justify-between mb-4">
-        <div class="text-sm text-gray-600">
-          Showing {{ (currentPage - 1) * pageSize + 1 }}-{{ Math.min(currentPage * pageSize, totalBoards) }} of {{ totalBoards }} boards
-        </div>
-        <div class="flex items-center space-x-2">
-          <button 
-            @click="previousPage" 
-            :disabled="currentPage === 1"
-            class="px-3 py-1 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Previous
-          </button>
-          <span class="text-sm text-gray-600">Page {{ currentPage }} of {{ totalPages }}</span>
-          <button 
-            @click="nextPage"
-            :disabled="currentPage === totalPages"
-            class="px-3 py-1 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Next
-          </button>
-        </div>
-      </div>
-
-      <!-- Main Content Layout -->
-      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <!-- Left Sidebar - Board List -->
-        <div class="lg:col-span-1">
-          <div class="bg-white rounded-lg shadow">
-            <div class="space-y-1 p-2">
-              <div v-for="board in boards" :key="board.id"
-                   :class="[
-                     'p-3 rounded-lg cursor-pointer border-2 transition-all',
-                     selectedBoard?.id === board.id
-                       ? 'border-emerald-500 bg-emerald-50'
-                       : 'border-transparent hover:border-gray-200 hover:bg-gray-50'
-                   ]"
-                   @click="selectBoard(board)"
+          
+          <div class="overflow-y-auto max-h-[calc(100vh-300px)]">
+            <div v-if="isLoading" class="p-4 text-center">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
+              <p class="text-gray-600 mt-2">Loading boards...</p>
+            </div>
+            
+            <div v-else-if="paginatedBoards.length === 0" class="p-4 text-center text-gray-500">
+              No boards found
+            </div>
+            
+            <div v-else>
+              <div
+                v-for="board in paginatedBoards"
+                :key="board.id"
+                @click="selectBoard(board)"
+                :class="[
+                  'px-4 py-3 border-b border-gray-100 cursor-pointer transition-colors',
+                  selectedBoard?.id === board.id ? 'bg-emerald-50 border-emerald-300' : 'hover:bg-gray-50'
+                ]"
               >
                 <div class="flex items-center justify-between">
-                  <router-link 
-                    :to="`/board-inspector/${board.id}`"
-                    class="font-semibold text-emerald-600 hover:text-emerald-800 hover:underline"
-                  >
-                    Board #{{ board.id }}
-                  </router-link>
-                  <div class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded">
-                    {{ getGradeName(board.gradeId) }}
+                  <div class="flex-1">
+                    <div class="flex items-center gap-2">
+                      <span class="font-semibold text-gray-900">Board #{{ board.id }}</span>
+                      <span class="text-xs text-gray-500">Order {{ board.batch?.id || 'N/A' }}</span>
+                    </div>
+                    <div class="flex items-center gap-3 mt-1">
+                      <span class="text-xs text-gray-600">{{ getSpeciesName(board) }}</span>
+                      <span class="text-xs text-gray-600">{{ formatDimensions(board) }}</span>
+                    </div>
                   </div>
-                </div>
-                <div class="text-xs text-gray-500 mt-1">
-                  <span v-if="board.batchId">Order {{ board.batchId }}</span>
-                  <span v-if="board.bundleId" class="ml-2">Bundle {{ board.bundleId }}</span>
-                </div>
-                <div class="text-xs text-gray-400 mt-1">
-                  {{ formatDimensions(board) }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Main Content Area -->
-        <div class="lg:col-span-3">
-          <div v-if="selectedBoard" class="bg-white rounded-lg border-2 border-emerald-500 p-8">
-            <!-- Board Header -->
-            <div class="flex items-center justify-between mb-4">
-              <div class="flex items-center space-x-4">
-                <h2 class="text-2xl font-bold text-gray-900">
-                  Board 
-                  <router-link 
-                    :to="`/board-inspector/${selectedBoard.id}`"
-                    class="text-emerald-600 hover:text-emerald-800 hover:underline ml-2"
-                  >
-                    #{{ selectedBoard.id }}
-                  </router-link>
-                </h2>
-                <span class="px-3 py-1 bg-gray-800 text-white text-sm font-medium rounded">
-                  {{ getGradeName(selectedBoard.gradeId) }}
-                </span>
-                <span v-if="selectedBoard.customGradeId" class="px-3 py-1 bg-emerald-600 text-white text-sm font-medium rounded">
-                  Custom: {{ selectedBoard.customGradeId }}
-                </span>
-              </div>
-              <!-- Date stamp in top right -->
-              <div class="text-sm text-gray-500">
-                Scanned: {{ formatDate(selectedBoard.createDate) }}
-              </div>
-            </div>
-
-            <!-- Divider -->
-            <div class="border-b border-gray-200 mb-8"></div>
-
-            <!-- All KPI Cards in One Row (now 8 cards instead of 9) -->
-            <div class="grid grid-cols-4 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-8">
-              <!-- Dimensions -->
-              <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                <div class="flex flex-col items-center">
-                  <Ruler class="w-4 h-4 text-gray-600 mb-1" />
-                  <span class="text-xs text-gray-600">Length</span>
-                  <div class="text-sm font-bold text-gray-900 mt-1">{{ formatLength(selectedBoard.length) }}</div>
-                </div>
-              </div>
-              
-              <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                <div class="flex flex-col items-center">
-                  <ArrowLeftRight class="w-4 h-4 text-gray-600 mb-1" />
-                  <span class="text-xs text-gray-600">Width</span>
-                  <div class="text-sm font-bold text-gray-900 mt-1">{{ formatLength(selectedBoard.width) }}</div>
-                </div>
-              </div>
-              
-              <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                <div class="flex flex-col items-center">
-                  <Layers class="w-4 h-4 text-gray-600 mb-1" />
-                  <span class="text-xs text-gray-600">Thickness</span>
-                  <div class="text-sm font-bold text-gray-900 mt-1">{{ formatLength(selectedBoard.thickness) }}</div>
-                </div>
-              </div>
-              
-              <!-- Volume -->
-              <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                <div class="flex flex-col items-center">
-                  <Box class="w-4 h-4 text-gray-600 mb-1" />
-                  <span class="text-xs text-gray-600">Volume</span>
-                  <div class="text-sm font-bold text-gray-900 mt-1">{{ formatVolume(selectedBoard) }}</div>
-                </div>
-              </div>
-              
-              <!-- Value -->
-              <div class="bg-green-50 rounded-lg p-3 border border-green-200">
-                <div class="flex flex-col items-center">
-                  <DollarSign class="w-4 h-4 text-green-600 mb-1" />
-                  <span class="text-xs text-gray-600">Value</span>
-                  <div class="text-sm font-bold text-green-700 mt-1">${{ calculateValue(selectedBoard) }}</div>
-                </div>
-              </div>
-              
-              <!-- Yield -->
-              <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                <div class="flex flex-col items-center">
-                  <Percent class="w-4 h-4 text-gray-600 mb-1" />
-                  <span class="text-xs text-gray-600">Yield</span>
-                  <div class="text-sm font-bold text-gray-900 mt-1">{{ calculateYield(selectedBoard) }}%</div>
-                </div>
-              </div>
-              
-              <!-- Defects -->
-              <div :class="(selectedBoard.defects?.length || 0) > 0 ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'" class="rounded-lg p-3 border">
-                <div class="flex flex-col items-center">
-                  <AlertTriangle :class="(selectedBoard.defects?.length || 0) > 0 ? 'text-red-500' : 'text-gray-500'" class="w-4 h-4 mb-1" />
-                  <span class="text-xs text-gray-600">Defects</span>
-                  <div :class="(selectedBoard.defects?.length || 0) > 0 ? 'text-red-700' : 'text-gray-900'" class="text-sm font-bold mt-1">{{ selectedBoard.defects?.length || 0 }}</div>
-                </div>
-              </div>
-              
-              <!-- Faces -->
-              <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                <div class="flex flex-col items-center">
-                  <Maximize2 class="w-4 h-4 text-gray-500 mb-1" />
-                  <span class="text-xs text-gray-600">Faces</span>
-                  <div class="text-sm font-bold text-gray-900 mt-1">{{ selectedBoard.faces?.length || 0 }}</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Board Images -->
-            <div class="space-y-4 mb-6">
-              <div v-if="boardImages && boardImages.length > 0">
-                <div v-for="(image, index) in boardImages" :key="index" class="mb-4">
-                  <div class="flex items-center gap-2 mb-2">
-                    <h5 class="text-md font-medium text-gray-700">{{ image.faceName }}</h5>
-                    <!-- Grading face indicator -->
-                    <span v-if="selectedBoard.gradingFace === index + 1 || (index === 0 && !selectedBoard.gradingFace)" 
-                          class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-medium rounded-full">
-                      Grading Face
+                  <div class="text-right">
+                    <span class="inline-block px-2 py-1 text-xs font-medium rounded-full"
+                          :class="getGradeColorClass(board)">
+                      {{ getGradeName(board) }}
                     </span>
-                  </div>
-                  <div class="border border-gray-300 bg-gray-100">
-                    <img 
-                      :src="image.url" 
-                      :alt="`Board ${selectedBoard.id} - ${image.faceName}`"
-                      class="w-full h-auto"
-                      @error="handleImageError"
-                    />
+                    <div v-if="calculateBoardValue(board)" class="text-sm font-semibold text-green-600 mt-1">
+                      {{ calculateBoardValue(board) }}
+                    </div>
+                    <div class="text-xs text-gray-500">
+                      {{ formatDate(board.createDate) }}
+                    </div>
                   </div>
                 </div>
               </div>
-              <div v-else class="flex justify-center items-center py-8 bg-gray-50 rounded-lg">
-                <LoadingSpinner class="w-6 h-6 text-gray-400" />
-                <span class="ml-2 text-gray-500">Loading board images...</span>
-              </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="flex flex-wrap items-center gap-3 mb-8">
-              <button class="flex items-center px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border-2 border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-                <EyeOff class="w-4 h-4 mr-2" />
-                Hide Minor Defects
-              </button>
-              <button class="flex items-center px-3 py-1.5 text-sm font-medium text-emerald-600 bg-white border-2 border-emerald-300 rounded-md hover:bg-gray-50 transition-colors">
-                <CheckCircle class="w-4 h-4 mr-2" />
-                Agree with NG AI
-              </button>
-              <button class="flex items-center px-3 py-1.5 text-sm font-medium text-red-600 bg-white border-2 border-red-300 rounded-md hover:bg-gray-50 transition-colors">
-                <XCircle class="w-4 h-4 mr-2" />
-                Disagree with NG AI
-              </button>
-              <button @click="showGradeModal = true" class="flex items-center px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border-2 border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-                <FileText class="w-4 h-4 mr-2" />
-                See rejection rules
-              </button>
-              <button class="flex items-center px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border-2 border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-                <BookOpen class="w-4 h-4 mr-2" />
-                Add to Reference Bundle
-              </button>
-              <Button @click="downloadBoardData" variant="outline">
-                <Download class="w-4 h-4 mr-2" />
-                Download Data
-              </Button>
-              <Button class="bg-emerald-600 hover:bg-emerald-700 text-white">
-                <router-link :to="`/board-inspector/${selectedBoard.id}`" class="flex items-center">
-                  <Eye class="w-4 h-4 mr-2" />
-                  Full Inspection
-                </router-link>
-              </Button>
             </div>
           </div>
-
-          <!-- Empty state when no board selected -->
-          <div v-else class="bg-white rounded-lg border-2 border-gray-200 p-12 text-center">
-            <Package class="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Select a Board</h3>
-            <p class="text-gray-600">Choose a board from the list to view its details</p>
+          
+          <!-- Pagination -->
+          <div class="bg-gray-50 px-4 py-3 border-t border-gray-200">
+            <div class="flex items-center justify-between">
+              <Button 
+                size="sm" 
+                variant="outline" 
+                @click="previousPage" 
+                :disabled="currentPage <= 1"
+              >
+                Previous
+              </Button>
+              <span class="text-sm text-gray-600">
+                {{ startIndex + 1 }}-{{ endIndex }} of {{ filteredBoards.length }}
+              </span>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                @click="nextPage" 
+                :disabled="currentPage >= totalPages"
+              >
+                Next
+              </Button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Empty State -->
-    <div v-else-if="!isLoading" class="bg-white rounded-lg shadow p-12 text-center">
-      <Package class="w-16 h-16 text-gray-400 mx-auto mb-4" />
-      <h3 class="text-lg font-semibold text-gray-900 mb-2">No Boards Found</h3>
-      <p class="text-gray-600 mb-4">Try adjusting your filters or search criteria</p>
-      <Button @click="clearAllFilters" variant="outline">
-        Clear Filters
-      </Button>
+      <!-- Board Detail View -->
+      <div class="flex-1">
+        <div v-if="!selectedBoard" class="bg-white rounded-lg shadow-lg p-12 text-center">
+          <Package class="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 class="text-lg font-medium text-gray-900 mb-2">No Board Selected</h3>
+          <p class="text-gray-500">Select a board from the list to view details</p>
+        </div>
+        
+        <!-- Use the shared BoardViewer component -->
+        <BoardViewer
+          v-else
+          ref="boardViewerRef"
+          :board="selectedBoard"
+          :available-grades="availableGrades"
+          :show-kpis="true"
+          @usable-area-toggled="handleUsableAreaToggle"
+        >
+          <!-- Additional action buttons for BoardFinder -->
+          <template #actions>
+            <button class="flex items-center px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border-2 border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+              <ThumbsUp class="w-4 h-4 mr-2" />
+              Agree with NG AI
+            </button>
+            <button @click="() => { if (boardViewerRef) boardViewerRef.showFeedbackModal = true }" class="flex items-center px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border-2 border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+              <ThumbsDown class="w-4 h-4 mr-2" />
+              Disagree with NG AI
+            </button>
+            <button class="flex items-center px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border-2 border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+              <BookOpen class="w-4 h-4 mr-2" />
+              Add to Reference Bundle
+            </button>
+            <button 
+              @click="goToInspector"
+              class="flex items-center px-3 py-1.5 text-sm font-medium text-emerald-600 bg-white border-2 border-emerald-300 rounded-md hover:bg-emerald-50 transition-colors">
+              <ExternalLink class="w-4 h-4 mr-2" />
+              Open in Inspector
+            </button>
+          </template>
+        </BoardViewer>
+      </div>
     </div>
-    
-    <!-- Rejection Rules Modal (Reusable Component) -->
-    <RejectionRulesModal 
-      v-model="showGradeModal" 
-      :board="selectedBoard"
-      :grades="availableGrades"
-    />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { 
-  Search, Filter, RefreshCw, X, Ruler, ArrowLeftRight, Box, AlertTriangle,
-  Layers, Download, Eye, Package, ImageIcon, CheckCircle, XCircle, FileText,
-  BookOpen, EyeOff, TrendingUp, DollarSign, Layers as LayersIcon, Calendar,
-  Hash, Archive, Camera, Shield, Maximize2, BarChart3, Percent
-} from 'lucide-vue-next'
+import BoardViewer from '@/components/board/BoardViewer.vue'
 import Button from '@/components/ui/button.vue'
-import LoadingSpinner from '@/components/ui/loading-spinner.vue'
-import { useApi } from '@/composables/useApi'
-import Sheet from '@/components/ui/sheet.vue'
-import SheetContent from '@/components/ui/sheet-content.vue'
-import SheetHeader from '@/components/ui/sheet-header.vue'
-import SheetTitle from '@/components/ui/sheet-title.vue'
-import SheetDescription from '@/components/ui/sheet-description.vue'
-import RejectionRulesModal from '@/components/board/RejectionRulesModal.vue'
+import { Search, Filter, Package, ThumbsUp, ThumbsDown, BookOpen, ExternalLink } from 'lucide-vue-next'
+import DateRangePicker from '@/components/ui/date-range-picker.vue'
+
+// Simple debounce implementation
+const debounce = (func, wait) => {
+  let timeout
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout)
+      func(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+  }
+}
 
 const router = useRouter()
 
 // State
-const searchQuery = ref('')
+const boards = ref([])
 const selectedBoard = ref(null)
+const searchQuery = ref('')
 const showFilters = ref(false)
-const showGradeModal = ref(false)
 const isLoading = ref(false)
 const error = ref(null)
-const boards = ref([])
-const allBoards = ref([]) // Cache all boards for filtering
-const boardImages = ref(null)
-
-// Pagination
-const currentPage = ref(1)
 const pageSize = ref(25)
-const totalBoards = ref(0)
-const totalPages = computed(() => Math.ceil(totalBoards.value / pageSize.value))
-
-// Available filter options (will be loaded from API)
-const availableOrders = ref([]) // Note: API still uses 'batches', but we display as 'orders'
+const currentPage = ref(1)
 const availableGrades = ref([])
-const availableBundles = ref([])
+const boardViewerRef = ref(null)
 
-// Cache for order custom grades mapping (API uses batch terminology)
-const orderCustomGradesCache = ref({})
+// Date range filtering
+const dateRange = ref('24h')  // Default to last 24 hours
+const customStartDate = ref('')
+const customEndDate = ref('')
 
 // Filters
 const filters = ref({
-  batchId: '',
-  gradeId: '',
-  bundleId: '',
-  shotId: '',
-  lengthMin: '',
-  lengthMax: '',
-  widthMin: '',
-  widthMax: ''
+  orderId: null,
+  gradeId: null,
+  speciesId: null,
+  lengthMin: null,
+  lengthMax: null,
+  widthMin: null,
+  widthMax: null,
+  hasDefects: null
 })
 
-// API composables
-const { execute: fetchBoards } = useApi('/api/v3/boards')
-const { execute: fetchBatches } = useApi('/api/v3/batches')
-const { execute: fetchGrades } = useApi('/api/v3/grades')
-const { execute: fetchBundles } = useApi('/api/v3/bundles')
-const { execute: fetchBatchDetails } = useApi('/api/v3/batches')
+// Computed
+const hasActiveFilters = computed(() => {
+  return Object.values(filters.value).some(v => v !== null && v !== '')
+})
 
-// Load boards from API
+const filteredBoards = computed(() => {
+  let result = [...boards.value]
+  
+  // Apply search
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    result = result.filter(board => {
+      return (
+        board.id?.toString().includes(query) ||
+        board.batch?.id?.toString().includes(query) ||
+        board.batch?.name?.toLowerCase().includes(query) ||
+        board.face1?.shotId?.toString().includes(query) ||
+        board.face2?.shotId?.toString().includes(query) ||
+        getGradeName(board).toLowerCase().includes(query) ||
+        getSpeciesName(board).toLowerCase().includes(query)
+      )
+    })
+  }
+  
+  // Apply filters
+  if (filters.value.orderId) {
+    result = result.filter(b => b.batch?.id == filters.value.orderId)
+  }
+  if (filters.value.gradeId) {
+    result = result.filter(b => b.gradeId == filters.value.gradeId)
+  }
+  
+  return result
+})
+
+const totalPages = computed(() => Math.ceil(filteredBoards.value.length / pageSize.value))
+const startIndex = computed(() => (currentPage.value - 1) * pageSize.value)
+const endIndex = computed(() => Math.min(startIndex.value + pageSize.value, filteredBoards.value.length))
+const paginatedBoards = computed(() => filteredBoards.value.slice(startIndex.value, endIndex.value))
+
+// Methods
+const getDateRangeParams = () => {
+  const now = new Date()
+  let startDate = new Date()
+  
+  switch(dateRange.value) {
+    case '1h':
+      startDate.setHours(now.getHours() - 1)
+      break
+    case '24h':
+      startDate.setDate(now.getDate() - 1)
+      break
+    case '7d':
+      startDate.setDate(now.getDate() - 7)
+      break
+    case '30d':
+      startDate.setDate(now.getDate() - 30)
+      break
+    case 'custom':
+      if (customStartDate.value && customEndDate.value) {
+        return {
+          startDate: new Date(customStartDate.value).toISOString(),
+          endDate: new Date(customEndDate.value).toISOString()
+        }
+      }
+      // Fall back to 24h if custom dates not set
+      startDate.setDate(now.getDate() - 1)
+      break
+    default:
+      startDate.setDate(now.getDate() - 1)
+  }
+  
+  return {
+    startDate: startDate.toISOString(),
+    endDate: now.toISOString()
+  }
+}
+
 const loadBoards = async () => {
   isLoading.value = true
   error.value = null
   
   try {
-    // Only reload data from API if we don't have it or filters changed
-    const shouldReloadFromAPI = allBoards.value.length === 0 || hasBackendFilters()
+    // Get date range for client-side filtering
+    const dateParams = getDateRangeParams()
+    const startDate = new Date(dateParams.startDate)
+    const endDate = new Date(dateParams.endDate)
     
-    if (shouldReloadFromAPI) {
-      const params = {}
+    // Load all boards using pagination (backend doesn't support date filtering)
+    const pageSize = 500 // Reasonable page size for performance
+    let allBoards = []
+    let currentPage = 1
+    let hasMore = true
+    
+    while (hasMore) {
+      const params = new URLSearchParams({
+        page: String(currentPage),
+        limit: String(pageSize),
+        sortBy: 'createDate',
+        sortDesc: 'true'  // Most recent first
+      })
       
-      // Add backend filters
-      if (filters.value.batchId) params.batchId = filters.value.batchId
-      if (filters.value.gradeId) params.gradeId = filters.value.gradeId
-      if (filters.value.bundleId) params.bundleId = filters.value.bundleId
-      if (filters.value.shotId) params.shotId = filters.value.shotId
+      const response = await fetch(`/api/v3/boards?${params}`)
+      if (!response.ok) throw new Error('Failed to fetch boards')
       
-      const response = await fetchBoards(params)
+      const data = await response.json()
+      const pageBoards = data.data || []
       
-      if (response && response.data) {
-        // Handle the response structure from the API
-        if (response.data.boards) {
-          allBoards.value = response.data.boards
-        } else if (Array.isArray(response.data)) {
-          allBoards.value = response.data
-        } else {
-          allBoards.value = []
-        }
+      if (pageBoards.length === 0) {
+        // No more boards
+        hasMore = false
       } else {
-        allBoards.value = []
+        // Filter by date on client side since backend doesn't support it
+        const filteredPageBoards = pageBoards.filter(board => {
+          if (!board.createDate) return false
+          const boardDate = new Date(board.createDate)
+          return boardDate >= startDate && boardDate <= endDate
+        })
+        
+        // Check for duplicates (in case pagination is broken)
+        const existingIds = new Set(allBoards.map(b => b.id))
+        const newBoards = filteredPageBoards.filter(b => !existingIds.has(b.id))
+        
+        if (newBoards.length === 0 && pageBoards.length === pageSize) {
+          // No boards in date range on this page, but might be more pages
+          currentPage++
+        } else {
+          allBoards = [...allBoards, ...newBoards]
+          
+          // If we got less than pageSize, we've reached the end
+          if (pageBoards.length < pageSize) {
+            hasMore = false
+          } else {
+            currentPage++
+          }
+        }
+      }
+      
+      // Safety limit to prevent infinite loops
+      if (currentPage > 20) {
+        console.warn('Reached maximum page limit, stopping')
+        hasMore = false
       }
     }
     
-    // Apply client-side search filtering to cached data
-    const filteredBoards = applySearchFilter(allBoards.value)
-    
-    // Apply client-side pagination to filtered results
-    totalBoards.value = filteredBoards.length
-    const startIndex = (currentPage.value - 1) * pageSize.value
-    const endIndex = startIndex + pageSize.value
-    boards.value = filteredBoards.slice(startIndex, endIndex)
+    boards.value = allBoards
+    console.log(`Loaded ${boards.value.length} boards within date range from ${currentPage} page(s)`)
+    console.log(`Date range: ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`)
     
     // Auto-select first board if none selected
     if (boards.value.length > 0 && !selectedBoard.value) {
       selectBoard(boards.value[0])
     }
   } catch (err) {
+    error.value = err.message
     console.error('Error loading boards:', err)
-    error.value = 'Failed to load boards. Please try again.'
-    boards.value = []
-    allBoards.value = []
   } finally {
     isLoading.value = false
   }
 }
 
-// Check if any backend filters are active
-const hasBackendFilters = () => {
-  return filters.value.batchId || 
-         filters.value.gradeId || 
-         filters.value.bundleId || 
-         filters.value.shotId
+const onDateRangeChange = () => {
+  // Reload boards when date range changes
+  loadBoards()
 }
 
-// Apply search filter to boards array (only searches by board ID)
-const applySearchFilter = (boardsList) => {
-  if (!searchQuery.value) {
-    return boardsList
-  }
-  
-  const query = searchQuery.value.trim()
-  
-  return boardsList.filter(board => {
-    // Only search by board ID for simplicity
-    const boardId = board.id?.toString() || ''
-    return boardId.includes(query)
-  })
-}
-
-// Load filter options
-const loadFilterOptions = async () => {
+const loadGrades = async () => {
   try {
-    // Load orders (API endpoint still uses 'batches') - TEMPORARY: Use no params to avoid pagination issues
-    const batchResponse = await fetchBatches({}) // Note: API uses 'batches', but we call them 'orders' in UI
-    if (batchResponse && batchResponse.data) {
-      availableOrders.value = Array.isArray(batchResponse.data) ? batchResponse.data : []
-    }
-    
-    // Load grades
-    const gradeResponse = await fetchGrades({})
-    if (gradeResponse && gradeResponse.data) {
-      availableGrades.value = Array.isArray(gradeResponse.data) ? gradeResponse.data : []
-    }
-    
-    // Load bundles - TEMPORARY: Use no params to avoid pagination issues
-    // Note: bundles endpoint may not exist (404 errors in logs)
-    const bundleResponse = await fetchBundles({})
-    if (bundleResponse && bundleResponse.data) {
-      if (bundleResponse.data.bundles) {
-        availableBundles.value = bundleResponse.data.bundles
-      } else if (Array.isArray(bundleResponse.data)) {
-        availableBundles.value = bundleResponse.data
-      }
-    }
+    const response = await fetch('/api/v3/grades')
+    if (!response.ok) throw new Error('Failed to fetch grades')
+    const data = await response.json()
+    availableGrades.value = data.data || []
   } catch (err) {
-    console.error('Error loading filter options:', err)
+    console.error('Error loading grades:', err)
   }
 }
 
-// Load board images
-const loadBoardImages = async () => {
-  if (!selectedBoard.value) return
-  
-  try {
-    // This would call the image endpoint - adjust based on your API
-    boardImages.value = [
-      {
-        faceName: 'Face 1',
-        url: `/api/legacy/ui/images/render/board/${selectedBoard.value.id}/face1/original`
-      },
-      {
-        faceName: 'Face 2', 
-        url: `/api/legacy/ui/images/render/board/${selectedBoard.value.id}/face2/original`
-      }
-    ]
-  } catch (err) {
-    console.error('Error loading board images:', err)
-  }
-}
-
-// Utility functions
-const selectBoard = async (board) => {
+const selectBoard = (board) => {
   selectedBoard.value = board
-  boardImages.value = null // Reset images when selecting new board
-  
-  // Automatically load board images
-  if (board) {
-    await loadBoardImages()
+}
+
+const toggleFilters = () => {
+  showFilters.value = !showFilters.value
+}
+
+const previousPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--
   }
 }
 
-const formatLength = (value) => {
-  if (!value) return 'N/A'
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++
+  }
+}
+
+const goToInspector = () => {
+  if (selectedBoard.value) {
+    router.push(`/board-inspector/${selectedBoard.value.id}`)
+  }
+}
+
+const handleUsableAreaToggle = (isShowing) => {
+  console.log('Usable area toggled:', isShowing)
+}
+
+// Helper functions
+const getGradeNameById = (gradeId) => {
+  // Map batch-specific grade IDs to standard grade names
+  const batchGradeMapping = {
+    575: 'AW',
+    576: 'AR', 
+    577: 'BW',
+    578: 'BR',
+    579: 'CW',
+    580: 'CR',
+    581: 'Rebut'
+  }
   
-  // Handle object format from API
-  if (typeof value === 'object' && value.value) {
-    const rawValue = parseFloat(value.value)
-    const unit = value.unit || 'cm'
-    
-    if (unit === 'cm') {
-      return `${rawValue.toFixed(1)} cm`
-    } else if (unit === 'mm') {
-      // Convert mm to cm for display
-      const cm = rawValue / 10
-      return `${cm.toFixed(1)} cm`
+  if (batchGradeMapping[gradeId]) {
+    return batchGradeMapping[gradeId]
+  }
+  
+  const grade = availableGrades.value.find(g => g.id === gradeId)
+  return grade?.name || `Grade ${gradeId}`
+}
+
+const getGradeName = (board) => {
+  // Handle null/undefined gradeId
+  if (!board?.gradeId) {
+    // When gradeId is null, check what grades passed
+    if (board?.grades && board.grades.length > 0) {
+      // Find the first valid grade (excluding Rebut)
+      const validGrade = board.grades.find(g => {
+        if (!g.valid) return false
+        const gradeName = getGradeNameById(g.id)
+        // Exclude Rebut from being selected as the primary grade
+        return !gradeName.toLowerCase().includes('rebut')
+      })
+      
+      if (validGrade) {
+        return getGradeNameById(validGrade.id)
+      }
+      
+      // Check if only Rebut passed
+      const rebutGrade = board.grades.find(g => {
+        const gradeName = getGradeNameById(g.id)
+        return gradeName.toLowerCase().includes('rebut') && g.valid
+      })
+      
+      // If Rebut is valid but other grades are also valid, ignore Rebut
+      if (rebutGrade && board.grades.some(g => g.valid && g.id !== rebutGrade.id)) {
+        // Find the non-Rebut valid grade
+        const otherValidGrade = board.grades.find(g => g.valid && g.id !== rebutGrade.id)
+        return getGradeNameById(otherValidGrade.id)
+      }
+      
+      if (rebutGrade) {
+        return 'Rebut'
+      }
+      
+      // If no grades passed and we have validation data, it's Rebut (reject)
+      const hasValidationData = board.grades.some(g => g.valid !== undefined)
+      if (hasValidationData) {
+        return 'Rebut' // All grades failed, board is rejected
+      }
     }
-    return `${rawValue.toFixed(1)} ${unit}`
+    // Only show Ungraded if there's no validation data at all
+    return 'Ungraded'
   }
   
-  // Handle numeric value (assume mm, convert to cm)
-  const cm = value / 10
-  return `${cm.toFixed(1)} cm`
+  const grade = availableGrades.value.find(g => g.id === board.gradeId)
+  return grade?.name || `Grade ${board.gradeId}`
 }
 
-const formatSurface = (value) => {
-  if (!value) return 'N/A'
-  return `${value.toFixed(2)} sq ft`
+const getSpeciesName = (board) => {
+  if (!board) return 'Unknown'
+  
+  // API uses 'specie' not 'species'
+  if (board.specie) {
+    if (typeof board.specie === 'object' && board.specie.name) {
+      return board.specie.name
+    }
+    if (typeof board.specie === 'string') {
+      return board.specie
+    }
+  }
+  // Fallback to species for compatibility
+  if (board.species) {
+    if (typeof board.species === 'object' && board.species.name) {
+      return board.species.name
+    }
+    if (typeof board.species === 'string') {
+      return board.species
+    }
+  }
+  
+  return 'Unknown'
 }
 
 const formatDimensions = (board) => {
@@ -673,239 +531,81 @@ const formatDimensions = (board) => {
   return `${length} × ${width}`
 }
 
+const formatLength = (value) => {
+  if (!value) return 'N/A'
+  
+  if (typeof value === 'object' && value.value) {
+    const rawValue = parseFloat(value.value)
+    const unit = value.unit || 'cm'
+    
+    if (unit === 'cm') {
+      return `${rawValue.toFixed(1)} cm`
+    } else if (unit === 'mm') {
+      const cm = rawValue / 10
+      return `${cm.toFixed(1)} cm`
+    }
+    return `${rawValue.toFixed(1)} ${unit}`
+  }
+  
+  const cm = value / 10
+  return `${cm.toFixed(1)} cm`
+}
+
 const formatDate = (dateStr) => {
   if (!dateStr) return 'N/A'
-  return new Date(dateStr).toLocaleDateString()
+  const date = new Date(dateStr)
+  return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-// Fix encoding issues from legacy API
-const fixEncoding = (text) => {
-  if (!text) return text
-  // Common French character replacements
-  return text
-    .replace(/�|Ã¨/g, 'è')
-    .replace(/Ã©/g, 'é')
-    .replace(/Ã /g, 'à')
-    .replace(/Ã¢/g, 'â')
-    .replace(/Ã§/g, 'ç')
-    .replace(/Ã´/g, 'ô')
-    .replace(/Ã»/g, 'û')
-    .replace(/Ã®/g, 'î')
-    .replace(/Ãª/g, 'ê')
-    .replace(/Ã¹/g, 'ù')
-}
-
-// Load order custom grades mapping (API still uses batch terminology)
-const loadOrderCustomGrades = async (orderId) => {
-  if (!orderId || orderCustomGradesCache.value[orderId]) {
-    return orderCustomGradesCache.value[orderId]
+const calculateBoardValue = (board) => {
+  if (!board) return ''
+  
+  // Only display price/value if provided by the API
+  // No client-side calculations to support multiple customer sources
+  
+  // Check if board has a price field from API
+  if (board.price !== undefined && board.price !== null) {
+    return `€${board.price.toFixed(2)}`
   }
   
-  try {
-    // Use direct fetch to legacy API since the adapter might not handle this properly
-    // Note: API endpoint uses 'batches' but we refer to them as 'orders' in the new app
-    const response = await fetch(`/api/legacy/batches/${orderId}`, {
-      headers: {
-        'Accept': 'application/json; charset=utf-8',
-        'Content-Type': 'application/json; charset=utf-8'
-      }
-    })
-    const data = await response.json()
-    
-    if (data && data.data && data.data.customGrades) {
-      const mapping = {}
-      data.data.customGrades.forEach(cg => {
-        mapping[cg.id] = cg.customGrade?.name || cg.name || `Grade ${cg.id}`
-      })
-      orderCustomGradesCache.value[orderId] = mapping
-      console.log(`Loaded order ${orderId} custom grades:`, mapping)
-      return mapping
-    }
-  } catch (err) {
-    console.error('Error loading order custom grades:', err)
-  }
-  return {}
-}
-
-const getGradeName = (gradeId, board = null) => {
-  // First check if we have order custom grades cached for this grade ID
-  // Grade IDs > 100 are typically order custom grade assignment IDs
-  if (gradeId > 100) {
-    // Look through all cached order custom grades
-    for (const orderId in orderCustomGradesCache.value) {
-      const mapping = orderCustomGradesCache.value[orderId]
-      if (mapping && mapping[gradeId]) {
-        console.log(`Found grade ${gradeId} in order ${orderId}: ${mapping[gradeId]}`)
-        return mapping[gradeId]
-      }
-    }
-    // Try to find from selected board's order
-    if (selectedBoard.value && selectedBoard.value.batchId) {
-      const mapping = orderCustomGradesCache.value[selectedBoard.value.batchId]
-      if (mapping && mapping[gradeId]) {
-        return mapping[gradeId]
-      }
-    }
-    console.log(`Grade ${gradeId} not found in cache, orders cached:`, Object.keys(orderCustomGradesCache.value))
+  // Check if board has a value field from API  
+  if (board.value !== undefined && board.value !== null) {
+    return `€${board.value.toFixed(2)}`
   }
   
-  // If board has grade info, use it
-  if (board && board.grade && board.grade.name) {
-    return board.grade.name
-  }
-  
-  // Otherwise look up in available grades
-  const grade = availableGrades.value.find(g => g.id === gradeId)
-  return grade?.name || `Grade ${gradeId}`
+  // If API doesn't provide price/value, don't show anything
+  // This allows different customers to have their own pricing models
+  return ''
 }
 
-const handleImageError = (event) => {
-  event.target.src = '/boardpic.png' // Fallback image
-}
-
-// Calculate the board's value (placeholder logic)
-const calculateValue = (board) => {
-  if (!board) return '0.00'
-  // Simple calculation based on volume and grade
-  const basePrice = 100 // Base price per unit
-  const volume = board.volumeGraded || (board.length * board.width * board.thickness) / 1000000000
-  return (basePrice * volume).toFixed(2)
-}
-
-// Calculate yield percentage
-const calculateYield = (board) => {
-  if (!board) return 0
-  // Mock calculation - would be based on defects and usable area
-  const totalDefects = board.defects?.length || 0
-  const yieldPercentage = Math.max(0, 100 - (totalDefects * 5))
-  return yieldPercentage.toFixed(1)
-}
-
-// Format volume
-const formatVolume = (board) => {
-  if (!board) return 'N/A'
-  const volume = board.volumeGraded || (board.length * board.width * board.thickness) / 1000000000
-  return `${volume.toFixed(4)} m³`
-}
-
-const downloadBoardData = () => {
-  if (!selectedBoard.value) return
-  
-  const dataStr = JSON.stringify(selectedBoard.value, null, 2)
-  const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr)
-  
-  const exportFileDefaultName = `board-${selectedBoard.value.id}.json`
-  
-  const linkElement = document.createElement('a')
-  linkElement.setAttribute('href', dataUri)
-  linkElement.setAttribute('download', exportFileDefaultName)
-  linkElement.click()
-}
-
-// Pagination
-const nextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++
-    applySearchAndPagination() // Use cached data for pagination
-  }
-}
-
-const previousPage = () => {
-  if (currentPage.value > 1) {
-    currentPage.value--
-    applySearchAndPagination() // Use cached data for pagination
-  }
-}
-
-// Filter management
-const toggleFilters = () => {
-  showFilters.value = !showFilters.value
-}
-
-const clearAllFilters = () => {
-  filters.value = {
-    batchId: '',
-    gradeId: '',
-    bundleId: '',
-    shotId: '',
-    lengthMin: '',
-    lengthMax: '',
-    widthMin: '',
-    widthMax: ''
-  }
-  searchQuery.value = ''
-  currentPage.value = 1
-  loadBoards()
-}
-
-const hasActiveFilters = computed(() => {
-  return searchQuery.value ||
-    filters.value.batchId ||
-    filters.value.gradeId ||
-    filters.value.bundleId ||
-    filters.value.shotId ||
-    filters.value.lengthMin ||
-    filters.value.lengthMax ||
-    filters.value.widthMin ||
-    filters.value.widthMax
-})
-
-// Apply search and pagination without reloading from API
-const applySearchAndPagination = () => {
-  // Apply client-side search filtering to cached data
-  const filteredBoards = applySearchFilter(allBoards.value)
-  
-  // Apply client-side pagination to filtered results
-  totalBoards.value = filteredBoards.length
-  const startIndex = (currentPage.value - 1) * pageSize.value
-  const endIndex = startIndex + pageSize.value
-  boards.value = filteredBoards.slice(startIndex, endIndex)
-  
-  // Auto-select first board if none selected
-  if (boards.value.length > 0 && !selectedBoard.value) {
-    selectBoard(boards.value[0])
-  }
+const getGradeColorClass = (board) => {
+  const gradeName = getGradeName(board)
+  if (gradeName.includes('A')) return 'bg-emerald-100 text-emerald-700'
+  if (gradeName.includes('B')) return 'bg-blue-100 text-blue-700'
+  if (gradeName.includes('C')) return 'bg-amber-100 text-amber-700'
+  if (gradeName.toLowerCase().includes('rebut')) return 'bg-red-100 text-red-700'
+  return 'bg-gray-100 text-gray-700'
 }
 
 // Debounced search
-let searchTimeout = null
-const debouncedSearch = () => {
-  clearTimeout(searchTimeout)
-  searchTimeout = setTimeout(() => {
-    currentPage.value = 1 // Reset to first page when searching
-    
-    // If we have backend filters, reload from API, otherwise just filter cached data
-    if (hasBackendFilters()) {
-      loadBoards()
-    } else {
-      applySearchAndPagination()
-    }
-  }, 300)
-}
+const debouncedSearch = debounce(() => {
+  currentPage.value = 1 // Reset to first page on search
+}, 300)
 
-// Initialize on mount
+// Lifecycle
 onMounted(() => {
-  const initializeApp = async () => {
-    try {
-      await loadFilterOptions()
-      // Preload order 84 custom grades (common order for testing)
-      await loadOrderCustomGrades(84)
-      await loadBoards()
-    } catch (error) {
-      console.error('Failed to initialize app:', error)
-    }
+  // Wrap async operations in an inner function to avoid Vue lifecycle warnings
+  const initializeData = async () => {
+    await Promise.all([
+      loadGrades(),
+      loadBoards()
+    ])
   }
   
-  initializeApp()
+  initializeData()
 })
-
-// Watch for filter changes
-watch(() => filters.value, () => {
-  currentPage.value = 1
-  // Clear cached data when backend filters change to force reload
-  if (hasBackendFilters()) {
-    allBoards.value = []
-  }
-  loadBoards()
-}, { deep: true })
 </script>
+
+<style scoped>
+/* Any BoardFinder-specific styles */
+</style>

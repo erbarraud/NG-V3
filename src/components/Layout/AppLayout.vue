@@ -1,6 +1,6 @@
 <template>
   <ErrorBoundary>
-  <div class="min-h-screen bg-slate-50" :class="{ 'fullscreen-mode': isFullScreen }">
+  <div class="min-h-screen bg-gray-50 flex flex-col" :class="{ 'fullscreen-mode': isFullScreen }">
     <!-- Navigation Header -->
     <nav v-if="!isFullScreen" class="shadow-xl" style="background-color: #213C33; border-bottom: 2px solid #4ED586;" aria-label="Main navigation">
       <div class="w-full px-4 sm:px-6 lg:px-8">
@@ -73,12 +73,12 @@
                 <button
                   @click="showToolsMenu = !showToolsMenu"
                   :class="[
-                    ['UserManagement', 'ShiftScheduler', 'ClaimsManagement', 'LiveScanning'].includes($route.name)
+                    ['UserManagement', 'ShiftScheduler', 'ClaimsManagement'].includes($route.name)
                       ? 'text-white shadow-lg ring-2 ring-primary/50'
                       : 'text-white hover:bg-primary/80 hover:text-white',
                     'px-4 py-2 rounded-lg text-sm font-semibold flex items-center transition-all duration-200 hover:shadow-md'
                   ]"
-                  :style="['UserManagement', 'ShiftScheduler', 'ClaimsManagement', 'LiveScanning'].includes($route.name) ? 'background-color: #204739' : ''"
+                  :style="['UserManagement', 'ShiftScheduler', 'ClaimsManagement'].includes($route.name) ? 'background-color: #204739' : ''"
                   :aria-expanded="showToolsMenu"
                   aria-haspopup="true"
                   aria-label="Tools menu"
@@ -112,13 +112,6 @@
                     @click="showToolsMenu = false"
                   >
                     Claims Management
-                  </router-link>
-                  <router-link
-                    to="/scanning"
-                    class="block px-4 py-2 text-sm text-slate-700 hover:bg-primary/10 hover:text-primary transition-colors duration-150"
-                    @click="showToolsMenu = false"
-                  >
-                    Live Scanning
                   </router-link>
                   <router-link
                     to="/grade-management"
@@ -209,12 +202,12 @@
     </nav>
 
     <!-- Main Content -->
-    <main>
+    <main class="flex-1">
       <router-view />
     </main>
 
     <!-- Footer -->
-    <footer v-if="!isFullScreen" class="bg-white border-t border-slate-200 py-4">
+    <footer v-if="!isFullScreen" class="bg-white border-t border-slate-200 py-4 mt-auto">
       <div class="w-full px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between">
           <div class="text-sm text-slate-500">

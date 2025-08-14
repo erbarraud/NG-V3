@@ -14,8 +14,39 @@ This is a Vue 3 + TypeScript application for a lumber grading system (NG-V3) tha
 - Save context to this CLAUDE.md file after each session
 - Always run lint and typecheck commands when code changes are made
 - **Use "Orders" terminology instead of "Batches" in the UI** (the old app used "batches", new app uses "orders")
+- **Update API_MISSING_ENDPOINTS.md** when connecting pages to API and finding missing data/endpoints
 
 ## Recent Changes & Current State
+
+### Session: 2025-08-14 (Euro Currency & API-Based Pricing)
+**Currency Update to Euros:**
+1. **Changed all price displays from USD ($) to Euros (€)**:
+   - BoardViewer: Shows board value in Euros when provided by API
+   - BoardFinder: Shows price only when API provides it
+   - LineCheckDashboard: Updated price display to Euros
+   - BoardInspector: Uses BoardViewer which shows Euros
+
+**Removed Client-Side Price Calculations:**
+1. **Why**: To support multiple customer sources with different pricing models
+2. **Changes**:
+   - Removed all hardcoded price calculations from client
+   - Only display prices when provided by API
+   - Show "N/A" when API doesn't provide pricing
+3. **API Requirements**:
+   - Backend should provide `price` or `value` field for each board
+   - Pricing should be calculated server-side based on customer rules
+   - Currency should be configurable per customer
+4. **Documented in API_MISSING_ENDPOINTS.md**
+
+**Fixed Usable Area Overlay Issues:**
+1. **Problem**: White overlay extending beyond wood into gray background areas
+2. **Solution**: Improved background detection algorithm with multiple criteria:
+   - Detects black borders (avgColor < 40)
+   - Identifies gray backgrounds (low color variance + gray range)
+   - Excludes top/bottom edges (typically background)
+   - Differentiates wood texture from uniform gray
+3. **Implementation**: Enhanced pixel analysis checking color variance and texture patterns
+4. **Result**: Usable area overlay now correctly shows only on wood surfaces
 
 ### Session: 2025-08-13 (Terminology Update)
 **Changes Made:**
@@ -226,3 +257,24 @@ Currently deployed on Vercel with API proxy configuration to handle CORS issues 
    - Vue lifecycle warnings were preventing proper component initialization
    - Private mode worked because it bypassed the cached failed state
    - Backend 500 errors are intermittent but not the primary cause
+
+### Session: 2025-08-13 (Show Usable Area Investigation)
+**Findings on "Show Usable Area" Feature:**
+1. **API Data Structure Investigation**:
+   - Added extensive debugging logs to `loadBoardImages()` function
+   - Face objects from API contain: `url`, `annotatedUrl`, `defects` array
+   - NO coordinate data for clear cuttings/usable areas found in face objects
+   - `annotatedUrl` field exists and likely contains pre-rendered overlay images
+
+2. **Implementation Status**:
+   - Toggle button exists and triggers `toggleUsableArea()` function
+   - Image reloading happens when toggle is clicked
+   - When "Show Usable Area" is ON: Uses `annotatedUrl` or falls back to `/api/legacy/ui/images/render/board/{id}/face{n}/reductions`
+   - When OFF: Uses regular `url` or falls back to `/api/legacy/ui/images/render/board/{id}/face{n}/original`
+   - `getUsableAreaForFace()` checks for: `usableAreas`, `clearCuttings`, `cuttings`, `reductions` arrays but finds none
+
+3. **Current Issue**:
+   - API doesn't provide coordinate data for client-side overlay rendering
+   - Solution relies on server-side rendered images (`annotatedUrl` or `/reductions` endpoint)
+   - Feature depends on backend providing appropriate overlay images
+   - If backend doesn't provide these images, feature won't show visual changes

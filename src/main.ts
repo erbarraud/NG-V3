@@ -14,7 +14,7 @@ const pinia = createPinia()
 setupErrorHandler(app)
 
 // Initialize performance monitoring (but don't auto-log)
-const performance = usePerformance()
+usePerformance()
 
 app.use(pinia)
 app.use(router)

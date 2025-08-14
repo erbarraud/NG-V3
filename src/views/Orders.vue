@@ -1,20 +1,21 @@
 <template>
   <div class="w-full px-4 sm:px-6 lg:px-8 py-6">
     <!-- Loading State -->
-    <div v-if="isLoading" class="flex justify-center items-center py-12">
-      <div class="text-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
-        <p class="text-gray-600">Loading past orders...</p>
+    <div v-if="isLoading" class="space-y-6">
+      <div class="flex items-center justify-between">
+        <LoadingSkeleton variant="text" :rows="2" container-class="w-64" />
+        <LoadingSkeleton variant="text" :rows="1" container-class="w-32" />
+      </div>
+      <div class="bg-white rounded-lg shadow p-6">
+        <LoadingSkeleton variant="table" :rows="8" />
       </div>
     </div>
-    
-    <!-- Main Content -->
-    <div v-else>
+
     <!-- Page Header -->
-    <div class="flex items-center justify-between mb-8">
+    <div v-else class="flex items-center justify-between mb-8">
       <div>
-        <h1 class="text-4xl font-extrabold text-gray-900">Past Orders</h1>
-        <p class="text-gray-600 mt-1">View and manage completed and cancelled production orders</p>
+        <h1 class="text-4xl font-extrabold text-gray-900">{{ pageTitle }}</h1>
+        <p class="text-gray-600 mt-1">{{ pageDescription }}</p>
       </div>
       <Button>
         <router-link to="/orders/create" class="flex items-center">
@@ -24,8 +25,25 @@
       </Button>
     </div>
 
+    <!-- Empty State for Upcoming Orders -->
+    <div v-if="displayMode === 'upcoming' && displayOrders.length === 0" class="bg-white rounded-lg shadow p-12 text-center">
+      <div class="max-w-md mx-auto">
+        <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+        </svg>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No Upcoming Orders</h3>
+        <p class="text-gray-500 mb-6">There are no scheduled orders at this time. The API does not currently provide scheduled order data.</p>
+        <Button asChild>
+          <router-link to="/orders/create">
+            <Plus class="w-4 h-4 mr-2" />
+            Schedule New Order
+          </router-link>
+        </Button>
+      </div>
+    </div>
+
     <!-- Data Table -->
-    <div class="bg-white rounded-lg shadow">
+    <div v-else class="bg-white rounded-lg shadow">
       <!-- Table Header with Search and Filters -->
       <div class="p-6 border-b border-gray-200">
         <div class="flex items-center justify-between mb-4">
@@ -40,6 +58,16 @@
               />
             </div>
             <select
+              v-if="showAllOrders"
+              v-model="statusFilter"
+              class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+            >
+              <option value="">All Statuses</option>
+              <option value="PLANNED">Planned</option>
+              <option value="OPEN">Open</option>
+              <option value="CLOSED">Closed</option>
+            </select>
+            <select
               v-model="speciesFilter"
               class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
             >
@@ -52,7 +80,7 @@
             </Button>
           </div>
           <div class="text-sm text-gray-600">
-            Showing {{ filteredOrders.length }} of {{ pastOrders.length }} orders
+            Showing {{ filteredOrders.length }} of {{ displayOrders.length }} orders
           </div>
         </div>
       </div>
@@ -81,7 +109,7 @@
                 Sorts
               </th>
               <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-b-2 border-emerald-500">
-                Completed Date
+                {{ showAllOrders ? 'Schedule' : 'Completed Date' }}
               </th>
               <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-b-2 border-emerald-500">
                 Status
@@ -115,8 +143,8 @@
                 <div class="text-sm text-gray-900">{{ order.sorts?.length || 0 }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ order.completedDate }}</div>
-                <div class="text-xs text-gray-500">{{ order.completedTime }}</div>
+                <div class="text-sm text-gray-900">{{ order.date }}</div>
+                <div class="text-xs text-gray-500">{{ order.time }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <Badge :variant="getStatusVariant(order.status)" class="text-xs">
@@ -125,7 +153,10 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex items-center space-x-2">
-                  <router-link :to="`/orders/${order.id}`" class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                  <button v-if="showAllOrders" class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                    <Edit class="w-4 h-4" />
+                  </button>
+                  <router-link :to="`/orders/${order.id}`" class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
                     <Eye class="w-4 h-4" />
                   </router-link>
                   <button class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
@@ -179,18 +210,48 @@
         </div>
       </div>
     </div>
-    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { Search, Plus, X, Eye, MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { useRoute } from 'vue-router'
+import { Search, Plus, X, Edit, Eye, MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import Button from '@/components/ui/button.vue'
 import Badge from '@/components/ui/badge.vue'
+import LoadingSkeleton from '@/components/ui/loading-skeleton.vue'
+import { useAsyncState } from '@/composables/useAsyncState.js'
+
+// Get route to determine display mode
+const route = useRoute()
+const displayMode = computed(() => {
+  if (route.path === '/orders/upcoming') return 'upcoming'
+  if (route.path === '/orders/past') return 'past'
+  return 'all' // default for /orders/all
+})
+
+const showAllOrders = computed(() => displayMode.value === 'all')
+
+// Page title and description based on mode
+const pageTitle = computed(() => {
+  switch (displayMode.value) {
+    case 'upcoming': return 'Upcoming Orders'
+    case 'past': return 'Past Orders'
+    default: return 'All Orders'
+  }
+})
+
+const pageDescription = computed(() => {
+  switch (displayMode.value) {
+    case 'upcoming': return 'View and manage scheduled production orders'
+    case 'past': return 'View and manage completed and cancelled production orders'
+    default: return 'View and manage all production orders'
+  }
+})
 
 // Filters
 const searchQuery = ref('')
+const statusFilter = ref('')
 const speciesFilter = ref('')
 
 // Pagination
@@ -199,146 +260,88 @@ const itemsPerPage = ref(10)
 
 // API data
 const apiOrders = ref([])
-const isLoading = ref(false)
 
 // Load orders from API
 const loadOrders = async () => {
-  isLoading.value = true
-  try {
-    const response = await fetch('/api/legacy/batches')
+  // Load all orders with proper pagination
+  const allOrders = []
+  let page = 1
+  let hasMore = true
+  const pageSize = 100
+  
+  while (hasMore) {
+    const response = await fetch(`/api/v3/orders?page=${page}&pageSize=${pageSize}`)
     if (!response.ok) throw new Error('Failed to fetch orders')
     const data = await response.json()
-    apiOrders.value = data.data || []
-  } catch (err) {
-    console.error('Error loading orders:', err)
-  } finally {
-    isLoading.value = false
+    const pageOrders = data.data || []
+    
+    allOrders.push(...pageOrders)
+    
+    if (pageOrders.length < pageSize) {
+      hasMore = false
+    }
+    
+    page++
+    
+    // Safety limit to prevent infinite loop
+    if (page > 10) hasMore = false
   }
+  
+  apiOrders.value = allOrders
+  return apiOrders.value
 }
 
-// Get past (closed) orders from API data
-const pastOrders = computed(() => {
-  // Filter for CLOSED status orders
-  const closedOrders = apiOrders.value.filter(o => o.status === 'CLOSED')
+// Get display orders based on mode
+const displayOrders = computed(() => {
+  let orders = []
+  
+  // Filter based on mode
+  switch (displayMode.value) {
+    case 'upcoming':
+      // Show PLANNED orders as upcoming (if they exist in production)
+      // Also include OPEN orders with future start dates
+      const today = new Date().toISOString().split('T')[0]
+      orders = apiOrders.value.filter(o => 
+        o.status === 'PLANNED' || 
+        o.status === 'SCHEDULED' ||
+        (o.status === 'OPEN' && o.startDate > today)
+      )
+      break
+    case 'past':
+      orders = apiOrders.value.filter(o => o.status === 'CLOSED')
+      break
+    default: // 'all'
+      orders = apiOrders.value
+      break
+  }
   
   // Map to display format with N/A for missing data
-  return closedOrders.map(order => ({
+  return orders.map(order => ({
     id: `ORD-${order.id}`,
     name: order.name,
     customer: 'N/A', // Not in API
     species: order.specie?.name || 'N/A',
     dryStatus: order.dryStatus?.name || 'N/A',
     volume: 'N/A', // Not in API
-    completedDate: order.startDate ? new Date(order.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A',
-    completedTime: 'N/A', // Not in API
+    date: order.startDate ? new Date(order.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A',
+    time: 'N/A', // Not in API
     status: order.status || 'N/A',
     sorts: [] // Not in API
   }))
 })
 
-// Sample past orders data for reference (shows desired structure)
-const samplePastOrders = ref([
-  {
-    id: 'ORD-20250630-004',
-    name: 'Cherry - Cabinet Grade',
-    customer: 'Cabinet Masters',
-    species: 'Cherry',
-    dryStatus: 'Kiln Dried (KD)',
-    volume: '1,800 bf',
-    completedDate: 'Jun 30, 2025',
-    completedTime: '2:00 PM',
-    status: 'Completed'
-  },
-  {
-    id: 'ORD-20250629-005',
-    name: 'Hard Maple - Premium',
-    customer: 'Premium Hardwoods',
-    species: 'Hard Maple',
-    dryStatus: 'Kiln Dried (KD)',
-    volume: '3,600 bf',
-    completedDate: 'Jun 29, 2025',
-    completedTime: '4:00 PM',
-    status: 'Completed'
-  },
-  {
-    id: 'ORD-20250628-006',
-    name: 'Walnut - Select Grade',
-    customer: 'Luxury Millwork',
-    species: 'Walnut',
-    dryStatus: 'Kiln Dried (KD)',
-    volume: '1,200 bf',
-    completedDate: 'Jun 28, 2025',
-    completedTime: '3:00 PM',
-    status: 'Completed'
-  },
-  {
-    id: 'ORD-20250627-007',
-    name: 'Red Oak - Construction Grade',
-    customer: 'BuildCorp',
-    species: 'Red Oak',
-    dryStatus: 'Green (Air Dried)',
-    volume: '5,000 bf',
-    completedDate: 'Jun 27, 2025',
-    completedTime: '6:00 PM',
-    status: 'Completed'
-  },
-  {
-    id: 'ORD-20250626-008',
-    name: 'Soft Maple - Furniture Grade',
-    customer: 'Modern Furniture Co.',
-    species: 'Soft Maple',
-    dryStatus: 'Kiln Dried (KD)',
-    volume: '2,800 bf',
-    completedDate: 'Jun 26, 2025',
-    completedTime: '4:00 PM',
-    status: 'Cancelled'
-  },
-  {
-    id: 'ORD-20250625-009',
-    name: 'White Oak - Flooring Premium',
-    customer: 'Premium Flooring Inc.',
-    species: 'White Oak',
-    dryStatus: 'Kiln Dried (KD)',
-    volume: '4,500 bf',
-    completedDate: 'Jun 25, 2025',
-    completedTime: '5:30 PM',
-    status: 'Completed'
-  },
-  {
-    id: 'ORD-20250624-010',
-    name: 'Cherry - Furniture Grade',
-    customer: 'Artisan Furniture',
-    species: 'Cherry',
-    dryStatus: 'Kiln Dried (KD)',
-    volume: '2,200 bf',
-    completedDate: 'Jun 24, 2025',
-    completedTime: '3:45 PM',
-    status: 'Completed'
-  },
-  {
-    id: 'ORD-20250623-011',
-    name: 'Hard Maple - Select',
-    customer: 'Quality Woods Inc.',
-    species: 'Hard Maple',
-    dryStatus: 'Kiln Dried (KD)',
-    volume: '3,100 bf',
-    completedDate: 'Jun 23, 2025',
-    completedTime: '5:15 PM',
-    status: 'Completed'
-  }
-])
-
 // Computed properties
 const filteredOrders = computed(() => {
-  return pastOrders.value.filter(order => {
+  return displayOrders.value.filter(order => {
     const matchesSearch = !searchQuery.value || 
       order.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
       order.id.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
       order.customer.toLowerCase().includes(searchQuery.value.toLowerCase())
     
+    const matchesStatus = !statusFilter.value || order.status === statusFilter.value
     const matchesSpecies = !speciesFilter.value || order.species === speciesFilter.value
     
-    return matchesSearch && matchesSpecies
+    return matchesSearch && matchesStatus && matchesSpecies
   })
 })
 
@@ -365,23 +368,29 @@ const visiblePages = computed(() => {
 // Methods
 const clearFilters = () => {
   searchQuery.value = ''
+  statusFilter.value = ''
   speciesFilter.value = ''
   currentPage.value = 1
 }
 
 const getStatusVariant = (status) => {
   switch (status) {
-    case 'CLOSED':
-      return 'secondary'
+    case 'PLANNED':
+      return 'outline'  // Blue outline for planned
     case 'OPEN':
-      return 'default'
+      return 'default'   // Green for active/open
+    case 'CLOSED':
+      return 'secondary' // Gray for closed
     default:
       return 'outline'
   }
 }
 
-// Load data on mount
-onMounted(() => {
-  loadOrders()
-})
+const { isLoading } = useAsyncState(
+  loadOrders,
+  null,
+  {
+    immediate: true
+  }
+)
 </script>

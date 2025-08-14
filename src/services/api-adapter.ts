@@ -89,10 +89,19 @@ class ApiAdapter {
       '/api/v3/units': '/units',
       '/api/v3/dry-statuses': '/dryStatuses',
       '/api/v3/printers': '/printers',
-      '/api/v3/feedback-categories': '/feedback-categories'
+      '/api/v3/feedback-categories': '/feedback-categories',
+      '/api/v3/orders': '/batches',
+      '/api/v3/orders/open': '/batches/open',
+      '/api/v3/orders/closed': '/batches/closed'
     }
     
-    const match = v3Endpoint.match(/^(\/api\/v3\/[^\/]+)(\/\d+)?(.*)$/)
+    // Handle image URLs specially
+    if (v3Endpoint.includes('/images/board/')) {
+      // Transform /api/v3/images/board/{id}/face{n}/{quality} to legacy format
+      return v3Endpoint.replace('/api/v3/images/board/', '/ui/images/render/board/')
+    }
+    
+    const match = v3Endpoint.match(/^(\/api\/v3\/[^/]+)(\/\d+)?(.*)$/)
     if (match) {
       const base = match[1]
       const id = match[2] || ''
@@ -186,6 +195,7 @@ class ApiAdapter {
       { regex: /\/auth\//, type: 'auth' },
       { regex: /\/custom-grades/, type: 'custom-grades' },
       { regex: /\/grades/, type: 'grades' },
+      { regex: /\/orders/, type: 'batches' },
       { regex: /\/batches/, type: 'batches' },
       { regex: /\/boards/, type: 'boards' },
       { regex: /\/bundles/, type: 'bundles' },

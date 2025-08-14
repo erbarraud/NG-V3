@@ -6,9 +6,7 @@ const Dashboard = () => import('../views/Dashboard.vue')
 const ProductionOrders = () => import('../views/ProductionOrders.vue')
 const CreateProductionOrder = () => import('../views/CreateProductionOrder.vue')
 const OrderDetails = () => import('../views/OrderDetails.vue')
-const AllOrders = () => import('../views/AllOrders.vue')
-const PastOrders = () => import('../views/PastOrders.vue')
-const LiveScanning = () => import('../views/LiveScanning.vue')
+const Orders = () => import('../views/Orders.vue')
 const LineCheck = () => import('../views/LineCheck.vue')
 const LineCheckDashboard = () => import('../views/LineCheckDashboard.vue')
 const BoardFinder = () => import('../views/BoardFinder.vue')
@@ -66,17 +64,17 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/orders/all',
     name: 'AllOrders',
-    component: AllOrders
+    component: Orders
   },
   {
     path: '/orders/past',
     name: 'PastOrders',
-    component: PastOrders
+    component: Orders
   },
   {
-    path: '/scanning',
-    name: 'LiveScanning',
-    component: LiveScanning
+    path: '/orders/upcoming',
+    name: 'UpcomingOrders',
+    component: Orders
   },
   {
     path: '/line-check',

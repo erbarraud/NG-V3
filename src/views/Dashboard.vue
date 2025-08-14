@@ -33,7 +33,7 @@
               <span class="text-lg font-semibold text-slate-900">Production Overview</span>
             </div>
             <Badge variant="secondary" class="bg-emerald-50 text-emerald-700 border-emerald-200">
-              No Active Shift
+              {{ activeOrder ? 'Active Shift' : 'No Active Shift' }}
             </Badge>
           </div>
           <Button variant="outline" size="sm" class="bg-white/80">
@@ -53,7 +53,7 @@
                 </div>
                 <div>
                   <div class="text-xs font-medium text-emerald-700">Next Shift</div>
-                  <div class="text-sm font-bold text-emerald-900">Morning - 7:00 AM</div>
+                  <div class="text-sm font-bold text-emerald-900">N/A</div>
                 </div>
               </div>
             </div>
@@ -68,13 +68,10 @@
                 </div>
                 <div>
                   <div class="text-xs font-medium text-slate-600">Value Processed</div>
-                  <div class="text-lg font-bold text-slate-900">$24,680</div>
+                  <div class="text-lg font-bold text-slate-900">N/A</div>
                 </div>
               </div>
-              <div class="flex items-center text-emerald-600">
-                <TrendingUp class="h-3 w-3 mr-1" />
-                <span class="text-xs font-semibold">+8.2%</span>
-              </div>
+              <!-- Trend removed - no data available -->
             </div>
           </div>
 
@@ -87,13 +84,10 @@
                 </div>
                 <div>
                   <div class="text-xs font-medium text-slate-600">Volume Processed</div>
-                  <div class="text-lg font-bold text-slate-900">38.4 m³</div>
+                  <div class="text-lg font-bold text-slate-900">N/A</div>
                 </div>
               </div>
-              <div class="flex items-center text-emerald-600">
-                <TrendingUp class="h-3 w-3 mr-1" />
-                <span class="text-xs font-semibold">+12.1%</span>
-              </div>
+              <!-- Trend removed - no data available -->
             </div>
           </div>
 
@@ -105,14 +99,11 @@
                   <MessageSquare class="w-4 h-4 text-emerald-600" />
                 </div>
                 <div>
-                  <div class="text-xs font-medium text-slate-600">Feedback Submitted</div>
-                  <div class="text-lg font-bold text-slate-900">34</div>
+                  <div class="text-xs font-medium text-slate-600">Total Orders</div>
+                  <div class="text-lg font-bold text-slate-900">{{ totalOrders }}</div>
                 </div>
               </div>
-              <div class="flex items-center text-red-500">
-                <TrendingDown class="h-3 w-3 mr-1" />
-                <span class="text-xs font-semibold">-2.3%</span>
-              </div>
+              <!-- Trend removed - no data available -->
             </div>
           </div>
         </div>
@@ -121,7 +112,11 @@
         <div>
           <h3 class="text-lg font-semibold text-slate-900 mb-4">Boards Processed per Hour</h3>
           <div class="bg-white/40 rounded-lg p-4 border border-slate-100">
-            <BarChart :data="chartData" height="256px" />
+            <div class="text-center py-16 text-gray-500">
+              <Package class="w-12 h-12 mx-auto mb-4 text-gray-300" />
+              <div>No production data available</div>
+              <div class="text-sm text-gray-400 mt-2">API does not provide hourly production metrics</div>
+            </div>
           </div>
         </div>
       </CardContent>
@@ -143,179 +138,36 @@
         
         <!-- Compact List View -->
         <div class="space-y-2">
-          <div class="flex items-center justify-between py-3 px-4 hover:bg-slate-50 rounded-xl border border-slate-100 transition-all duration-200 hover:shadow-md">
-            <div class="flex items-center space-x-4 flex-1">
-              <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
-              <div>
-                <div class="font-semibold text-slate-900">Red Oak - Premium Run</div>
-                <div class="text-xs text-slate-500">
-                  <router-link to="/orders/ORD-20250701-001" class="text-emerald-600 hover:text-emerald-800 hover:underline font-medium">
-                    Order B-4873
-                  </router-link>
-                  • Started 09:15 AM
-                </div>
-              </div>
-              <div class="text-sm text-slate-600">Johnson Lumber Co.</div>
-              <Badge variant="default" class="bg-emerald-100 text-emerald-800">Active</Badge>
-            </div>
-            <div class="flex items-center space-x-4">
-              <div class="text-right">
-                <div class="text-sm font-semibold text-slate-900">125 boards</div>
-                <div class="text-xs text-slate-500">3.8 / 11.2 m³</div>
-              </div>
-              <div class="text-right">
-                <div class="text-sm font-semibold text-emerald-600">$2,847</div>
-                <div class="text-xs text-slate-500">92.1% acc</div>
-              </div>
-              <Button variant="ghost" size="sm" class="text-slate-400 hover:text-slate-600">
-                <MoreHorizontal class="h-4 w-4" />
-              </Button>
-            </div>
+          <div v-if="recentOrders.length === 0" class="text-center py-8 text-gray-500">
+            No recent orders available
           </div>
-
-          <div class="flex items-center justify-between py-3 px-4 hover:bg-slate-50 rounded-xl border border-slate-100 transition-all duration-200 hover:shadow-md">
+          <div v-for="order in recentOrders" :key="order.id"
+               class="flex items-center justify-between py-3 px-4 hover:bg-slate-50 rounded-xl border border-slate-100 transition-all duration-200 hover:shadow-md">
             <div class="flex items-center space-x-4 flex-1">
-              <div class="w-2 h-2 bg-slate-400 rounded-full"></div>
+              <div class="w-2 h-2 rounded-full" :class="order.status === 'OPEN' ? 'bg-emerald-500' : 'bg-slate-400'"></div>
               <div>
-                <div class="font-semibold text-slate-900">Soft Maple - Special Order</div>
+                <div class="font-semibold text-slate-900">{{ order.name }}</div>
                 <div class="text-xs text-slate-500">
-                  <router-link to="/orders/ORD-20250701-002" class="text-emerald-600 hover:text-emerald-800 hover:underline font-medium">
-                    Order B-4872
+                  <router-link :to="`/orders/ORD-${order.id}`" class="text-emerald-600 hover:text-emerald-800 hover:underline font-medium">
+                    Order {{ order.orderId }}
                   </router-link>
-                  • 08:30 AM - 11:45 AM
+                  • {{ order.status === 'OPEN' ? 'Started' : '' }} {{ order.startTime }}
                 </div>
               </div>
-              <div class="text-sm text-slate-600">Artisan Furniture</div>
-              <Badge variant="secondary">Completed</Badge>
+              <div class="text-sm text-slate-600">{{ order.customer }}</div>
+              <Badge :variant="order.status === 'OPEN' ? 'default' : 'secondary'" 
+                     :class="order.status === 'OPEN' ? 'bg-emerald-100 text-emerald-800' : ''">
+                {{ order.status === 'OPEN' ? 'Active' : 'Completed' }}
+              </Badge>
             </div>
             <div class="flex items-center space-x-4">
               <div class="text-right">
-                <div class="text-sm font-semibold text-slate-900">287 boards</div>
-                <div class="text-xs text-slate-500">12.6 m³</div>
+                <div class="text-sm font-semibold text-slate-900">{{ order.boardCount }} boards</div>
+                <div class="text-xs text-slate-500">{{ order.volume }}</div>
               </div>
               <div class="text-right">
-                <div class="text-sm font-semibold text-emerald-600">$4,125</div>
-                <div class="text-xs text-slate-500">91.8% acc</div>
-              </div>
-              <Button variant="ghost" size="sm" class="text-slate-400 hover:text-slate-600">
-                <MoreHorizontal class="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between py-3 px-4 hover:bg-slate-50 rounded-xl border border-slate-100 transition-all duration-200 hover:shadow-md">
-            <div class="flex items-center space-x-4 flex-1">
-              <div class="w-2 h-2 bg-slate-400 rounded-full"></div>
-              <div>
-                <div class="font-semibold text-slate-900">White Oak - Flooring</div>
-                <div class="text-xs text-slate-500">
-                  <router-link to="/orders/ORD-20250702-003" class="text-emerald-600 hover:text-emerald-800 hover:underline font-medium">
-                    Order B-4871
-                  </router-link>
-                  • 07:15 AM - 10:30 AM
-                </div>
-              </div>
-              <div class="text-sm text-slate-600">Flooring Inc.</div>
-              <span class="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded-full font-semibold">Completed</span>
-            </div>
-            <div class="flex items-center space-x-4">
-              <div class="text-right">
-                <div class="text-sm font-semibold text-slate-900">198 boards</div>
-                <div class="text-xs text-slate-500">9.9 m³</div>
-              </div>
-              <div class="text-right">
-                <div class="text-sm font-semibold text-emerald-600">$3,672</div>
-                <div class="text-xs text-slate-500">92.5% acc</div>
-              </div>
-              <Button variant="ghost" size="sm" class="text-slate-400 hover:text-slate-600">
-                <MoreHorizontal class="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between py-3 px-4 hover:bg-slate-50 rounded-xl border border-slate-100 transition-all duration-200 hover:shadow-md">
-            <div class="flex items-center space-x-4 flex-1">
-              <div class="w-2 h-2 bg-slate-400 rounded-full"></div>
-              <div>
-                <div class="font-semibold text-slate-900">Cherry - Cabinet Grade</div>
-                <div class="text-xs text-slate-500">
-                  <router-link to="/orders/ORD-20250630-004" class="text-emerald-600 hover:text-emerald-800 hover:underline font-medium">
-                    Order B-4870
-                  </router-link>
-                  • 14:20 PM - 17:45 PM
-                </div>
-              </div>
-              <div class="text-sm text-slate-600">Cabinet Masters</div>
-              <span class="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded-full font-semibold">Completed</span>
-            </div>
-            <div class="flex items-center space-x-4">
-              <div class="text-right">
-                <div class="text-sm font-semibold text-slate-900">342 boards</div>
-                <div class="text-xs text-slate-500">15.2 m³</div>
-              </div>
-              <div class="text-right">
-                <div class="text-sm font-semibold text-emerald-600">$5,890</div>
-                <div class="text-xs text-slate-500">89.3% acc</div>
-              </div>
-              <Button variant="ghost" size="sm" class="text-slate-400 hover:text-slate-600">
-                <MoreHorizontal class="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between py-3 px-4 hover:bg-slate-50 rounded-xl border border-slate-100 transition-all duration-200 hover:shadow-md">
-            <div class="flex items-center space-x-4 flex-1">
-              <div class="w-2 h-2 bg-slate-400 rounded-full"></div>
-              <div>
-                <div class="font-semibold text-slate-900">Hard Maple - Premium</div>
-                <div class="text-xs text-slate-500">
-                  <router-link to="/orders/ORD-20250629-005" class="text-emerald-600 hover:text-emerald-800 hover:underline font-medium">
-                    Order B-4869
-                  </router-link>
-                  • 09:00 AM - 13:30 PM
-                </div>
-              </div>
-              <div class="text-sm text-slate-600">Premium Hardwoods</div>
-              <span class="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded-full font-semibold">Completed</span>
-            </div>
-            <div class="flex items-center space-x-4">
-              <div class="text-right">
-                <div class="text-sm font-semibold text-slate-900">421 boards</div>
-                <div class="text-xs text-slate-500">18.7 m³</div>
-              </div>
-              <div class="text-right">
-                <div class="text-sm font-semibold text-emerald-600">$7,234</div>
-                <div class="text-xs text-slate-500">94.1% acc</div>
-              </div>
-              <Button variant="ghost" size="sm" class="text-slate-400 hover:text-slate-600">
-                <MoreHorizontal class="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between py-3 px-4 hover:bg-slate-50 rounded-xl border border-slate-100 transition-all duration-200 hover:shadow-md">
-            <div class="flex items-center space-x-4 flex-1">
-              <div class="w-2 h-2 bg-slate-400 rounded-full"></div>
-              <div>
-                <div class="font-semibold text-slate-900">Walnut - Select Grade</div>
-                <div class="text-xs text-slate-500">
-                  <router-link to="/orders/ORD-20250628-006" class="text-emerald-600 hover:text-emerald-800 hover:underline font-medium">
-                    Order B-4868
-                  </router-link>
-                  • 11:15 AM - 15:20 PM
-                </div>
-              </div>
-              <div class="text-sm text-slate-600">Luxury Millwork</div>
-              <span class="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded-full font-semibold">Completed</span>
-            </div>
-            <div class="flex items-center space-x-4">
-              <div class="text-right">
-                <div class="text-sm font-semibold text-slate-900">156 boards</div>
-                <div class="text-xs text-slate-500">22.1 m³</div>
-              </div>
-              <div class="text-right">
-                <div class="text-sm font-semibold text-emerald-600">$8,945</div>
-                <div class="text-xs text-slate-500">90.7% acc</div>
+                <div class="text-sm font-semibold text-emerald-600">{{ order.value }}</div>
+                <div class="text-xs text-slate-500">{{ order.accuracy }}</div>
               </div>
               <Button variant="ghost" size="sm" class="text-slate-400 hover:text-slate-600">
                 <MoreHorizontal class="h-4 w-4" />
@@ -335,30 +187,9 @@
         </div>
         <div class="text-sm text-slate-600 mb-4">Recent notifications and warnings</div>
         
-        <div class="space-y-4">
-          <div class="flex items-start space-x-3 p-3 bg-orange-50 border-l-4 border-orange-400 rounded-xl">
-            <AlertTriangle class="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
-            <div class="flex-1 min-w-0">
-              <div class="font-semibold text-slate-900">Accuracy Drop Detected</div>
-              <div class="text-sm text-slate-600 mt-1">Batch #4872 showed 5% lower accuracy than average</div>
-              <div class="text-xs text-slate-500 mt-2 flex items-center">
-                <Clock class="w-3 h-3 mr-1" />
-                2 hours ago
-              </div>
-            </div>
-          </div>
-
-          <div class="flex items-start space-x-3 p-3 bg-emerald-50 border-l-4 border-emerald-400 rounded-xl">
-            <FileText class="h-5 w-5 text-emerald-600 mt-0.5 flex-shrink-0" />
-            <div class="flex-1 min-w-0">
-              <div class="font-semibold text-slate-900">New Grading Rule Added</div>
-              <div class="text-sm text-slate-600 mt-1">Admin user added a new rule for knot detection</div>
-              <div class="text-xs text-slate-500 mt-2 flex items-center">
-                <Clock class="w-3 h-3 mr-1" />
-                Jul 24, 2025
-              </div>
-            </div>
-          </div>
+        <div class="text-center py-8">
+          <div class="text-gray-500">No system alerts available</div>
+          <div class="text-sm text-gray-400 mt-2">API does not provide alert data</div>
         </div>
         </CardContent>
       </Card>
@@ -367,7 +198,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import {
   Calendar, Clock, DollarSign, Package, MessageSquare, TrendingUp, TrendingDown,
   MoreHorizontal, Download, ChevronRight, AlertTriangle, FileText, RefreshCw, AlertCircle
@@ -379,6 +210,40 @@ import CardContent from '@/components/ui/card-content.vue'
 import Badge from '@/components/ui/badge.vue'
 import LoadingSkeleton from '@/components/ui/loading-skeleton.vue'
 import { useAsyncState } from '@/composables/useAsyncState'
+
+// API data
+const apiOrders = ref([])
+
+// Get active order (OPEN status)
+const activeOrder = computed(() => {
+  return apiOrders.value.find(o => o.status === 'OPEN')
+})
+
+// Get total orders count
+const totalOrders = computed(() => {
+  return apiOrders.value.length
+})
+
+// Get recent orders from API data
+const recentOrders = computed(() => {
+  // Sort by ID (desc) to get most recent first, limit to 7 items
+  const sorted = [...apiOrders.value].sort((a, b) => b.id - a.id).slice(0, 7)
+  
+  return sorted.map(order => ({
+    id: order.id,
+    name: order.name,
+    orderId: `B-${order.id}`,
+    customer: 'N/A', // Not in API
+    status: order.status,
+    boardCount: 'N/A', // Would need separate API call
+    volume: 'N/A', // Not in API
+    value: 'N/A', // Not in API
+    accuracy: 'N/A', // Not in API
+    startTime: order.startDate ? new Date(order.startDate).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'N/A',
+    species: order.specie?.name || 'N/A',
+    dryStatus: order.dryStatus?.name || 'N/A'
+  }))
+})
 
 // Chart data
 const chartData = ref({
@@ -406,17 +271,20 @@ const chartData = ref({
 })
 
 
-// Simulate async data loading
+// Load dashboard data from API
 const loadDashboardData = async () => {
-  // Simulate API call delay
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  
-  // Simulate potential error (uncomment to test error state)
-  // if (Math.random() > 0.8) {
-  //   throw new Error('Failed to fetch dashboard data')
-  // }
-  
-  return { success: true }
+  try {
+    // Fetch orders from API using v3 endpoint (translated to legacy format)
+    const response = await fetch('/api/v3/orders')
+    if (!response.ok) throw new Error('Failed to fetch orders')
+    const data = await response.json()
+    apiOrders.value = data.data || []
+    
+    return { success: true }
+  } catch (err) {
+    console.error('Error loading dashboard data:', err)
+    throw err
+  }
 }
 
 const { isLoading, error, execute: retryLoad } = useAsyncState(
