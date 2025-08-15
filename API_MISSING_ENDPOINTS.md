@@ -7,26 +7,45 @@
 - Cannot display board monetary value to users
 - Client-side calculations removed to support multiple customer pricing models
 
-**Required**:
-- Each board should include a `price` or `value` field from the backend
-- Price should be calculated server-side based on:
-  - Customer-specific pricing rules
-  - Grade quality
-  - Board volume/dimensions
-  - Market conditions
-- Currency should be configurable per customer (EUR for current customer)
+**Required Production-Ready Multi-Currency Implementation**:
+- Use ISO 4217 currency codes validated against internal currency table
+- Model money as typed object with: `amount_minor` (integer), `amount` (string decimal), `currency` (^[A-Z]{3}$), `display`
+- Avoid binary floats for monetary calculations
+- Support client currency selection via query param/header (e.g., `?currency=USD`)
+- Provide both `base_price` and `display_price` with exchange rate metadata
+- Include `exchange_rate`, `rate_timestamp`, and `rate_provider` fields
+- Persist exchange rate details on orders for audit trail
+- Validate currencies with 400/422 responses for invalid/unsupported codes
 
 **Example API Response**:
 ```json
 {
   "id": 106760,
   "gradeId": 575,
-  "price": 125.50,  // Server-calculated price
-  "currency": "EUR", // Customer-specific currency
-  "pricePerM3": 850, // Optional: unit price for transparency
-  ...
+  "base_price": {
+    "amount_minor": 12550,
+    "amount": "125.50", 
+    "currency": "EUR",
+    "display": "€125.50"
+  },
+  "display_price": {
+    "amount_minor": 13775,
+    "amount": "137.75",
+    "currency": "USD", 
+    "display": "$137.75"
+  },
+  "exchange_rate": 1.098,
+  "rate_timestamp": "2025-08-14T10:30:00Z",
+  "rate_provider": "ECB",
+  "price_per_m3": {
+    "amount": "850.00",
+    "currency": "EUR"
+  }
 }
 ```
+
+**Additional Endpoints Required**:
+- `GET /api/v3/currencies` - List supported currency codes, minor units, symbols, rounding rules
 
 ## High-Resolution Board Images
 
@@ -58,12 +77,16 @@ No additional HD endpoints needed - current images are already maximum resolutio
 - `/clean`, `/raw`, `/base` endpoints all return 406
 - Board data contains `url` and `annotatedUrl` fields but both paths return 404
 
-**Required**: 
-- Endpoint that returns board images WITHOUT any defects drawn
-- This is essential for the defect filtering feature to work properly
-- Without clean images, we cannot implement proper defect toggling as designed
+**Required Implementation**: 
+- Update existing endpoint: `GET /ui/images/render/board/{id}/{face}/{quality}?annotations=false`
+- Server should validate `annotations` query parameter 
+- When `annotations=false`, return original image without defect overlays
+- When `annotations=true` or absent, return annotated image (current behavior)
+- Return 200 with appropriate content-type for clean images
+- Return 406 only for unsupported Accept headers
+- Update board data URLs to include `annotations=false` for clean image access
 
-**Workaround**: Currently showing images with all defects visible (suboptimal)
+**Priority**: CRITICAL - Essential for defect filtering feature to work properly
 
 ## Current API Data Available
 The `/api/legacy/batches` endpoint provides:
@@ -157,10 +180,16 @@ The `/api/legacy/batches` endpoint provides:
 ### New Endpoints Needed
 1. `GET /api/orders/running` - Get currently running order with live metrics
 2. `GET /api/orders/scheduled` - Get upcoming scheduled orders
-3. `POST /api/orders/{id}/start` - Start a scheduled order
-4. `POST /api/orders/{id}/stop` - Stop/complete a running order
-5. `PUT /api/orders/{id}/priority` - Update order priority/sequence
-6. `GET /api/orders/{id}/metrics` - Get real-time metrics for an order
+3. `PATCH /api/orders/{id}` - Update order state/status (body: {"status": "started|stopped|completed"})
+4. `PUT /api/orders/{id}/priority` - Update order priority/sequence
+5. `GET /api/orders/{id}/metrics` - Get real-time metrics for an order
+
+**State Management**: 
+- Use RESTful state updates via PATCH/PUT with request body containing state/status fields
+- Valid states: scheduled, running, completed, paused, cancelled
+- Validate state transitions and ensure idempotency
+- Require authentication/authorization for state changes
+- Return appropriate error codes for invalid transitions
 
 ## Dashboard/Overview Page - Missing Endpoints
 

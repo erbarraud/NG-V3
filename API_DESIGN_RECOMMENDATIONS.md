@@ -91,7 +91,7 @@
 │   ├── PATCH  /orders/{id}            # Update order
 │   ├── DELETE /orders/{id}            # Delete order
 │   ├── GET    /orders/{id}/boards     # List boards in order
-│   └── POST   /orders/{id}/start      # Start order (action)
+│   └── PATCH  /orders/{id}            # Update order status (body: { "status": "started" })
 │
 ├── boards/
 │   ├── GET    /boards                 # List boards

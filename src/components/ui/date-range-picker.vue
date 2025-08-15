@@ -54,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { CalendarIcon } from 'lucide-vue-next'
 import Button from './button.vue'
 import Popover from './popover.vue'
@@ -73,14 +73,25 @@ interface Emits {
   (e: 'update:customStartDate', value: string): void
   (e: 'update:customEndDate', value: string): void
   (e: 'change'): void
+  (e: 'invalid-range'): void
+}
 }
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-// Use props directly for v-model binding
+// Use reactive props with watchers to sync changes
 const customStartDate = ref(props.customStartDate || '')
 const customEndDate = ref(props.customEndDate || '')
+
+// Watch for prop changes and sync local state
+watch(() => props.customStartDate, (newValue) => {
+  customStartDate.value = newValue || ''
+})
+
+watch(() => props.customEndDate, (newValue) => {
+  customEndDate.value = newValue || ''
+})
 
 const quickOptions = [
   { value: '1h', label: 'Last hour' },
@@ -111,6 +122,19 @@ const selectQuickOption = (value: string) => {
 }
 
 const updateCustomRange = () => {
+  // Validate date order
+  if (customStartDate.value && customEndDate.value) {
+    const startDate = new Date(customStartDate.value)
+    const endDate = new Date(customEndDate.value)
+    
+    if (endDate < startDate) {
+      // Normalize by setting end date to start date
+      customEndDate.value = customStartDate.value
+      emit('invalid-range')
+      return
+    }
+  }
+
   emit('update:customStartDate', customStartDate.value)
   emit('update:customEndDate', customEndDate.value)
   emit('change')

@@ -16,7 +16,13 @@
         ></div>
         
         <!-- Dialog content -->
-        <div class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div 
+          ref="dialogRef"
+          role="dialog"
+          aria-modal="true"
+          class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+          @keydown="handleKeydown"
+        >
           <slot />
         </div>
       </div>
@@ -25,12 +31,38 @@
 </template>
 
 <script setup>
-defineProps({
+import { ref, watch, nextTick, onUnmounted } from 'vue'
+import { useLockScroll } from '@vueuse/core'
+
+const props = defineProps({
   open: {
     type: Boolean,
     default: false
   }
 })
 
-defineEmits(['update:open'])
+const emit = defineEmits(['update:open'])
+
+const dialogRef = ref()
+const { lockScroll, unlockScroll } = useLockScroll()
+
+const handleKeydown = (event) => {
+  if (event.key === 'Escape') {
+    emit('update:open', false)
+  }
+}
+
+watch(() => props.open, async (isOpen) => {
+  if (isOpen) {
+    lockScroll()
+    await nextTick()
+    dialogRef.value?.focus()
+  } else {
+    unlockScroll()
+  }
+})
+
+onUnmounted(() => {
+  unlockScroll()
+})
 </script>

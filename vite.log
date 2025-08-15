@@ -1,0 +1,435 @@
+
+> neural-grader-vue-app@0.0.0 dev
+> vite
+
+
+  VITE v7.0.6  ready in 536 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /batches
+Received Response from the Target: 500 /boards
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /bundles
+Received Response from the Target: 500 /bundles
+Sending Request to the Target: GET /boards?search=32
+Received Response from the Target: 500 /boards?search=32
+Sending Request to the Target: GET /boards?search=321
+Received Response from the Target: 500 /boards?search=321
+3:46:31 PM [vite] (client) hmr update /src/index.css, /src/views/BoardFinder.vue
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /batches
+Received Response from the Target: 500 /boards
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /bundles
+Received Response from the Target: 500 /bundles
+3:47:58 PM [vite] (client) hmr update /src/index.css, /src/views/BoardFinder.vue
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /batches
+Received Response from the Target: 500 /boards
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /bundles
+Received Response from the Target: 500 /bundles
+3:50:04 PM [vite] (client) hmr update /src/index.css, /src/views/BoardFinder.vue
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /boards
+Received Response from the Target: 500 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /bundles
+Received Response from the Target: 500 /bundles
+3:50:35 PM [vite] (client) hmr update /src/index.css, /src/views/BoardFinder.vue
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /batches
+Received Response from the Target: 500 /boards
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /bundles
+Received Response from the Target: 500 /bundles
+3:50:54 PM [vite] (client) hmr update /src/index.css, /src/views/BoardFinder.vue
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /batches
+Received Response from the Target: 500 /boards
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /bundles
+Received Response from the Target: 500 /bundles
+3:51:25 PM [vite] (client) hmr update /src/index.css, /src/views/BoardFinder.vue
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /boards
+Received Response from the Target: 500 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /bundles
+Received Response from the Target: 500 /bundles
+Sending Request to the Target: GET /boards
+Received Response from the Target: 200 /boards
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /boards
+Received Response from the Target: 500 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /bundles
+Received Response from the Target: 500 /bundles
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /boards
+Received Response from the Target: 500 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /bundles
+Received Response from the Target: 500 /bundles
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /boards
+Received Response from the Target: 500 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /bundles
+Received Response from the Target: 500 /bundles
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 200 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 200 /boards
+Received Response from the Target: 200 /grades
+Sending Request to the Target: GET /bundles
+Received Response from the Target: 404 /bundles
+Sending Request to the Target: GET /boards?search=342
+Received Response from the Target: 200 /boards?search=342
+Sending Request to the Target: GET /ui/images/render/board/1/face1/original
+Sending Request to the Target: GET /ui/images/render/board/1/face2/original
+Received Response from the Target: 200 /ui/images/render/board/1/face1/original
+Received Response from the Target: 200 /ui/images/render/board/1/face2/original
+3:58:43 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 200 /batches
+Received Response from the Target: 200 /boards
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /boards
+Received Response from the Target: 500 /batches
+Received Response from the Target: 200 /grades
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 200 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 200 /boards
+Received Response from the Target: 200 /grades
+Sending Request to the Target: GET /ui/images/render/board/5/face1/original
+Sending Request to the Target: GET /ui/images/render/board/5/face2/original
+Received Response from the Target: 200 /ui/images/render/board/5/face2/original
+Received Response from the Target: 200 /ui/images/render/board/5/face1/original
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /batches
+Received Response from the Target: 500 /boards
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+4:09:32 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 200 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 200 /boards
+Received Response from the Target: 200 /grades
+Sending Request to the Target: GET /ui/images/render/board/5/face1/original
+Sending Request to the Target: GET /ui/images/render/board/5/face2/original
+Received Response from the Target: 200 /ui/images/render/board/5/face1/original
+Received Response from the Target: 200 /ui/images/render/board/5/face2/original
+4:11:57 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+4:12:15 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+4:13:55 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+4:14:16 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+4:17:12 PM [vite] (client) hmr update /src/index.css, /src/views/BoardFinder.vue
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 200 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 200 /boards
+Received Response from the Target: 200 /grades
+4:17:27 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+4:19:39 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 200 /batches
+Received Response from the Target: 200 /boards
+Sending Request to the Target: GET /grades
+Received Response from the Target: 200 /grades
+Sending Request to the Target: GET /ui/images/render/board/5/face1/original
+Sending Request to the Target: GET /ui/images/render/board/5/face2/original
+Received Response from the Target: 200 /ui/images/render/board/5/face1/original
+Received Response from the Target: 200 /ui/images/render/board/5/face2/original
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /boards
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 200 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 200 /boards
+Received Response from the Target: 200 /grades
+Sending Request to the Target: GET /ui/images/render/board/5/face1/original
+Sending Request to the Target: GET /ui/images/render/board/5/face2/original
+Received Response from the Target: 200 /ui/images/render/board/5/face1/original
+Received Response from the Target: 200 /ui/images/render/board/5/face2/original
+4:29:17 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+4:29:30 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+4:29:41 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+4:30:10 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+4:30:18 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /batches
+Received Response from the Target: 500 /boards
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 200 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 200 /boards
+Received Response from the Target: 200 /grades
+Sending Request to the Target: GET /ui/images/render/board/5/face1/original
+Sending Request to the Target: GET /ui/images/render/board/5/face2/original
+Received Response from the Target: 200 /ui/images/render/board/5/face2/original
+Received Response from the Target: 200 /ui/images/render/board/5/face1/original
+Sending Request to the Target: GET /ui/images/render/board/4/face1/original
+Sending Request to the Target: GET /ui/images/render/board/4/face2/original
+Received Response from the Target: 200 /ui/images/render/board/4/face1/original
+Received Response from the Target: 200 /ui/images/render/board/4/face2/original
+Sending Request to the Target: GET /ui/images/render/board/3/face1/original
+Sending Request to the Target: GET /ui/images/render/board/3/face2/original
+Received Response from the Target: 200 /ui/images/render/board/3/face1/original
+Received Response from the Target: 200 /ui/images/render/board/3/face2/original
+Sending Request to the Target: GET /ui/images/render/board/2/face1/original
+Sending Request to the Target: GET /ui/images/render/board/2/face2/original
+Received Response from the Target: 200 /ui/images/render/board/2/face1/original
+Received Response from the Target: 200 /ui/images/render/board/2/face2/original
+4:40:55 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+4:41:08 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+Sending Request to the Target: GET /ui/images/render/board/1/face1/original
+Sending Request to the Target: GET /ui/images/render/board/1/face2/original
+Received Response from the Target: 200 /ui/images/render/board/1/face1/original
+Received Response from the Target: 200 /ui/images/render/board/1/face2/original
+Sending Request to the Target: GET /ui/images/render/board/3/face1/original
+Sending Request to the Target: GET /ui/images/render/board/3/face2/original
+Received Response from the Target: 200 /ui/images/render/board/3/face2/original
+Received Response from the Target: 200 /ui/images/render/board/3/face1/original
+4:43:54 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /batches
+Received Response from the Target: 500 /boards
+Sending Request to the Target: GET /grades
+Received Response from the Target: 200 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Received Response from the Target: 200 /grades
+Received Response from the Target: 200 /boards
+Sending Request to the Target: GET /ui/images/render/board/5/face1/original
+Sending Request to the Target: GET /ui/images/render/board/5/face2/original
+Received Response from the Target: 200 /ui/images/render/board/5/face2/original
+Received Response from the Target: 200 /ui/images/render/board/5/face1/original
+4:44:23 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /batches
+Received Response from the Target: 500 /boards
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 200 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 200 /grades
+Received Response from the Target: 200 /boards
+Sending Request to the Target: GET /ui/images/render/board/5/face1/original
+Sending Request to the Target: GET /ui/images/render/board/5/face2/original
+Received Response from the Target: 200 /ui/images/render/board/5/face1/original
+Received Response from the Target: 200 /ui/images/render/board/5/face2/original
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 200 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 200 /grades
+Received Response from the Target: 200 /boards
+Sending Request to the Target: GET /ui/images/render/board/5/face1/original
+Sending Request to the Target: GET /ui/images/render/board/5/face2/original
+Received Response from the Target: 200 /ui/images/render/board/5/face1/original
+Received Response from the Target: 200 /ui/images/render/board/5/face2/original
+Sending Request to the Target: GET /ui/images/render/board/4/face1/original
+Sending Request to the Target: GET /ui/images/render/board/4/face2/original
+Received Response from the Target: 200 /ui/images/render/board/4/face2/original
+Received Response from the Target: 200 /ui/images/render/board/4/face1/original
+Sending Request to the Target: GET /ui/images/render/board/3/face1/original
+Sending Request to the Target: GET /ui/images/render/board/3/face2/original
+Received Response from the Target: 200 /ui/images/render/board/3/face1/original
+Received Response from the Target: 200 /ui/images/render/board/3/face2/original
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 200 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 200 /boards
+Received Response from the Target: 200 /grades
+Sending Request to the Target: GET /ui/images/render/board/5/face1/original
+Sending Request to the Target: GET /ui/images/render/board/5/face2/original
+Received Response from the Target: 200 /ui/images/render/board/5/face2/original
+Received Response from the Target: 200 /ui/images/render/board/5/face1/original
+Sending Request to the Target: GET /grades
+Received Response from the Target: 200 /grades
+Sending Request to the Target: GET /boards
+Received Response from the Target: 200 /boards
+Sending Request to the Target: GET /boards
+Received Response from the Target: 200 /boards
+Sending Request to the Target: GET /boards
+Received Response from the Target: 200 /boards
+Sending Request to the Target: GET /boards
+Received Response from the Target: 200 /boards
+Sending Request to the Target: GET /boards
+Received Response from the Target: 200 /boards
+Sending Request to the Target: GET /boards
+Received Response from the Target: 200 /boards
+4:48:16 PM [vite] (client) hmr update /src/index.css, /src/views/BoardFinder.vue
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /boards
+Received Response from the Target: 500 /batches
+Received Response from the Target: 200 /batches
+Sending Request to the Target: GET /grades
+Sending Request to the Target: GET /grades
+Received Response from the Target: 200 /boards
+Received Response from the Target: 200 /grades
+Received Response from the Target: 500 /grades
+4:48:25 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /boards
+Received Response from the Target: 500 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+4:48:40 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /boards
+Received Response from the Target: 500 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 200 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 200 /boards
+Received Response from the Target: 200 /grades
+Sending Request to the Target: GET /ui/images/render/board/5/face1/original
+Sending Request to the Target: GET /ui/images/render/board/5/face2/original
+Received Response from the Target: 200 /ui/images/render/board/5/face1/original
+Received Response from the Target: 200 /ui/images/render/board/5/face2/original
+Sending Request to the Target: GET /ui/images/render/board/4/face1/original
+Sending Request to the Target: GET /ui/images/render/board/4/face2/original
+Received Response from the Target: 200 /ui/images/render/board/4/face2/original
+Received Response from the Target: 200 /ui/images/render/board/4/face1/original
+Sending Request to the Target: GET /ui/images/render/board/3/face1/original
+Sending Request to the Target: GET /ui/images/render/board/3/face2/original
+Received Response from the Target: 200 /ui/images/render/board/3/face1/original
+Received Response from the Target: 200 /ui/images/render/board/3/face2/original
+Sending Request to the Target: GET /boards?search=32
+Received Response from the Target: 200 /boards?search=32
+Sending Request to the Target: GET /boards?search=23445
+Received Response from the Target: 200 /boards?search=23445
+Sending Request to the Target: GET /boards
+Received Response from the Target: 200 /boards
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 200 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 200 /boards
+Received Response from the Target: 200 /grades
+Sending Request to the Target: GET /ui/images/render/board/5/face1/original
+Sending Request to the Target: GET /ui/images/render/board/5/face2/original
+Received Response from the Target: 200 /ui/images/render/board/5/face1/original
+Received Response from the Target: 200 /ui/images/render/board/5/face2/original
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /boards
+Received Response from the Target: 500 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /boards
+Received Response from the Target: 500 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /batches
+Received Response from the Target: 500 /boards
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /batches
+Received Response from the Target: 500 /boards
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /boards
+Received Response from the Target: 500 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /boards
+Received Response from the Target: 500 /batches
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /batches
+Received Response from the Target: 500 /boards
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+Sending Request to the Target: GET /batches
+Sending Request to the Target: GET /boards
+Received Response from the Target: 500 /batches
+Received Response from the Target: 500 /boards
+Sending Request to the Target: GET /grades
+Received Response from the Target: 500 /grades
+5:40:41 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+5:44:24 PM [vite] (client) hmr update /src/index.css, /src/views/BoardFinder.vue
+5:44:36 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+5:46:15 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+5:46:24 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+5:47:19 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+5:47:28 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+5:50:01 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+5:51:18 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+5:51:59 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+5:52:47 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+5:53:17 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css
+5:53:27 PM [vite] (client) hmr update /src/views/BoardFinder.vue, /src/index.css

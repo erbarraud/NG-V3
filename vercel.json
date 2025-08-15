@@ -1,9 +1,14 @@
 {
+  "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "devCommand": "npm run dev",
   "installCommand": "npm install --legacy-peer-deps",
   "rewrites": [
+    {
+      "source": "/api/v3/(.*)",
+      "destination": "/api/v3/$1"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"

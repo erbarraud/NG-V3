@@ -5,12 +5,16 @@
 ### Prerequisites
 - Node.js 18+ 
 - npm or yarn
-- Access to backend API (http://192.168.111.132:8082)
+- Access to backend API (configure via BACKEND_URL environment variable)
 
 ### Setup
 ```bash
 # Install dependencies
 npm install
+
+# Configure environment (copy and modify .env.example)
+cp .env.example .env.local
+# Edit .env.local to set VITE_API_TARGET=${BACKEND_URL}
 
 # Start development server
 npm run dev
@@ -135,9 +139,18 @@ for (let i = 0; i < points.length; i += 2) {
 - `GET /api/legacy/ui/images/render/board/{id}/face{n}/original` - Board images
 
 ### Pagination
-Most endpoints support:
-- `?page=1&pageSize=100`
-- Default pageSize is often 10
+API versions use different parameter names:
+- **v3 API**: `?page=1&limit=100` (default limit: 20)
+- **Legacy API**: `?pageNumber=1&pageSize=100` (default pageSize: 10)
+
+Examples:
+```bash
+# v3 API
+GET /api/v3/boards?page=1&limit=50
+
+# Legacy API  
+GET /api/legacy/boards?pageNumber=1&pageSize=50
+```
 
 ## ⚠️ Important Notes
 

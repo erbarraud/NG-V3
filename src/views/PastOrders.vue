@@ -57,6 +57,19 @@
         </div>
       </div>
 
+      <!-- Error Message -->
+      <div v-if="errorMessage" class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center justify-between">
+        <div class="flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+          {{ errorMessage }}
+        </div>
+        <Button @click="retryLoad" variant="outline" size="sm">
+          Retry
+        </Button>
+      </div>
+
       <!-- Data Table -->
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -202,18 +215,27 @@ const apiOrders = ref([])
 const isLoading = ref(false)
 
 // Load orders from API
+const errorMessage = ref('')
+
 const loadOrders = async () => {
   isLoading.value = true
+  errorMessage.value = ''
   try {
     const response = await fetch('/api/legacy/batches')
-    if (!response.ok) throw new Error('Failed to fetch orders')
+    if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`)
     const data = await response.json()
     apiOrders.value = data.data || []
   } catch (err) {
     console.error('Error loading orders:', err)
+    errorMessage.value = err.message || 'Failed to load orders. Please try again.'
+    apiOrders.value = []
   } finally {
     isLoading.value = false
   }
+}
+
+const retryLoad = () => {
+  loadOrders()
 }
 
 // Get past (closed) orders from API data
@@ -229,7 +251,10 @@ const pastOrders = computed(() => {
     species: order.specie?.name || 'N/A',
     dryStatus: order.dryStatus?.name || 'N/A',
     volume: 'N/A', // Not in API
-    completedDate: order.startDate ? new Date(order.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A',
+    completedDate: order.startDate ? (() => {
+      const date = new Date(order.startDate)
+      return isNaN(date.getTime()) ? 'N/A' : date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    })() : 'N/A',
     completedTime: 'N/A', // Not in API
     status: order.status || 'N/A',
     sorts: [] // Not in API

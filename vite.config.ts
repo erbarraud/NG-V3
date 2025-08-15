@@ -14,7 +14,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api/v3': {
-        target: 'http://192.168.111.132:8082/processing',
+        target: process.env.VITE_API_TARGET || 'http://localhost:8082/processing',
         changeOrigin: true,
         rewrite: (path) => {
           // Handle image URLs specially
@@ -47,48 +47,54 @@ export default defineConfig({
           return path.replace(/^\/api\/v3/, '')
         },
         configure: (proxy, _options) => {
-          proxy.on('error', (err, _req, _res) => {
-            console.log('v3 proxy error', err);
-          });
-          proxy.on('proxyReq', (proxyReq, req, _res) => {
-            console.log('V3 API Request:', req.method, req.url);
-          });
-          proxy.on('proxyRes', (proxyRes, req, _res) => {
-            console.log('V3 API Response:', proxyRes.statusCode, req.url);
-          });
+          if (process.env.NODE_ENV !== 'production') {
+            proxy.on('error', (err, _req, _res) => {
+              console.error('v3 proxy error', err);
+            });
+            proxy.on('proxyReq', (proxyReq, req, _res) => {
+              console.log('V3 API Request:', req.method, req.url);
+            });
+            proxy.on('proxyRes', (proxyRes, req, _res) => {
+              console.log('V3 API Response:', proxyRes.statusCode, req.url);
+            });
+          }
         },
       },
       '/api/legacy': {
-        target: 'http://192.168.111.132:8082/processing',
+        target: process.env.VITE_API_TARGET || 'http://localhost:8082/processing',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/legacy/, ''),
         configure: (proxy, _options) => {
-          proxy.on('error', (err, _req, _res) => {
-            console.log('proxy error', err);
-          });
-          proxy.on('proxyReq', (proxyReq, req, _res) => {
-            console.log('Sending Request to the Target:', req.method, req.url);
-          });
-          proxy.on('proxyRes', (proxyRes, req, _res) => {
-            console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
-          });
+          if (process.env.NODE_ENV !== 'production') {
+            proxy.on('error', (err, _req, _res) => {
+              console.error('proxy error', err);
+            });
+            proxy.on('proxyReq', (proxyReq, req, _res) => {
+              console.log('Sending Request to the Target:', req.method, req.url);
+            });
+            proxy.on('proxyRes', (proxyRes, req, _res) => {
+              console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
+            });
+          }
         },
       },
       // Proxy for clean images from nginx (port 80)
       '/gateway': {
-        target: 'http://192.168.111.132',
+        target: process.env.VITE_GATEWAY_TARGET || 'http://localhost',
         changeOrigin: true,
         secure: false,
         configure: (proxy, _options) => {
-          proxy.on('error', (err, _req, _res) => {
-            console.log('gateway proxy error', err);
-          });
-          proxy.on('proxyReq', (proxyReq, req, _res) => {
-            console.log('Gateway Request:', req.method, req.url);
-          });
-          proxy.on('proxyRes', (proxyRes, req, _res) => {
-            console.log('Gateway Response:', proxyRes.statusCode, req.url);
-          });
+          if (process.env.NODE_ENV !== 'production') {
+            proxy.on('error', (err, _req, _res) => {
+              console.error('gateway proxy error', err);
+            });
+            proxy.on('proxyReq', (proxyReq, req, _res) => {
+              console.log('Gateway Request:', req.method, req.url);
+            });
+            proxy.on('proxyRes', (proxyRes, req, _res) => {
+              console.log('Gateway Response:', proxyRes.statusCode, req.url);
+            });
+          }
         },
       }
     }

@@ -1,10 +1,10 @@
-interface LegacyResponse {
+export interface LegacyResponse {
   status: number
   data: any
   error?: string
 }
 
-interface V3Response<T> {
+export interface V3Response<T> {
   data: T
   meta?: {
     timestamp: string
@@ -144,7 +144,8 @@ class ApiAdapter {
     }
     
     if (options.body && typeof options.body === 'object') {
-      options.body = JSON.stringify(this.transformRequestBody(options.body))
+      const transformedBody = this.transformRequestBody(options.body)
+      options = { ...options, body: JSON.stringify(transformedBody) }
     }
     
     return { ...options, headers }
@@ -450,9 +451,9 @@ class ApiAdapter {
     return this.handleError(new Error('Invalid authentication response'))
   }
 
-  private handleError(error: any): V3Response<any> {
+  private handleError<T>(error: any): V3Response<T> {
     return {
-      data: null,
+      data: undefined as unknown as T,
       error: {
         code: error.code || 'UNKNOWN_ERROR',
         message: error.message || 'An unexpected error occurred'
@@ -466,4 +467,3 @@ class ApiAdapter {
 }
 
 export default ApiAdapter
-export type { V3Response, LegacyResponse }

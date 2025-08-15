@@ -158,16 +158,17 @@ This is a Vue 3 + TypeScript application for a lumber grading system (NG-V3) tha
 ### Key Endpoints
 - `/api/v3/boards` - Get board list
 - `/api/v3/grades` - Get available grades
-- `/api/v3/batches` - Get batch information
-- `/api/v3/batches/{id}` - Get specific batch with custom grades
+- `/api/v3/orders` - Get order information
+- `/api/v3/orders/{id}` - Get specific order with custom grades
 - `/api/legacy/ui/images/render/board/{id}/face{n}/original` - Board images
-- `/api/legacy/batches/{id}` - Direct legacy API for batch custom grades
+- `/api/legacy/batches/{id}` - Direct legacy API for order custom grades (legacy path)
 
 ### Important API Findings
-- Grade IDs > 100 are batch-specific custom grade assignments
-- Each batch has its own custom grade mappings
-- Board validation includes all possible grades for the batch
+- Grade IDs > 100 are order-specific custom grade assignments
+- Each order has its own custom grade mappings
+- Board validation includes all possible grades for the order
 - French text from API has encoding issues (requires client-side fix)
+- **Note**: v3 API uses Orders terminology while legacy API paths still use `/batches`
 
 ## Component Structure
 
