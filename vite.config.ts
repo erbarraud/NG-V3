@@ -14,7 +14,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api/v3': {
-        target: process.env.VITE_API_TARGET || 'http://localhost:8082/processing',
+        target: process.env.VITE_API_TARGET || process.env.VITE_LEGACY_API_URL || 'http://192.168.111.132:8082/processing',
         changeOrigin: true,
         rewrite: (path) => {
           // Handle image URLs specially
@@ -23,9 +23,18 @@ export default defineConfig({
           }
           
           // Convert modern pagination params to legacy format for boards endpoint
-          if (path.includes('/boards') && path.includes('?')) {
-            path = path.replace(/[?&]page=(\d+)/g, (match, p1) => match.replace(`page=${p1}`, `pageNumber=${p1}`))
-            path = path.replace(/[?&]limit=(\d+)/g, (match, p1) => match.replace(`limit=${p1}`, `pageSize=${p1}`))
+          if (path.includes('/boards')) {
+            // First convert the parameters
+            if (path.includes('?')) {
+              path = path.replace(/[?&]page=(\d+)/g, (match, p1) => match.replace(`page=${p1}`, `pageNumber=${p1}`))
+              path = path.replace(/[?&]limit=(\d+)/g, (match, p1) => match.replace(`limit=${p1}`, `pageSize=${p1}`))
+            }
+            
+            // Add expand parameter to get all board data including cuts and reductions
+            if (!path.includes('expand=')) {
+              const separator = path.includes('?') ? '&' : '?'
+              path += `${separator}expand=supplier,front,back,grade,defects,cuts,reductions,length,species,dryStatuses,price,currency,batch,thicknessValue,boardSize,bundle`
+            }
           }
           
           // Map v3 endpoints to legacy endpoints
@@ -61,7 +70,7 @@ export default defineConfig({
         },
       },
       '/api/legacy': {
-        target: process.env.VITE_API_TARGET || 'http://localhost:8082/processing',
+        target: process.env.VITE_API_TARGET || process.env.VITE_LEGACY_API_URL || 'http://192.168.111.132:8082/processing',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/legacy/, ''),
         configure: (proxy, _options) => {
@@ -80,7 +89,7 @@ export default defineConfig({
       },
       // Proxy for clean images from nginx (port 80)
       '/gateway': {
-        target: process.env.VITE_GATEWAY_TARGET || 'http://localhost',
+        target: process.env.VITE_GATEWAY_TARGET || 'http://192.168.111.132:80',
         changeOrigin: true,
         secure: false,
         configure: (proxy, _options) => {

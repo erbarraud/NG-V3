@@ -32,7 +32,7 @@
 
 <script setup>
 import { ref, watch, nextTick, onUnmounted } from 'vue'
-import { useLockScroll } from '@vueuse/core'
+import { useScrollLock } from '@vueuse/core'
 
 const props = defineProps({
   open: {
@@ -44,7 +44,7 @@ const props = defineProps({
 const emit = defineEmits(['update:open'])
 
 const dialogRef = ref()
-const { lockScroll, unlockScroll } = useLockScroll()
+const isLocked = useScrollLock(document.body)
 
 const handleKeydown = (event) => {
   if (event.key === 'Escape') {
@@ -54,15 +54,15 @@ const handleKeydown = (event) => {
 
 watch(() => props.open, async (isOpen) => {
   if (isOpen) {
-    lockScroll()
+    isLocked.value = true
     await nextTick()
     dialogRef.value?.focus()
   } else {
-    unlockScroll()
+    isLocked.value = false
   }
 })
 
 onUnmounted(() => {
-  unlockScroll()
+  isLocked.value = false
 })
 </script>

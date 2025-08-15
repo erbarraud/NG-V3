@@ -130,7 +130,7 @@ const error = ref(null)
 const jumpToId = ref(null)
 const boardViewerRef = ref(null)
 
-// Mock data for navigation (in real app, this would come from API)
+// Board IDs loaded from API for navigation
 const allBoardIds = ref([])
 const currentIndex = computed(() => allBoardIds.value.indexOf(currentBoardId.value))
 const totalBoards = computed(() => allBoardIds.value.length)
@@ -181,7 +181,10 @@ const loadBoard = async (id) => {
     }
     
     if (!board) {
-      throw new Error(`Board with ID ${id} not found. The board may have been deleted or the ID is incorrect.`)
+      // Board not found - show error
+      error.value = `Board with ID ${id} not found. The board may have been deleted or the ID is incorrect.`
+      boardData.value = null // Clear any previous board data
+      return // Exit early since board doesn't exist
     }
     
     boardData.value = board
@@ -196,6 +199,7 @@ const loadBoard = async (id) => {
   } catch (err) {
     error.value = `Failed to load board: ${err.message}`
     console.error('Error loading board:', err)
+    boardData.value = null // Clear any previous board data
   } finally {
     isLoading.value = false
   }

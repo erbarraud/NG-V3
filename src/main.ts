@@ -19,9 +19,11 @@ usePerformance()
 app.use(pinia)
 app.use(router)
 
-// Initialize auth after pinia is set up
-const authStore = useAuthStore()
-authStore.initializeAuth()
+// Initialize auth after app is set up
+router.isReady().then(() => {
+  const authStore = useAuthStore()
+  authStore.initializeAuth()
+})
 
 app.mount('#app')
 

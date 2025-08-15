@@ -18,6 +18,40 @@ This is a Vue 3 + TypeScript application for a lumber grading system (NG-V3) tha
 
 ## Recent Changes & Current State
 
+### Session: 2025-08-15 (Board Images and Usable Area Fix)
+**Major Issues Fixed:**
+
+1. **Board Images Not Loading**:
+   - **Problem**: All boards showing placeholder images instead of actual board photos
+   - **Root Cause**: Images served from nginx on port 80, not processing API on port 8082
+   - **Solution**: Fixed gateway proxy in vite.config.ts to target port 80 for /gateway paths
+   - **Impact**: Board images now load correctly from gateway/stitches URLs
+
+2. **Usable Area Visualization**:
+   - **Problem**: Client-side drawing didn't match server's usable area visualization
+   - **Root Cause**: Was trying to draw from missing coordinate data in API
+   - **Solution**: Discovered and implemented server-provided mask overlays
+   - **Architecture**:
+     * Base layer: Clean board image (face.url)
+     * Overlay: Semi-transparent PNG mask (face.usableAreaMaskUrl)
+     * Result: Shows only usable areas without defects
+   - **Key Discovery**: Legacy app uses mask overlay, not image switching
+
+3. **API Data Structure Findings**:
+   - Board faces contain:
+     * `url`: Clean image without overlays
+     * `annotatedUrl`: Image with all overlays baked in
+     * `usableAreaMaskUrl`: PNG mask for usable areas
+   - All URLs are gateway/stitches paths served by nginx
+   - Cuts/reductions data arrays exist but are empty (coordinate data not provided)
+
+**Technical Implementation**:
+- Images always load clean version (no baked-in defects)
+- Usable area toggle overlays mask image at 30% opacity
+- Defects drawn on canvas overlay (can be toggled separately)
+- Only grading face shows usable area mask
+- Removed client-side usable area drawing code (kept as deprecated reference)
+
 ### Session: 2025-08-14 (Euro Currency & API-Based Pricing)
 **Currency Update to Euros:**
 1. **Changed all price displays from USD ($) to Euros (€)**:

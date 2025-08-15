@@ -75,7 +75,6 @@ interface Emits {
   (e: 'change'): void
   (e: 'invalid-range'): void
 }
-}
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()

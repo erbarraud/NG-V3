@@ -172,15 +172,17 @@
                 @load="(e) => handleImageLoad(e, index)"
               />
               
-              <!-- Canvas overlay for usable areas (below defects) -->
-              <canvas
-                v-if="showUsableArea"
-                :ref="el => { if (el) usableAreaCanvasRefs[index] = el }"
+              <!-- Usable area mask overlay (only on grading face) -->
+              <img
+                v-if="showUsableArea && boardImages[index]?.isGradingFace && getMaskUrl(index)"
+                :src="getMaskUrl(index)"
+                :alt="`Usable area mask for ${image.faceName}`"
                 class="absolute top-0 left-0 pointer-events-none z-10"
                 :style="{ 
-                  display: imageLoadedStates[index] ? 'block' : 'none'
+                  opacity: 0.3,
+                  mixBlendMode: 'multiply'
                 }"
-              ></canvas>
+              />
               
               <!-- Canvas overlay for defects (positioned absolutely on top) -->
               <canvas
@@ -417,6 +419,33 @@
 </template>
 
 <script setup>
+/**
+ * BoardViewer Component
+ * 
+ * Displays lumber board images with overlays for defects and usable areas.
+ * 
+ * Architecture:
+ * - Base Layer: Clean board images (no overlays) served from nginx via gateway URLs
+ * - Defects Layer: Canvas overlay drawing defect polygons from API data
+ * - Usable Area Layer: Semi-transparent PNG mask showing clear cutting areas
+ * 
+ * Image Sources:
+ * - Clean images: face.url (e.g., gateway/stitches/date/row/id/id-face-0.jpg)
+ * - Usable area masks: face.usableAreaMaskUrl (e.g., gateway/stitches/date/row/id/usable-id-face-0.png)
+ * - All images served by nginx on port 80, proxied through /gateway path
+ * 
+ * Key Features:
+ * - Toggle defects visibility (Hide Minor Defects button)
+ * - Toggle usable area overlay (Show Usable Area button) - only on grading face
+ * - Interactive defect selection for grading feedback
+ * - Magnifier for detailed inspection
+ * - Grade validation results in side sheet
+ * 
+ * Props:
+ * - board: Board data object with faces, defects, grades
+ * - availableGrades: List of available grades for validation
+ * - showKpis: Whether to show KPI cards
+ */
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { Trees, Droplets, Maximize2, AlertCircle, AlertTriangle, ImageIcon, Ruler, ArrowLeftRight, Square, Package, Activity, Box, FileStack, FileText, Eye, EyeOff, ZoomIn, X, MessageSquare } from 'lucide-vue-next'
 import Sheet from '@/components/ui/sheet.vue'
@@ -462,7 +491,7 @@ const imageLoadedStates = ref([false, false]) // Track if images are loaded
 const imageDimensions = ref([null, null]) // Store natural dimensions of images
 const canvasRefs = ref({}) // References to canvas elements
 const canvasContexts = ref({}) // Canvas 2D contexts
-const usableAreaCanvasRefs = ref({}) // References to usable area canvas elements
+// Removed: usableAreaCanvasRefs - no longer needed, using server mask overlay instead
 
 // Magnifier state
 const magnifierEnabled = ref(false)
@@ -578,58 +607,40 @@ const kpiData = computed(() => {
  * @async
  * @returns {Promise<void>}
  */
+/**
+ * Load board images from the API.
+ * Images are served by nginx on port 80 via gateway URLs.
+ * Each face has:
+ * - url: Clean image without any overlays
+ * - usableAreaMaskUrl: Semi-transparent mask showing usable areas
+ * - annotatedUrl: Image with all overlays baked in (not currently used)
+ */
 const loadBoardImages = async () => {
   if (!props.board) return
   
   try {
-    // Always load high-res images for magnifier
-    const face1HighRes = `/api/v3/images/board/${props.board.id}/face1/original`
-    const face2HighRes = `/api/v3/images/board/${props.board.id}/face2/original`
+    // Check which face is the grading face (only this face shows usable area mask)
+    const face1IsGradingFace = props.board.face1?.gradingFace === true
+    const face2IsGradingFace = props.board.face2?.gradingFace === true
     
-    // Check if we should use annotatedUrl (usable area) or regular url
-    if (showUsableArea.value) {
-      // According to the dev, usable area images are saved server-side
-      // and the path is in annotatedUrl, but sometimes the file doesn't exist
-      const face1AnnotatedUrl = props.board.face1?.annotatedUrl
-      const face2AnnotatedUrl = props.board.face2?.annotatedUrl
-      
-      // Try to use annotatedUrl first, fall back to reductions endpoint
-      const face1Url = face1AnnotatedUrl 
-        ? `/api/legacy/${face1AnnotatedUrl}`
-        : `/api/v3/images/board/${props.board.id}/face1/reductions`
-      const face2Url = face2AnnotatedUrl 
-        ? `/api/legacy/${face2AnnotatedUrl}`
-        : `/api/v3/images/board/${props.board.id}/face2/reductions`
-      
-      boardImages.value = [
-        {
-          faceName: 'Face 1',
-          url: face1Url,
-          fallbackUrl: face1HighRes,
-          highResUrl: face1HighRes
-        },
-        {
-          faceName: 'Face 2',
-          url: face2Url,
-          fallbackUrl: face2HighRes,
-          highResUrl: face2HighRes
-        }
-      ]
-    } else {
-      // Use the original endpoint for normal images
-      boardImages.value = [
-        {
-          faceName: 'Face 1',
-          url: face1HighRes,
-          highResUrl: face1HighRes
-        },
-        {
-          faceName: 'Face 2',
-          url: face2HighRes,
-          highResUrl: face2HighRes
-        }
-      ]
-    }
+    // Get clean URLs from the board data (gateway/stitches/... paths)
+    const face1Clean = props.board.face1?.url ? `/${props.board.face1.url}` : ''
+    const face2Clean = props.board.face2?.url ? `/${props.board.face2.url}` : ''
+    
+    boardImages.value = [
+      {
+        faceName: 'Face 1',
+        url: face1Clean,
+        highResUrl: face1Clean,
+        isGradingFace: face1IsGradingFace
+      },
+      {
+        faceName: 'Face 2',
+        url: face2Clean,
+        highResUrl: face2Clean,
+        isGradingFace: face2IsGradingFace
+      }
+    ]
     
     // Preload high-res images for magnifier
     boardImages.value.forEach(img => {
@@ -637,29 +648,19 @@ const loadBoardImages = async () => {
       preloadImg.src = img.highResUrl
     })
   } catch (err) {
-    console.error('Error loading board images:', err)
+    // Handle error silently - placeholder will be shown
   }
 }
 
 /**
- * Toggle the display of usable area overlay on board images.
- * When enabled, shows highlighted areas where clear cuttings can be made.
+ * Toggle the display of usable area mask overlay.
+ * When enabled, shows a semi-transparent mask highlighting wood areas
+ * suitable for clear cuttings (without defects).
  */
 const toggleUsableArea = () => {
   showUsableArea.value = !showUsableArea.value
   emit('usable-area-toggled', showUsableArea.value)
-  
-  // Draw or clear usable area overlays
-  if (showUsableArea.value) {
-    // Wait for Vue to render the canvases, then draw
-    nextTick(() => {
-      [0, 1].forEach(index => {
-        if (imageLoadedStates.value[index]) {
-          drawUsableAreaOverlay(index)
-        }
-      })
-    })
-  }
+  // The mask overlay is handled via template v-if directive
 }
 
 /**
@@ -1160,10 +1161,8 @@ const handleImageLoad = async (event, index) => {
   
   // Get canvas context AFTER setting size (because changing size clears the canvas)
   const ctx = canvas.getContext('2d')
-  if (!ctx) {
-    console.error('Failed to get 2D context from canvas!')
-    return
-  }
+  if (!ctx) return
+  
   canvasContexts.value[index] = ctx
   
   imageDimensions.value[index] = {
@@ -1173,13 +1172,7 @@ const handleImageLoad = async (event, index) => {
     displayHeight: displayHeight
   }
   
-  // Set as loaded first
   imageLoadedStates.value[index] = true
-  
-  // Draw usable area overlay if enabled
-  if (showUsableArea.value) {
-    drawUsableAreaOverlay(index)
-  }
   
   // Draw defects overlay
   drawDefectsOnCanvas(index)
@@ -1245,11 +1238,11 @@ const getScaledHeight = (height, imageIndex) => {
 // Watch for board changes and initialize defects visibility
 watch(() => props.board, (newBoard) => {
   if (newBoard) {
-    console.log('Board changed, resetting defect visibility')
+    // Board changed, reset defect visibility
     
     // Start with no defects selected (clean board)
     selectedDefects.value = new Set()
-    console.log('Board loaded with clean view (no defects selected)')
+    // Board loaded with clean view (no defects selected)
     
     // Reset feedback state
     feedbackSubmitted.value = false
@@ -1393,7 +1386,14 @@ const getMagnifiedImageStyle = (boardIndex) => {
   }
 }
 
-// Get image URL - always load clean images (no defects, no overlays)
+/**
+ * Get the URL for a board face image.
+ * Always returns the clean image URL (no defects or overlays).
+ * Images are served by nginx on port 80 from gateway/stitches paths.
+ * 
+ * @param {number} index - Face index (0 or 1)
+ * @returns {string} Image URL path
+ */
 const getImageUrl = (index) => {
   if (!props.board) return ''
   
@@ -1401,25 +1401,51 @@ const getImageUrl = (index) => {
   const faceName = `face${faceNumber}`
   const face = props.board[faceName]
   
-  if (!face) return ''
-  
-  // Always use the clean URL from board data - served by nginx on port 80
-  if (face.url) {
-    // Clean images are served by nginx, proxied through our dev server
+  // Always use the clean face URL from the API - it's served by nginx on port 80
+  // We'll overlay the usable area mask separately
+  if (face?.url) {
     return `/${face.url}`
   }
   
-  // Fallback if no URL in board data
+  // Fallback to constructed URL if no face URL
   const boardId = props.board.id
   return `/api/legacy/ui/images/render/board/${boardId}/face${faceNumber}/original`
 }
 
 /**
- * Draw usable area overlay on canvas by masking defect areas.
- * Creates a high-contrast overlay showing areas suitable for clear cuttings.
- * Uses pixel-level analysis to distinguish between wood and background.
+ * Get the URL for the usable area mask overlay.
+ * Returns a semi-transparent PNG showing areas suitable for clear cuttings.
+ * Only available for the grading face.
  * 
- * @param {number} canvasIndex - Index of the canvas (0 or 1) corresponding to face number
+ * @param {number} index - Face index (0 or 1)
+ * @returns {string} Mask image URL path or empty string if unavailable
+ */
+const getMaskUrl = (index) => {
+  if (!props.board) return ''
+  
+  const faceNumber = index + 1
+  const faceName = `face${faceNumber}`
+  const face = props.board[faceName]
+  
+  
+  // Return the mask URL if available (served as PNG with transparency)
+  if (face?.usableAreaMaskUrl) {
+    return `/${face.usableAreaMaskUrl}`
+  }
+  
+  return ''
+}
+
+// Note: These functions were removed as we now use server-provided mask overlays
+// The API doesn't currently provide coordinate data for client-side drawing
+
+/**
+ * DEPRECATED: Client-side usable area drawing.
+ * This function is no longer used as we now use server-provided mask overlays.
+ * Kept for reference in case server masks become unavailable.
+ * 
+ * @deprecated Use server mask overlays via getMaskUrl() instead
+ * @param {number} canvasIndex - Index of the canvas (0 or 1)
  */
 const drawUsableAreaOverlay = async (canvasIndex) => {
   const canvas = usableAreaCanvasRefs.value[canvasIndex]
@@ -1450,6 +1476,9 @@ const drawUsableAreaOverlay = async (canvasIndex) => {
   const faceNumber = canvasIndex + 1
   const faceName = `face${faceNumber}`
   const face = props.board[faceName]
+  
+  // Note: This function is currently disabled as we use server-provided mask overlays
+  // Keeping the defect-based approach as fallback if server masks are unavailable
   
   // High contrast approach: Darken entire board, then highlight usable areas
   
@@ -1574,15 +1603,9 @@ const getFallbackImageUrl = (index) => {
   if (!props.board) return ''
   
   const faceNumber = index + 1
-  const faceName = `face${faceNumber}`
-  
-  // Try annotated image from nginx first  
-  if (props.board[faceName]?.annotatedUrl) {
-    return `/${props.board[faceName].annotatedUrl}`
-  }
-  
-  // Final fallback to backend endpoint
   const boardId = props.board.id
+  
+  // Always use our constructed URL - don't trust URLs from API as they may contain placeholders
   return `/api/legacy/ui/images/render/board/${boardId}/face${faceNumber}/original`
 }
 

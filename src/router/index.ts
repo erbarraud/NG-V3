@@ -22,6 +22,7 @@ const ServerError = () => import('../views/error/ServerError.vue')
 const NetworkError = () => import('../views/error/NetworkError.vue')
 const Unauthorized = () => import('../views/error/Unauthorized.vue')
 const Debug = () => import('../views/Debug.vue')
+const UITest = () => import('../views/UITest.vue')
 
 const routes: RouteRecordRaw[] = [
   {
@@ -168,6 +169,15 @@ const routes: RouteRecordRaw[] = [
     meta: {
       requiresAuth: false,
       title: 'API Bridge Test'
+    }
+  },
+  {
+    path: '/ui-test',
+    name: 'UITest',
+    component: UITest,
+    meta: {
+      requiresAuth: false,
+      title: 'UI Component Test'
     }
   },
   {
